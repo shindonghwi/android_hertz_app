@@ -42,5 +42,5 @@ val Neutral99 = Color(0xFFFFFAFF)
 val Neutral90 = Color(0xFFDDDAE0)
 val Neutral10 = Color(0xFF151518)
 
-val White = Color(0xFFFFFFFF)
-val Black = Color(0xFF000000)
+val White = Color(0xFFFEFEFE)
+val Black = Color(0xFF202020)
