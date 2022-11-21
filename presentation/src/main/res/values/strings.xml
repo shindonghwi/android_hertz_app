@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">MagoHz</string>
+
+    <string name="home_title">My Hertz</string>
+
+
+    <!-- 공통 -->
+    <string name="login">로그인</string>
+    <string name="company">Mago</string>
+
 </resources>
