@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
+import mago.apps.hertz.ui.navigation.Navigation
 import mago.apps.hertz.ui.theme.MagoHzTheme
 
 @AndroidEntryPoint
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MagoHzTheme {
+                Navigation()
             }
         }
     }
