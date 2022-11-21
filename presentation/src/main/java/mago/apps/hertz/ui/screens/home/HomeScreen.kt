@@ -48,7 +48,9 @@ private fun HomeContent(modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
     val imageHeight = configuration.screenHeightDp.dp * 0.1f
 
-    ConstraintLayout(modifier = modifier, constraintSet = createConstraintSet()) {
+    ConstraintLayout(
+        modifier = modifier, constraintSet = createConstraintSet()
+    ) {
         Text(
             modifier = Modifier.layoutId("title"),
             text = stringResource(id = R.string.home_title),
@@ -56,7 +58,8 @@ private fun HomeContent(modifier: Modifier = Modifier) {
             color = MaterialTheme.colors.primary
         )
         Column(
-            modifier = Modifier.layoutId("profileImage"), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.layoutId("profileImage"),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
                 modifier = Modifier
