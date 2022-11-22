@@ -66,6 +66,7 @@ dependencies {
             implementation(NavigationCompose)
             implementation(dagger)
         }
+        implementation("com.google.accompanist:accompanist-permissions:0.27.1")
     }
 
     Kapts.apply {

@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppBar(
-    title: String = "",
     type: AppbarType,
+    textContent: @Composable (() -> Unit)? = null,
     leftContent: @Composable (() -> Unit)? = null,
     rightContent: @Composable (() -> Unit)? = null
 ) {
@@ -27,7 +27,6 @@ fun AppBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = 12.dp)
             .background(
                 if (isSystemInDarkTheme()) {
                     Color.Black.copy(alpha = 0.0f)
@@ -37,14 +36,14 @@ fun AppBar(
             ),
     ) {
         Row(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.fillMaxHeight().padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // left area
-            LeftAppBar(type, title, leftContent)
+            LeftAppBar(type, textContent, leftContent)
 
             // center area
-            CenterAppBar(type, title)
+            CenterAppBar(type, textContent)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -56,7 +55,7 @@ fun AppBar(
 
 @Composable
 private fun RowScope.LeftAppBar(
-    type: AppbarType, title: String = "", leftContent: @Composable (() -> Unit)?
+    type: AppbarType, textContent: @Composable (() -> Unit)?, leftContent: @Composable (() -> Unit)?
 ) {
     when (type) {
         AppbarType.EMPTY -> {}
@@ -68,39 +67,24 @@ private fun RowScope.LeftAppBar(
                 imageVector = Icons.Rounded.Person,
                 contentDescription = null
             )
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            textContent?.let { it() }
         }
         AppbarType.ICON_TITLE_ICON -> {
             leftContent?.let { it() }
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            textContent?.let { it() }
         }
         else -> {}
     }
 }
 
 @Composable
-fun RowScope.CenterAppBar(type: AppbarType, title: String) {
+fun RowScope.CenterAppBar(type: AppbarType, textContent: @Composable (() -> Unit)?) {
     if (type == AppbarType.ONLY_TITLE_CENTER) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            textContent?.let { it() }
         }
     }
 }

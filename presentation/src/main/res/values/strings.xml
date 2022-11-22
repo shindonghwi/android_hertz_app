@@ -2,11 +2,20 @@
     <string name="app_name">MagoHz</string>
 
     <string name="home_title">My Hertz</string>
+    <string name="home_title_2">Mago\'s Hz/</string>
+    <string name="home_bottombar_answer_title_text">텍스트로 답하기</string>
+    <string name="home_bottombar_answer_hint_text">예: 2만원짜리 스파게티 먹을 때</string>
+    <string name="home_bottombar_answer_title_audio">음성으로 답하기</string>
+    <string name="home_bottombar_answer_audio_stop">완료</string>
+    <string name="home_bottombar_answer_audio_play">답변하기</string>
 
 
     <!-- 공통 -->
     <string name="id">아이디</string>
     <string name="pw">비밀번호</string>
     <string name="company">Mago</string>
+    <string name="permission_description">앱을 원활히 사용하려면\n아래 권한이 필요해요</string>
+    <string name="permission_read_storage">저장공간: 질문에 답변을 하면 음성파일이 저장돼요</string>
+    <string name="permission_mic_storage">오디오녹음: 질문을 음성으로 답변하기 위해서 필요해요</string>
 
 </resources>
