@@ -7,7 +7,9 @@
     <string name="home_bottombar_answer_hint_text">예: 2만원짜리 스파게티 먹을 때</string>
     <string name="home_bottombar_answer_title_audio">음성으로 답하기</string>
     <string name="home_bottombar_answer_audio_stop">완료</string>
-    <string name="home_bottombar_answer_audio_play">답변하기</string>
+    <string name="home_bottombar_answer_audio_play">답변하기</string>수
+    <string name="home_bottombar_answer_today_emotion_title">오늘의 감정 주파수</string>
+    <string name="home_bottombar_answer_today_tag">태그</string>
 
 
     <!-- 공통 -->

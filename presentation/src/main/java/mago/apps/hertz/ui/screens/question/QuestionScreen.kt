@@ -10,8 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -28,13 +26,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
+import mago.apps.hertz.ui.screens.components.input.CustomTextField
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.backgroundVGradient
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import java.text.SimpleDateFormat
+import java.util.*
 
 enum class AnswerState { IDLE, TEXT, AUDIO }
 
@@ -42,10 +42,10 @@ enum class AnswerState { IDLE, TEXT, AUDIO }
 @Composable
 fun QuestionScreen(navController: NavHostController) {
     Scaffold(topBar = {
-        AppBar(type = AppbarType.ICON_TITLE_ICON,
+        AppBar(
+            type = AppbarType.ICON_TITLE_ICON,
             textContent = { QuestionAppBarTitleContent() },
             leftContent = { QuestionAppBarLeftContent() },
-//            rightContent = { QuestionAppBarRightContent() }
         )
     }, bottomBar = {
         QuestionBottomBar()
@@ -76,7 +76,6 @@ fun QuestionScreen(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QuestionBottomBar() {
     val answerState = remember { mutableStateOf(AnswerState.IDLE) }
@@ -90,6 +89,7 @@ fun QuestionBottomBar() {
     val audioAnswerHeight =
         configuration.screenHeightDp.dp * 0.55f // 음성으로 답하기 클릭했을때 나오는 UI
 
+    // 축소 UI
     AnimatedVisibility(
         visible = !isAnswerMode,
         enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandIn(),
@@ -100,6 +100,7 @@ fun QuestionBottomBar() {
                 .fillMaxWidth()
                 .height(bottomHeight),
         ) {
+            // 텍스트로 답하기(축소)
             QuestionBottomBarTextAnswer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -107,8 +108,10 @@ fun QuestionBottomBar() {
                     .background(MaterialTheme.colorScheme.background)
                     .noDuplicationClickable {
                         answerState.value = AnswerState.TEXT
-                    }, isExpanded = false
+                    },
             )
+
+            // 음성으로 답하기(축소)
             QuestionBottomBarAudioAnswer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,6 +123,8 @@ fun QuestionBottomBar() {
             )
         }
     }
+
+    // 확장 UI
     AnimatedVisibility(
         visible = isAnswerMode,
         enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandIn(),
@@ -130,16 +135,18 @@ fun QuestionBottomBar() {
                 .fillMaxWidth()
                 .height(if (answerState.value == AnswerState.TEXT) textAnswerHeight else audioAnswerHeight),
         ) {
+            // 텍스트로 답하기(확장)
             if (answerState.value == AnswerState.TEXT) {
-                QuestionBottomBarTextAnswer(
+                QuestionBottomBarTextAnswerExpanded(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(MaterialTheme.colorScheme.background),
-                    isExpanded = true
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(20.dp),
                 )
             }
 
+            // 음성으로 답하기(확장)
             if (answerState.value == AnswerState.AUDIO) {
                 QuestionBottomBarAudioAnswerExpanded(
                     modifier = Modifier
@@ -188,40 +195,10 @@ private fun QuestionAppBarLeftContent() {
     )
 }
 
-@Composable
-private fun QuestionAppBarRightContent() {
-    Icon(modifier = Modifier
-        .size(36.dp)
-        .noDuplicationClickable {
-
-        }
-        .padding(4.dp),
-        imageVector = Icons.TwoTone.Star,
-        contentDescription = null)
-    Icon(modifier = Modifier
-        .padding(horizontal = 8.dp)
-        .size(36.dp)
-        .noDuplicationClickable {
-
-        }
-        .padding(4.dp),
-        imageVector = Icons.TwoTone.Star,
-        contentDescription = null)
-    Icon(modifier = Modifier
-        .size(36.dp)
-        .noDuplicationClickable {
-
-        }
-        .padding(4.dp),
-        imageVector = Icons.TwoTone.Star,
-        contentDescription = null)
-}
-
-
-// 텍스트로 답하기
+// 텍스트로 답하기(축소)
 @Composable
 private fun QuestionBottomBarTextAnswer(
-    modifier: Modifier, isExpanded: Boolean
+    modifier: Modifier
 ) {
     Column(
         modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
@@ -266,7 +243,138 @@ private fun QuestionBottomBarTextAnswer(
 }
 
 
-// 음성으로 답하기
+// 텍스트로 답하기(확장)
+@Composable
+private fun QuestionBottomBarTextAnswerExpanded(
+    modifier: Modifier
+) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Text(
+            text = SimpleDateFormat(
+                "yyyy년 MM월 dd일 EE요일", Locale.getDefault()
+            ).format(Calendar.getInstance().time),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        CustomTextField(
+            modifier = Modifier
+                .padding(top = 13.dp)
+                .fillMaxWidth()
+                .height(180.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+                .padding(14.dp),
+            textStyle = MaterialTheme.typography.bodyLarge,
+            textColor = Color.Black,
+            singleLine = false
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(top = 45.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "00:23",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleSmall
+            )
+
+            Text(
+                text = "주파수자리",
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 20.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+                textAlign = TextAlign.Center
+            )
+
+            Icon(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = R.drawable.play),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(id = R.string.home_bottombar_answer_today_emotion_title),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
+
+
+            EmotionPercentView(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(id = R.string.home_bottombar_answer_today_tag),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
+
+            /** TODO: 태그 자리 들어와야함 */
+            Text(
+                text = "여기에 태그자리",
+                color = Color.Black,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+        }
+    }
+}
+
+@Composable
+private fun EmotionPercentView(modifier: Modifier) {
+
+    val emotionList = listOf(
+        Pair("\uD83D\uDE04", 85),
+        Pair("\uD83D\uDE22", 20),
+        Pair("\uD83D\uDE21", 5),
+        Pair("\uD83D\uDE36", 37),
+    )
+
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        repeat(emotionList.size) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = emotionList[it].first,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = " ${emotionList[it].second}%",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+        }
+    }
+}
+
+
+// 음성으로 답하기(축소)
 @Composable
 private fun QuestionBottomBarAudioAnswer(modifier: Modifier) {
     Column(
@@ -304,7 +412,7 @@ private fun QuestionBottomBarAudioAnswer(modifier: Modifier) {
     }
 }
 
-// 음성으로 답하기
+// 음성으로 답하기(확장)
 @Composable
 private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
 
@@ -401,14 +509,14 @@ private fun QuestionContent(modifier: Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 63.dp),
+                .padding(horizontal = 20.dp),
             contentAlignment = Alignment.Center
         ) {
             /** TODO: 질문 텍스트 동적 변경 필요 */
             Text(
                 modifier = Modifier.verticalScroll(state = rememberScrollState()),
                 text = "내가 어른이 됐다고\n 느낄 때는?",
-                style = MaterialTheme.typography.titleLarge.copy(
+                style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight(
                         800
                     )
