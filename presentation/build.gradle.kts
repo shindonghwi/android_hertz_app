@@ -48,17 +48,18 @@ dependencies {
 
         Libraries.KTX.apply {
             implementation(core)
-            api(lifecycleRuntime)
-            api(lifecycleViewModel)
+            implementation(lifecycleRuntime)
+            implementation(lifecycleViewModel)
         }
 
         Libraries.Compose.apply {
-            api(material)
-            api(activity)
-            api(ui)
-            api(uiTooling)
-            api(navigation)
-            api(constraintLayout)
+            implementation(material3)
+            implementation(material3window)
+            implementation(activity)
+            implementation(ui)
+            implementation(uiTooling)
+            implementation(navigation)
+            implementation(constraintLayout)
         }
 
         Libraries.Hilt.apply {

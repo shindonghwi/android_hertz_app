@@ -1,19 +1,16 @@
 package mago.apps.hertz.ui.screens.home
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -26,10 +23,9 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
 import mago.apps.hertz.ui.screens.components.button.FillButton
-import mago.apps.hertz.ui.theme.Black
 import mago.apps.hertz.ui.theme.Display2
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(topBar = {
@@ -55,7 +51,7 @@ private fun HomeContent(modifier: Modifier = Modifier) {
             modifier = Modifier.layoutId("title"),
             text = stringResource(id = R.string.home_title),
             style = MaterialTheme.typography.Display2,
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colorScheme.primary
         )
         Column(
             modifier = Modifier.layoutId("profileImage"),
@@ -64,15 +60,15 @@ private fun HomeContent(modifier: Modifier = Modifier) {
             Icon(
                 modifier = Modifier
                     .size(imageHeight)
-                    .border(1.dp, Black, CircleShape),
+                    .border(1.dp, Color.Black, CircleShape),
                 imageVector = Icons.Rounded.Person,
                 contentDescription = null
             )
             Text(
                 modifier = Modifier.padding(top = 4.dp),
                 text = stringResource(id = R.string.company),
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onBackground
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         FillButton(

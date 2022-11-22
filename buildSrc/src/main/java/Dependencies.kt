@@ -23,6 +23,7 @@ object Versions {
         const val compose = "1.2.1"
         const val navigation = "2.5.2"
         const val constraintLayout = "1.0.0-rc01"
+        const val material3 = "1.0.1"
     }
 
     object Hilt{
@@ -72,6 +73,9 @@ object Libraries {
         const val navigation = "androidx.navigation:navigation-compose:${Versions.Compose.navigation}"
         const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.constraintLayout}"
         const val animation = "androidx.compose.animation:animation:${Versions.Compose.compose}"
+        const val material3 = "androidx.compose.material3:material3:${Versions.Compose.material3}"
+        const val material3window = "androidx.compose.material3:material3-window-size-class:${Versions.Compose.material3}"
+
     }
 
     object Hilt {

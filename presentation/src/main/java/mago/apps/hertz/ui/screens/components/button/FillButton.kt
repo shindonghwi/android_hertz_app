@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import mago.apps.hertz.ui.utils.compose.modifier.ClickableCheckObject
 
 @Composable
 fun FillButton(
@@ -19,7 +20,11 @@ fun FillButton(
     onClick: () -> Unit // 클릭 로직
 ) {
     Button(
-        onClick = { onClick() },
+        onClick = {
+            ClickableCheckObject.throttledFirstClicks {
+                onClick.invoke()
+            }
+        },
         shape = RoundedCornerShape(16.dp),
         elevation = null,
         enabled = isEnabled,
@@ -36,8 +41,8 @@ fun FillButton(
     ) {
         Text(
             content,
-            style = MaterialTheme.typography.button,
-            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onPrimary,
         )
     }
 }

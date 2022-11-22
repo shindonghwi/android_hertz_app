@@ -5,17 +5,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import mago.apps.hertz.ui.theme.Black
-import mago.apps.hertz.ui.theme.White
 
 @Composable
 fun AppBar(
@@ -31,14 +30,15 @@ fun AppBar(
             .padding(horizontal = 12.dp)
             .background(
                 if (isSystemInDarkTheme()) {
-                    Black.copy(alpha = 0.0f)
+                    Color.Black.copy(alpha = 0.0f)
                 } else {
-                    White.copy(alpha = 0.3f)
+                    Color.White.copy(alpha = 0.3f)
                 }
             ),
     ) {
         Row(
-            modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // left area
             LeftAppBar(type, title, leftContent)
@@ -64,15 +64,15 @@ private fun RowScope.LeftAppBar(
             Icon(
                 modifier = Modifier
                     .size(40.dp)
-                    .border(1.dp, Black, CircleShape),
+                    .border(1.dp, Color.Black, CircleShape),
                 imageVector = Icons.Rounded.Person,
                 contentDescription = null
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = title,
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.primary
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
         AppbarType.ICON_TITLE_ICON -> {
@@ -80,8 +80,8 @@ private fun RowScope.LeftAppBar(
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = title,
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.primary
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
         else -> {}
@@ -91,19 +91,24 @@ private fun RowScope.LeftAppBar(
 @Composable
 fun RowScope.CenterAppBar(type: AppbarType, title: String) {
     if (type == AppbarType.ONLY_TITLE_CENTER) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = title,
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.primary
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
 }
 
 @Composable
-fun RowScope.RightAppBar(type: AppbarType, rightContent: @Composable() (() -> Unit)?) {
+fun RowScope.RightAppBar(
+    type: AppbarType, rightContent: @Composable() (() -> Unit)?
+) {
     if (type == AppbarType.ICON_TITLE_ICON) {
         rightContent?.let { it() }
     }

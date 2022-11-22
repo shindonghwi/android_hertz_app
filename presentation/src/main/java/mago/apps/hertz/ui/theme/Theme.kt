@@ -1,52 +1,85 @@
 package mago.apps.hertz.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val LightColorPalette = lightColors(
-    primary = Primary40, // 기본 색상은 앱에서 가장 자주 표시되는 색상입니다.
-    primaryVariant = Primary90, // 기본 변형 색상은 두 요소를 구별하는 데 사용됩니다.
-    onPrimary = White, // 주색 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    secondary = Secondary40, // 두 번째 색상은 당신을 강조하고 구별할 수 있는 더 많은 방법을 제공합니다.
-    secondaryVariant = Secondary90, // 보조 변형 색상은 의 두 가지 요소를 구별하는 데 사용됩니다.
-    onSecondary = White, // 보조 색상 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    background = Neutral99, // 스크롤 가능한 콘텐츠 뒤에 배경색이 나타납니다.
-    onBackground = Neutral10, // 배경색 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    surface = Neutral99, // 표면 색상은 카드, 시트 및 같은 구성 요소의 표면에 사용됩니다.
-    onSurface = Neutral10, // 표면 색상 위에 표시되는 텍스트 및 아이콘에 사용됩니다.
-    error = Error40, // 오류 색상은 텍스트 필드와 같은 구성 요소 내의 오류를 나타내는 데 사용됩니다.
-    onError = White, // 오류 색상 위에 표시되는 텍스트 및 아이콘에 사용됩니다.
+private val LightColors = lightColorScheme(
+    primary = md_theme_light_primary,
+    onPrimary = md_theme_light_onPrimary,
+    primaryContainer = md_theme_light_primaryContainer,
+    onPrimaryContainer = md_theme_light_onPrimaryContainer,
+    secondary = md_theme_light_secondary,
+    onSecondary = md_theme_light_onSecondary,
+    secondaryContainer = md_theme_light_secondaryContainer,
+    onSecondaryContainer = md_theme_light_onSecondaryContainer,
+    tertiary = md_theme_light_tertiary,
+    onTertiary = md_theme_light_onTertiary,
+    tertiaryContainer = md_theme_light_tertiaryContainer,
+    onTertiaryContainer = md_theme_light_onTertiaryContainer,
+    error = md_theme_light_error,
+    errorContainer = md_theme_light_errorContainer,
+    onError = md_theme_light_onError,
+    onErrorContainer = md_theme_light_onErrorContainer,
+    background = md_theme_light_background,
+    onBackground = md_theme_light_onBackground,
+    surface = md_theme_light_surface,
+    onSurface = md_theme_light_onSurface,
+    surfaceVariant = md_theme_light_surfaceVariant,
+    onSurfaceVariant = md_theme_light_onSurfaceVariant,
+    outline = md_theme_light_outline,
+    inverseOnSurface = md_theme_light_inverseOnSurface,
+    inverseSurface = md_theme_light_inverseSurface,
+    inversePrimary = md_theme_light_inversePrimary,
+    surfaceTint = md_theme_light_surfaceTint,
 )
 
-private val DarkColorPalette = darkColors(
-    primary = Primary80, // 기본 색상은 앱에서 가장 자주 표시되는 색상입니다.
-    primaryVariant = Primary30, // 기본 변형 색상은 두 요소를 구별하는 데 사용됩니다.
-    onPrimary = Primary20, // 주색 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    secondary = Secondary80, // 두 번째 색상은 당신을 강조하고 구별할 수 있는 더 많은 방법을 제공합니다.
-    secondaryVariant = Secondary30, // 보조 변형 색상은 의 두 가지 요소를 구별하는 데 사용됩니다.
-    onSecondary = Secondary20, // 보조 색상 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    background = Neutral10, // 스크롤 가능한 콘텐츠 뒤에 배경색이 나타납니다.
-    onBackground = Neutral90, // 배경색 위에 표시되는 텍스트 및 아이콘에 사용되는 색상입니다.
-    surface = Neutral10, // 표면 색상은 카드, 시트 및 같은 구성 요소의 표면에 사용됩니다.
-    onSurface = Neutral90, // 표면 색상 위에 표시되는 텍스트 및 아이콘에 사용됩니다.
-    error = Error80, // 오류 색상은 텍스트 필드와 같은 구성 요소 내의 오류를 나타내는 데 사용됩니다.
-    onError = Error20, // 오류 색상 위에 표시되는 텍스트 및 아이콘에 사용됩니다.
+
+private val DarkColors = darkColorScheme(
+    primary = md_theme_dark_primary,
+    onPrimary = md_theme_dark_onPrimary,
+    primaryContainer = md_theme_dark_primaryContainer,
+    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
+    secondary = md_theme_dark_secondary,
+    onSecondary = md_theme_dark_onSecondary,
+    secondaryContainer = md_theme_dark_secondaryContainer,
+    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
+    tertiary = md_theme_dark_tertiary,
+    onTertiary = md_theme_dark_onTertiary,
+    tertiaryContainer = md_theme_dark_tertiaryContainer,
+    onTertiaryContainer = md_theme_dark_onTertiaryContainer,
+    error = md_theme_dark_error,
+    errorContainer = md_theme_dark_errorContainer,
+    onError = md_theme_dark_onError,
+    onErrorContainer = md_theme_dark_onErrorContainer,
+    background = md_theme_dark_background,
+    onBackground = md_theme_dark_onBackground,
+    surface = md_theme_dark_surface,
+    onSurface = md_theme_dark_onSurface,
+    surfaceVariant = md_theme_dark_surfaceVariant,
+    onSurfaceVariant = md_theme_dark_onSurfaceVariant,
+    outline = md_theme_dark_outline,
+    inverseOnSurface = md_theme_dark_inverseOnSurface,
+    inverseSurface = md_theme_dark_inverseSurface,
+    inversePrimary = md_theme_dark_inversePrimary,
+    surfaceTint = md_theme_dark_surfaceTint,
 )
 
 @Composable
-fun MagoHzTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun MagoHzTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
     val colors = if (darkTheme) {
-        DarkColorPalette
+        DarkColors
     } else {
-        LightColorPalette
+        LightColors
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = PretendardTypography,
         content = content
     )
