@@ -2,7 +2,7 @@
     <string name="app_name">MagoHz</string>
 
     <string name="home_title">My Hertz</string>
-    <string name="home_title_2">Mago\'s Hz/</string>
+    <string name="home_title_2">Mago\'s Hz</string>
     <string name="home_bottombar_answer_title_text">텍스트로 답하기</string>
     <string name="home_bottombar_answer_hint_text">예: 2만원짜리 스파게티 먹을 때</string>
     <string name="home_bottombar_answer_title_audio">음성으로 답하기</string>

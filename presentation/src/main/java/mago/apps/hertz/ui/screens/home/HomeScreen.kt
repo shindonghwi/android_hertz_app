@@ -19,6 +19,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.data.model.RouteScreen
 import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
 import mago.apps.hertz.ui.screens.components.button.ButtonColor
@@ -37,13 +38,19 @@ fun HomeScreen(navController: NavController) {
                 .background(backgroundColorSub)
                 .padding(it)
         ) {
-            HomeContent(modifier = Modifier.fillMaxSize())
+            HomeContent(
+                modifier = Modifier.fillMaxSize(),
+                navController = navController
+            )
         }
     }
 }
 
 @Composable
-private fun HomeContent(modifier: Modifier = Modifier) {
+private fun HomeContent(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -107,6 +114,28 @@ private fun HomeContent(modifier: Modifier = Modifier) {
                 )
             ) {
                 Toast.makeText(context, "비밀번호", Toast.LENGTH_SHORT).show()
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 56.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                FillButton(
+                    modifier = Modifier.width(200.dp),
+                    content = "시작하기",
+                    isEnabled = true,
+                    buttonColor = ButtonColor(
+                        container = MaterialTheme.colorScheme.secondary,
+                        disable = MaterialTheme.colorScheme.onSurfaceVariant,
+                        content = MaterialTheme.colorScheme.onSecondary,
+                        disabledContainer = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                ) {
+                    /** TODO: 임시로 홈화면에서 질문화면으로 넘어가게 두었음*/
+                    navController.navigate(RouteScreen.QuestionScreen.route)
+                }
             }
         }
 
