@@ -353,8 +353,7 @@ private fun EmotionPercentView(modifier: Modifier) {
 
 
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceAround
+        modifier = modifier, horizontalArrangement = Arrangement.SpaceAround
     ) {
         repeat(emotionList.size) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -503,8 +502,9 @@ private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
 
 @Composable
 private fun QuestionContent(modifier: Modifier) {
-    Box(modifier = modifier) {
+    val isVisible = remember { mutableStateOf(false) }
 
+    Box(modifier = modifier) {
         // 질문 영역
         Box(
             modifier = Modifier
@@ -512,18 +512,7 @@ private fun QuestionContent(modifier: Modifier) {
                 .padding(horizontal = 20.dp),
             contentAlignment = Alignment.Center
         ) {
-            /** TODO: 질문 텍스트 동적 변경 필요 */
-            Text(
-                modifier = Modifier.verticalScroll(state = rememberScrollState()),
-                text = "내가 어른이 됐다고\n 느낄 때는?",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight(
-                        800
-                    )
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
+            QuestionText(isVisible.value)
         }
 
         // 셔플 아이콘 영역
@@ -536,7 +525,7 @@ private fun QuestionContent(modifier: Modifier) {
             Icon(modifier = Modifier
                 .size(36.dp)
                 .noDuplicationClickable {
-
+                    isVisible.value = !isVisible.value
                 }
                 .padding(6.dp),
                 painter = painterResource(id = R.drawable.random),
@@ -545,5 +534,46 @@ private fun QuestionContent(modifier: Modifier) {
         }
 
 
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun QuestionText(isVisible: Boolean) {
+
+    val textList = listOf<String>(
+        "내가 어른이 됐다고\n느낄 때는?",
+        "지금 있는 곳에서\n누군가에게\n들려주고픈 노래는?",
+        "인생이란 무엇인가?",
+        "퇴근할때 듣고 싶은\n노래는 무엇인가요?",
+        "맛있게 먹는 야식은\n살찐다 VS 안찐다",
+    )
+    val max_num_value = textList.size - 1
+    val min_num_value = 0
+    val randomText =
+        textList[Random().nextInt(max_num_value - min_num_value + 1) + min_num_value]
+
+    /** TODO: 질문 텍스트 동적 변경 필요 */
+    AnimatedContent(
+        targetState = isVisible,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(300)
+            ) with fadeOut(
+                animationSpec = tween(300)
+            )
+        },
+    ) { targetState ->
+        Text(
+            modifier = Modifier.verticalScroll(state = rememberScrollState()),
+            text = randomText,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight(
+                    800
+                )
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
     }
 }

@@ -6,7 +6,6 @@ object Versions {
 
     object Kotlin{
         const val version = "1.7.10"
-        const val serializationJson = "1.0.1"
     }
 
     object AndroidX{
@@ -43,17 +42,16 @@ object Versions {
     object Gson{
         const val version = "2.10"
     }
+
+    object Firebase{
+        const val bom = "31.1.0"
+    }
+    object Google{
+        const val servicesVersion = "4.3.13"
+    }
 }
 
 object Libraries {
-
-    object Gradle {
-        const val gradle = "com.android.tools.build:gradle:${Versions.Gradle.version}"
-    }
-
-    object Kotlin {
-        const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.version}"
-    }
 
     object AndroidX {
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.AndroidX.constraintLayout}"
@@ -79,7 +77,6 @@ object Libraries {
     }
 
     object Hilt {
-        const val gradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.Hilt.version}"
         const val NavigationCompose = "androidx.hilt:hilt-navigation-compose:${Versions.Hilt.compose_hilt}"
         const val dagger = "com.google.dagger:hilt-android:${Versions.Hilt.version}"
     }
@@ -97,6 +94,18 @@ object Libraries {
     object Gson{
         const val gson = "com.google.code.gson:gson:${Versions.Gson.version}"
     }
+
+    object Firebase{
+        const val bom = "com.google.firebase:firebase-bom:${Versions.Firebase.bom}"
+        const val analytics = "com.google.firebase:firebase-analytics"
+    }
+}
+
+object ClassPaths{
+    const val googleService = "com.google.gms:google-services:${Versions.Google.servicesVersion}"
+    const val hilt = "com.google.dagger:hilt-android-gradle-plugin:${Versions.Hilt.version}"
+    const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.version}"
+    const val gradle = "com.android.tools.build:gradle:${Versions.Gradle.version}"
 }
 
 object Kapts {

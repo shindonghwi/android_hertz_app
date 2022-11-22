@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 
@@ -19,6 +20,10 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
@@ -66,7 +71,10 @@ dependencies {
             implementation(NavigationCompose)
             implementation(dagger)
         }
-        implementation("com.google.accompanist:accompanist-permissions:0.27.1")
+        Libraries.Firebase.apply {
+            implementation(platform(bom))
+            implementation(analytics)
+        }
     }
 
     Kapts.apply {

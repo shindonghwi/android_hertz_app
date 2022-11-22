@@ -1,13 +1,14 @@
+
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath(Libraries.Gradle.gradle)
-        classpath(Libraries.Kotlin.gradlePlugin)
-        classpath(Libraries.Hilt.gradlePlugin)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
+        classpath(ClassPaths.googleService)
+        classpath(ClassPaths.hilt)
+        classpath(ClassPaths.kotlin)
+        classpath(ClassPaths.gradle)
     }
 }
 
