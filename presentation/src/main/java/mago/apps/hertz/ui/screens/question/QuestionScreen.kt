@@ -543,6 +543,7 @@ fun QuestionText(isVisible: Boolean) {
 
     val textList = listOf<String>(
         "내가 어른이 됐다고\n느낄 때는?",
+        "당신이 가장 좋아했던\n사람은 누구인가요?",
         "지금 있는 곳에서\n누군가에게\n들려주고픈 노래는?",
         "인생이란 무엇인가?",
         "퇴근할때 듣고 싶은\n노래는 무엇인가요?",
