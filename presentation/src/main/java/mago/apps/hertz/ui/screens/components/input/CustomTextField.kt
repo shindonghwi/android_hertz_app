@@ -32,7 +32,6 @@ fun CustomTextField(
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = "",
-    textColor: Color = MaterialTheme.colorScheme.primary,
     textLimit: Int = Int.MAX_VALUE,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(
         color = Color.White,
@@ -80,7 +79,6 @@ fun CustomTextField(
                             Text(
                                 text = placeholderText,
                                 style = placeHolderTextStyle,
-                                color = textColor,
                                 overflow = textOverflow,
                                 maxLines = if (singleLine) 1 else Int.MAX_VALUE
                             )

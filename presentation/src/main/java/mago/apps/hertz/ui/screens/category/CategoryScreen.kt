@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
-import mago.apps.hertz.ui.theme.backgroundColorSub
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +31,7 @@ fun CategoryScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColorSub)
+//                .background(backgroundColorSub)
                 .padding(it)
         ) {
             CategoryContent(

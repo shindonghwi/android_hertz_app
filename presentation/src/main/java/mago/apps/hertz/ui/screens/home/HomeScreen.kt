@@ -2,11 +2,14 @@ package mago.apps.hertz.ui.screens.home
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,7 +27,13 @@ import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
 import mago.apps.hertz.ui.screens.components.button.ButtonColor
 import mago.apps.hertz.ui.screens.components.button.FillButton
-import mago.apps.hertz.ui.theme.backgroundColorSub
+import mago.apps.hertz.ui.screens.components.input.CustomTextField
+import mago.apps.hertz.ui.screens.components.input.CustomTextField1
+import mago.apps.hertz.ui.theme.light_sub_primary
+import mago.apps.hertz.ui.theme.light_sub_primary_background
+import mago.apps.hertz.ui.theme.light_sub_primary_than_darker_1
+import mago.apps.hertz.ui.theme.light_sub_secondary
+import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,12 +44,18 @@ fun HomeScreen(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColorSub)
+                .background(
+                    if (isSystemInDarkTheme()) {
+                        light_sub_primary_background
+                    } else {
+                        /** TODO: 로그인 화면 다크 색상 지정 필요 */
+                        light_sub_primary_background
+                    }
+                )
                 .padding(it)
         ) {
             HomeContent(
-                modifier = Modifier.fillMaxSize(),
-                navController = navController
+                modifier = Modifier.fillMaxSize(), navController = navController
             )
         }
     }
@@ -48,8 +63,7 @@ fun HomeScreen(navController: NavController) {
 
 @Composable
 private fun HomeContent(
-    modifier: Modifier = Modifier,
-    navController: NavController
+    modifier: Modifier = Modifier, navController: NavController
 ) {
 
     val context = LocalContext.current
@@ -63,15 +77,19 @@ private fun HomeContent(
             modifier = Modifier.layoutId("title"),
             text = stringResource(id = R.string.home_title),
             style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.secondary
+            color = if (isSystemInDarkTheme()) {
+                light_sub_primary_than_darker_1
+            } else {
+                /** TODO: 로그인 화면 다크 색상 지정 필요 */
+                light_sub_primary_than_darker_1
+            }
         )
         Column(
             modifier = Modifier.layoutId("profileImage"),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                modifier = Modifier
-                    .size(imageHeight),
+                modifier = Modifier.size(imageHeight),
                 painter = painterResource(id = R.drawable.profile_sample),
                 contentDescription = null,
                 tint = Color.Unspecified
@@ -80,7 +98,12 @@ private fun HomeContent(
                 modifier = Modifier.padding(top = 10.dp),
                 text = stringResource(id = R.string.company),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = if (isSystemInDarkTheme()) {
+                    light_sub_secondary
+                } else {
+                    /** TODO: 로그인 화면 다크 색상 지정 필요 */
+                    light_sub_secondary
+                }
             )
         }
 
@@ -93,50 +116,99 @@ private fun HomeContent(
                 content = stringResource(id = R.string.id),
                 isEnabled = true,
                 buttonColor = ButtonColor(
-                    container = MaterialTheme.colorScheme.secondary,
-                    disable = MaterialTheme.colorScheme.onSurfaceVariant,
-                    content = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainer = MaterialTheme.colorScheme.onSurfaceVariant,
+                    container = if (isSystemInDarkTheme()) {
+                        light_sub_primary
+                    } else {
+                        light_sub_primary
+                    },
+                    disable = if (isSystemInDarkTheme()) {
+                        Color.White.copy(alpha = 0.3f)
+                    } else {
+                        Color.White.copy(alpha = 0.3f)
+                    },
+                    content = if (isSystemInDarkTheme()) {
+                        Color.White
+                    } else {
+                        Color.White
+                    },
+                    disabledContainer = if (isSystemInDarkTheme()) {
+                        light_sub_primary.copy(alpha = 0.3f)
+                    } else {
+                        light_sub_primary.copy(alpha = 0.3f)
+                    },
                 )
             ) {
                 Toast.makeText(context, "아이디", Toast.LENGTH_SHORT).show()
             }
 
-            FillButton(
-                modifier = Modifier.padding(top = 16.dp),
-                content = stringResource(id = R.string.pw),
-                isEnabled = true,
-                buttonColor = ButtonColor(
-                    container = MaterialTheme.colorScheme.secondary.copy(alpha = 0.73f),
-                    disable = MaterialTheme.colorScheme.onSurfaceVariant,
-                    content = MaterialTheme.colorScheme.onSecondary,
-                    disabledContainer = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            ) {
-                Toast.makeText(context, "비밀번호", Toast.LENGTH_SHORT).show()
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 56.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                FillButton(
-                    modifier = Modifier.width(200.dp),
-                    content = "시작하기",
-                    isEnabled = true,
-                    buttonColor = ButtonColor(
-                        container = MaterialTheme.colorScheme.secondary,
-                        disable = MaterialTheme.colorScheme.onSurfaceVariant,
-                        content = MaterialTheme.colorScheme.onSecondary,
-                        disabledContainer = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                ) {
-                    /** TODO: 임시로 홈화면에서 질문화면으로 넘어가게 두었음*/
-                    navController.navigate(RouteScreen.QuestionScreen.route)
-                }
-            }
+            CustomTextField1()
+//            CustomTextField(
+//                modifier = Modifier
+//                    .padding(top = 16.dp)
+//                    .fillMaxWidth()
+//                    .height(48.dp)
+//                    .clip(RoundedCornerShape(16.dp))
+//                    .background(light_sub_primary),
+//                textColor = Color.White,
+//                textAlignment = Arrangement.Start,
+//                trailingIcon = {
+//                    Icon(
+//                        modifier = Modifier
+//                            .padding(end = 8.dp)
+//                            .size(36.dp)
+//                            .noDuplicationClickable {
+//                                navController.navigate(RouteScreen.MatchingScreen.route)
+//                            }
+//                            .padding(6.dp),
+//                        painter = painterResource(id = R.drawable.arrow_circle_up),
+//                        tint = Color.White,
+//                        contentDescription = null,
+//                    )
+//                }
+//            )
+//            FillButton(
+//                modifier = Modifier.padding(top = 16.dp),
+//                content = stringResource(id = R.string.pw),
+//                isEnabled = true,
+//                buttonColor = ButtonColor(
+//                    container = if (isSystemInDarkTheme()) {
+//                        light_sub_primary.copy(alpha = 0.73f)
+//                    } else {
+//                        light_sub_primary.copy(alpha = 0.73f)
+//                    },
+//                    disable = if (isSystemInDarkTheme()) {
+//                        Color.White.copy(alpha = 0.3f)
+//                    } else {
+//                        Color.White.copy(alpha = 0.3f)
+//                    },
+//                    content = if (isSystemInDarkTheme()) {
+//                        Color.White
+//                    } else {
+//                        Color.White
+//                    },
+//                    disabledContainer = if (isSystemInDarkTheme()) {
+//                        light_sub_primary.copy(alpha = 0.3f)
+//                    } else {
+//                        light_sub_primary.copy(alpha = 0.3f)
+//                    },
+//                ),
+//                tailIcon = {
+//                    Icon(
+//                        modifier = Modifier
+//                            .padding(end = 8.dp)
+//                            .size(36.dp)
+//                            .noDuplicationClickable {
+//                                navController.navigate(RouteScreen.MatchingScreen.route)
+//                            }
+//                            .padding(6.dp),
+//                        painter = painterResource(id = R.drawable.arrow_circle_up),
+//                        tint = Color.White,
+//                        contentDescription = null,
+//                    )
+//                }
+//            ) {
+//                Toast.makeText(context, "비밀번호", Toast.LENGTH_SHORT).show()
+//            }
         }
 
     }

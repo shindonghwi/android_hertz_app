@@ -11,10 +11,14 @@
     <string name="home_bottombar_answer_today_emotion_title">오늘의 감정 주파수</string>
     <string name="home_bottombar_answer_today_tag">태그</string>
 
+    <string name="matching_title">주파수를 맞추고\n싶은 상대의\n전화번호를 입력해주세요</string>
+
 
     <!-- 공통 -->
     <string name="id">아이디</string>
     <string name="pw">비밀번호</string>
+    <string name="phone">전화번호</string>
+    <string name="skip">넘어가기</string>
     <string name="company">Mago</string>
     <string name="permission_description">앱을 원활히 사용하려면\n아래 권한이 필요해요</string>
     <string name="permission_read_storage">저장공간: 질문에 답변을 하면 음성파일이 저장돼요</string>
