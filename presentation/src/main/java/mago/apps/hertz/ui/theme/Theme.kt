@@ -39,6 +39,7 @@ private val LightColors = lightColorScheme(
     inverseSurface = light_inverseSurface,
     inversePrimary = light_inversePrimary,
     surfaceTint = light_surfaceTint,
+    outlineVariant = light_outlineVariant
 )
 
 
@@ -70,6 +71,7 @@ private val DarkColors = darkColorScheme(
     inverseSurface = dark_inverseSurface,
     inversePrimary = dark_inversePrimary,
     surfaceTint = dark_surfaceTint,
+    outlineVariant = light_outlineVariant
 )
 
 @Composable
