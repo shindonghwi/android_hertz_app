@@ -155,22 +155,25 @@ private fun PlayingContent(isShowingDialog: MutableState<Boolean>) {
         )
     }
 
-    Text(
-        modifier = Modifier
-            .padding(top = 80.dp)
-            .wrapContentWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
-            .noDuplicationClickable {
-                isPlaying.value = false
-                isShowingDialog.value = true
-            }
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
-        color = MaterialTheme.colorScheme.onPrimary,
-        style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.Bold
-        ),
-        textAlign = TextAlign.Center
-    )
+    /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
+    if (isPlaying.value){
+        Text(
+            modifier = Modifier
+                .padding(top = 80.dp)
+                .wrapContentWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
+                .noDuplicationClickable {
+                    isPlaying.value = false
+                    isShowingDialog.value = true
+                }
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            textAlign = TextAlign.Center
+        )
+    }
 }
