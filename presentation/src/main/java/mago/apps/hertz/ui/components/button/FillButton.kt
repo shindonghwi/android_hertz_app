@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.components.button
+package mago.apps.hertz.ui.components.button
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

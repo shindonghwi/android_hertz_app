@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.components.appbar
+package mago.apps.hertz.ui.components.appbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,16 +6,40 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import mago.apps.hertz.R
+import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.components.appbar.question.QuestionAppbar
+import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
-fun AppBar(
+fun AppBar(currentRoute: String?) {
+    currentRoute?.let { route ->
+        when(route){
+            RouteScreen.QuestionScreen.route-> {
+                QuestionAppbar()
+            }
+        }
+    }
+}
+
+@Composable
+fun AppBarContent(
     type: AppbarType,
     textContent: @Composable (() -> Unit)? = null,
     leftContent: @Composable (() -> Unit)? = null,
@@ -80,7 +104,7 @@ private fun RowScope.LeftAppBar(
 }
 
 @Composable
-fun RowScope.CenterAppBar(type: AppbarType, textContent: @Composable (() -> Unit)?) {
+private fun RowScope.CenterAppBar(type: AppbarType, textContent: @Composable (() -> Unit)?) {
     if (type == AppbarType.ONLY_TITLE_CENTER) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -92,7 +116,7 @@ fun RowScope.CenterAppBar(type: AppbarType, textContent: @Composable (() -> Unit
 }
 
 @Composable
-fun RowScope.RightAppBar(
+private fun RowScope.RightAppBar(
     type: AppbarType, rightContent: @Composable() (() -> Unit)?
 ) {
     if (type == AppbarType.ICON_TITLE_ICON) {

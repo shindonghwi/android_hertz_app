@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.components.appbar
+package mago.apps.hertz.ui.components.appbar
 
 enum class AppbarType {
     EMPTY, // 없는 경우

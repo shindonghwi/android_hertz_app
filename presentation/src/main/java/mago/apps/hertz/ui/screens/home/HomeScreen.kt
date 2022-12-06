@@ -2,12 +2,9 @@ package mago.apps.hertz.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -32,32 +29,21 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.data.model.RouteScreen
-import mago.apps.hertz.ui.screens.components.appbar.AppBar
-import mago.apps.hertz.ui.screens.components.appbar.AppbarType
-import mago.apps.hertz.ui.screens.components.input.CustomTextField
-import mago.apps.hertz.ui.screens.components.input.KeyBoardActionUnit
+import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.components.appbar.AppBar
+import mago.apps.hertz.ui.components.appbar.AppbarType
+import mago.apps.hertz.ui.components.input.CustomTextField
+import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    Scaffold(topBar = {
-        AppBar(type = AppbarType.EMPTY)
-    }) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(it),
-        ) {
-            HomeContent(
-                modifier = Modifier
-                    .fillMaxSize(),
-                navController = navController
-            )
-        }
-    }
+    HomeContent(
+        modifier = Modifier
+            .fillMaxSize(),
+        navController = navController
+    )
 }
 
 @Composable

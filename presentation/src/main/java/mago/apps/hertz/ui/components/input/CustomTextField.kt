@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.components.input
+package mago.apps.hertz.ui.components.input
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField

@@ -1,10 +1,8 @@
 package mago.apps.hertz.ui.screens.question
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,7 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,138 +31,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.screens.components.appbar.AppBar
-import mago.apps.hertz.ui.screens.components.appbar.AppbarType
-import mago.apps.hertz.ui.screens.components.dialog.CustomPopup
-import mago.apps.hertz.ui.screens.components.dialog.PopupCallback
-import mago.apps.hertz.ui.screens.components.dialog.PopupType
-import mago.apps.hertz.ui.screens.components.input.CustomTextField
+import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import java.text.SimpleDateFormat
 import java.util.*
 
-enum class AnswerState { IDLE, TEXT, AUDIO }
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(navController: NavHostController) {
-    Scaffold(topBar = {
-        AppBar(type = AppbarType.ICON_TITLE_ICON,
-            textContent = { QuestionAppBarTitleContent() },
-            leftContent = { QuestionAppBarLeftContent() },
-            rightContent = { QuestionAppBarRightContent() })
-    }, bottomBar = {
-        QuestionBottomBar(navController)
-    }) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            // main content
-            QuestionContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            )
-        }
-    }
+    QuestionContent(modifier = Modifier.fillMaxSize())
 }
 
-
-@Composable
-fun QuestionBottomBar(navController: NavHostController) {
-    // 바텀바 높이
-    val configuration = LocalConfiguration.current
-    val bottomHeight = configuration.screenHeightDp.dp * 0.4f
-
-    val isShowingDialog = remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(bottomHeight),
-    ) {
-        // 텍스트로 답하기(축소)
-        QuestionBottomBarTextAnswer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.background)
-                .noDuplicationClickable {
-                    isShowingDialog.value = true
-                },
-        )
-
-        // 음성으로 답하기(축소)
-        QuestionBottomBarAudioAnswer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.primary)
-                .noDuplicationClickable {},
-        )
-    }
-
-    if (isShowingDialog.value) {
-        CustomPopup(PopupType.PERMISSION, object : PopupCallback{
-            override fun onState(isVisible: Boolean) {
-                if (!isVisible){
-                    isShowingDialog.value = false
-                }
-            }
-        })
-    }
-
-//    // 확장 UI
-//    AnimatedVisibility(
-//        visible = isAnswerMode,
-//        enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandIn(),
-//        exit = shrinkOut() + fadeOut(animationSpec = tween(durationMillis = 300)),
-//    ) {
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//        ) {
-//            // 텍스트로 답하기(확장)
-//            if (answerState.value == AnswerState.TEXT) {
-//                QuestionBottomBarTextAnswerExpanded(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .weight(1f)
-//                        .background(MaterialTheme.colorScheme.background)
-//                        .padding(20.dp),
-//                )
-//            }
-//
-//            // 음성으로 답하기(확장)
-//            if (answerState.value == AnswerState.AUDIO) {
-//                QuestionBottomBarAudioAnswerExpanded(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .weight(1f)
-//                        .background(MaterialTheme.colorScheme.primary)
-//                )
-//            }
-//        }
-//    }
-
-//    /** TODO: 질문화면 백 프레스 이벤트 수정*/
-//    val ctx = LocalContext.current
-//    var count = remember { 0 }
-//    BackHandler(enabled = true) {
-//        if (isAnswerMode) {
-//            answerState.value = AnswerState.IDLE
-//        } else {
-//            count += 1
-//            Toast.makeText(ctx, "한번더 누르면 종료", Toast.LENGTH_SHORT).show()
-//            if (count == 2) {
-//                Toast.makeText(ctx, "앱 종료", Toast.LENGTH_SHORT).show()
-//                count = 0
-//            }
-//        }
-//    }
-}
 
 @Composable
 private fun QuestionAppBarTitleContent() {
@@ -203,50 +82,6 @@ fun QuestionAppBarRightContent() {
             imageVector = it.first,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
-
-
-// 텍스트로 답하기(축소)
-@Composable
-private fun QuestionBottomBarTextAnswer(
-    modifier: Modifier
-) {
-    Column(
-        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier.padding(top = 14.dp),
-            text = stringResource(id = R.string.home_bottombar_answer_title_text),
-            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Box(
-            modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.home_bottombar_answer_hint_text),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_circle_up),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
-                )
-            }
-        }
     }
 }
 
@@ -376,44 +211,6 @@ private fun EmotionPercentView(modifier: Modifier) {
     }
 }
 
-
-// 음성으로 답하기(축소)
-@Composable
-private fun QuestionBottomBarAudioAnswer(modifier: Modifier) {
-    Column(
-        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier.padding(top = 14.dp),
-            text = stringResource(id = R.string.home_bottombar_answer_title_audio),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onPrimary),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    painter = painterResource(id = R.drawable.align_right),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-    }
-}
 
 // 음성으로 답하기(확장)
 @Composable

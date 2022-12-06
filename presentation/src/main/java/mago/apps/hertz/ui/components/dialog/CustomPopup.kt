@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.components.dialog
+package mago.apps.hertz.ui.components.dialog
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
