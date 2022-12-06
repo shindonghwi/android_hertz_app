@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.components.bottombar.question
+package mago.apps.hertz.ui.screens.question.bottom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,19 +19,12 @@ import mago.apps.hertz.ui.navigation.model.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
-fun QuestionBottomBar(navController: NavHostController) {
-    // 바텀바 높이
-    val configuration = LocalConfiguration.current
-    val bottomHeight = configuration.screenHeightDp.dp * 0.4f
-
+fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
     val isShowingDialog = remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(bottomHeight),
+        modifier = modifier,
     ) {
-        // 텍스트로 답하기(축소)
         QuestionBottomBarTextAnswer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -41,8 +34,6 @@ fun QuestionBottomBar(navController: NavHostController) {
                     isShowingDialog.value = true
                 },
         )
-
-        // 음성으로 답하기(축소)
         QuestionBottomBarAudioAnswer(
             modifier = Modifier
                 .fillMaxWidth()

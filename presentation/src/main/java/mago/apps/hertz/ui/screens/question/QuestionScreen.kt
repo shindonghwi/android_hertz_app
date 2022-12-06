@@ -2,18 +2,10 @@ package mago.apps.hertz.ui.screens.question
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,25 +13,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.components.input.CustomTextField
-import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
+import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun QuestionScreen(navController: NavHostController) {
-    QuestionContent(modifier = Modifier.fillMaxSize())
+    Column(modifier = Modifier.fillMaxSize()) {
+        QuestionContent(modifier = Modifier.weight(0.6f))
+        QuestionBottomBar(modifier = Modifier.weight(0.4f), navController = navController)
+    }
 }
 
 @Composable

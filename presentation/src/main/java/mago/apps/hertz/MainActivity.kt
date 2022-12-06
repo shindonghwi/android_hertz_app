@@ -15,9 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import mago.apps.hertz.ui.navigation.Navigation
 import mago.apps.hertz.ui.components.appbar.AppBar
-import mago.apps.hertz.ui.components.bottombar.BottomBar
+import mago.apps.hertz.ui.navigation.Navigation
 import mago.apps.hertz.ui.theme.MagoHzTheme
 
 @AndroidEntryPoint
@@ -42,8 +41,6 @@ private fun MainApp() {
 
     Scaffold(topBar = {
         AppBar(currentRoute)
-    }, bottomBar = {
-        BottomBar(currentRoute, navController)
     }) {
         Box(
             modifier = Modifier

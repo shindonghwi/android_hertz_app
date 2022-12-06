@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.components.bottombar.question
+package mago.apps.hertz.ui.screens.question.bottom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
