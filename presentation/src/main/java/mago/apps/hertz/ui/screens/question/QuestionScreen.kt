@@ -181,7 +181,7 @@ fun QuestionAppBarRightContent() {
     rightIcons.forEach {
         Icon(
             modifier = Modifier
-                .size(36.dp)
+                .size(40.dp)
                 .noDuplicationClickable {
                     it.second()
                 }
