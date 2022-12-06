@@ -8,8 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,32 +21,36 @@ fun AppBar(
     leftContent: @Composable (() -> Unit)? = null,
     rightContent: @Composable (() -> Unit)? = null
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .background(
-                if (isSystemInDarkTheme()) {
-                    Color.Black.copy(alpha = 0.0f)
-                } else {
-                    Color.White.copy(alpha = 0.3f)
-                }
-            ),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxHeight().padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+    if (type != AppbarType.EMPTY) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(
+                    if (isSystemInDarkTheme()) {
+                        Color.Black.copy(alpha = 0.0f)
+                    } else {
+                        Color.White.copy(alpha = 0.3f)
+                    }
+                ),
         ) {
-            // left area
-            LeftAppBar(type, textContent, leftContent)
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // left area
+                LeftAppBar(type, textContent, leftContent)
 
-            // center area
-            CenterAppBar(type, textContent)
+                // center area
+                CenterAppBar(type, textContent)
 
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
-            // right area
-            RightAppBar(type, rightContent)
+                // right area
+                RightAppBar(type, rightContent)
+            }
         }
     }
 }

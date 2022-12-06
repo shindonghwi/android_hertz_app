@@ -266,8 +266,6 @@ private fun QuestionBottomBarTextAnswerExpanded(
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
                 .padding(14.dp),
             textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
-            textColor = Color.Black,
-            singleLine = false
         )
 
         Row(

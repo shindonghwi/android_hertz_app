@@ -1,6 +1,6 @@
 package mago.apps.hertz.ui.theme
-
 import androidx.compose.ui.graphics.Color
+
 
 /** Light */
 val light_primary = Color(0xFF2152FF) // 주 색상
@@ -9,21 +9,16 @@ val light_onPrimary = Color(0xFFFFFFFF) // 주 색상 위에 표시되는 텍스
 val light_secondary = Color(0xFF3C3C42) // 부 색상
 val light_onSecondary = Color(0xFFFFFFFF) // 부 색상 위에 표시되는 텍스트, 아이콘등 색상
 
-val light_tertiary = Color(0xFF4AC6FF) // 3차 색상
-val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
-
 val light_background = Color(0xFFFCFCFF) // 가장 기본이 되는 배경 색상( 스크롤 하위 )
 val light_onBackground = Color(0xFF001E2F) // 배경위에 올라오는 텍스트 색상
 
-val light_sub_primary = Color(0xFF4AC6FF)
-val light_sub_primary_than_darker_1 = Color(0xFF4AACD9)
-val light_sub_primary_than_darker_2 = Color(0xFF2E7A9D)
-val light_sub_primary_background = Color(0xFFFFF8DE)
-val light_sub_secondary = Color(0xFF262626)
+val light_outline = Color(0xFFB1B1B1)
 
 /** Dark */
 
 /** 사용하지 않는 색상 */
+val light_tertiary = Color(0xFF4AC6FF) // 3차 색상
+val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
 val light_surface = Color(0xFFFCFCFF) // 배경 위 카드, 시트의 색상
 val light_onSurface = Color(0xFF001E2F) // 카드, 시트 위에 올라오는 색상
 val light_primaryContainer = Color(0xFFDDE1FF)
@@ -38,7 +33,6 @@ val light_onError = Color(0xFFFFFFFF)
 val light_onErrorContainer = Color(0xFF410002)
 val light_surfaceVariant = Color(0xFFE3E1EC)
 val light_onSurfaceVariant = Color(0xFF45464F)
-val light_outline = Color(0xFF767680)
 val light_inverseOnSurface = Color(0xFFE6F2FF)
 val light_inverseSurface = Color(0xFF00344E)
 val light_inversePrimary = Color(0xFFB9C3FF)
