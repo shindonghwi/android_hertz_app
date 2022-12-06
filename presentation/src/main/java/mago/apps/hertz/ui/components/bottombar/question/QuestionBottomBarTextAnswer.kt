@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
 
-// 텍스트로 답하기(축소)
 @Composable
 fun QuestionBottomBarTextAnswer(
     modifier: Modifier

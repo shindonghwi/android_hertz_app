@@ -1,52 +1,177 @@
 package mago.apps.hertz.ui.screens.answer.audio
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.components.appbar.AppBar
-import mago.apps.hertz.ui.components.appbar.AppbarType
-import mago.apps.hertz.ui.screens.question.*
+import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnswerAudioScreen(){
-//    Scaffold(topBar = {
-//        AppBar(type = AppbarType.ICON_TITLE_ICON,
-//            textContent = { QuestionAppBarTitleContent() },
-//            leftContent = { QuestionAppBarLeftContent() },
-//            rightContent = { QuestionAppBarRightContent() })
-//    }, bottomBar = {
-//        QuestionBottomBar(navController)
-//    }) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(MaterialTheme.colorScheme.background)
-//        ) {
-//            // main content
-//            QuestionContent(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(it)
-//            )
-//        }
-//    }
+fun AnswerAudioScreen() {
+    AnswerAudioContent()
+}
+
+@Composable
+private fun AnswerAudioContent() {
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        QuestionContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.5f)
+                .background(MaterialTheme.colorScheme.onPrimary)
+        )
+        AudioRecordingContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.5f)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+    }
+}
+
+
+@Composable
+private fun QuestionContent(modifier: Modifier) {
+    Column(
+        modifier = modifier.verticalScroll(state = rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "내가 어른이 됐다고\n느낄 때는?",
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 30.dp),
+            text = "예: 2만원짜리 스파게티 먹을 때 왜냐하면,,,",
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight(700)),
+            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun AudioRecordingContent(modifier: Modifier) {
+    Box(
+        modifier = modifier,
+    ) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(7.dp),
+            progress = 0.5f,
+            color = Color.White.copy(alpha = 0.5f),
+            trackColor = MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            PlayTimeContent()
+
+            Box(
+                modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier.wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    PlayingContent()
+//                        Icon(
+//                            modifier = Modifier
+//                                .size(80.dp)
+//                                .clip(CircleShape)
+//                                .background(MaterialTheme.colorScheme.onPrimary)
+//                                .padding(if (isPlaying.value) 0.dp else 16.dp),
+//                            painter = painterResource(id = R.drawable.align_right),
+//                            contentDescription = null,
+//                            tint = MaterialTheme.colorScheme.primary
+//                        )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayTimeContent() {
+    Text(
+        modifier = Modifier.padding(top = 20.dp),
+        text = "00:09 / 10:00",
+        color = MaterialTheme.colorScheme.onPrimary,
+        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+    )
+}
+
+@Composable
+private fun PlayingContent() {
+    val isPlaying = remember { mutableStateOf(true) }
+
+    WavesAnimation(
+        waveSize = 80.dp, waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(80.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.onPrimary)
+                .noDuplicationClickable {
+                    isPlaying.value = !isPlaying.value
+                }
+                .padding(5.dp),
+            painter = painterResource(id = if (isPlaying.value) R.drawable.pause else R.drawable.play),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+
+    Text(
+        modifier = Modifier
+            .padding(top = 80.dp)
+            .wrapContentWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
+            .noDuplicationClickable {
+
+            }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
+        color = MaterialTheme.colorScheme.onPrimary,
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.Bold
+        ),
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+private fun NotPlayingContent() {
+
 }
 

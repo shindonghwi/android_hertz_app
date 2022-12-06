@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.navigation.model.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
@@ -47,7 +48,9 @@ fun QuestionBottomBar(navController: NavHostController) {
                 .fillMaxWidth()
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.primary)
-                .noDuplicationClickable {},
+                .noDuplicationClickable {
+                    navController.navigate(RouteScreen.AnswerAudioScreen.route)
+                },
         )
     }
 

@@ -42,50 +42,6 @@ fun QuestionScreen(navController: NavHostController) {
     QuestionContent(modifier = Modifier.fillMaxSize())
 }
 
-
-@Composable
-private fun QuestionAppBarTitleContent() {
-    Text(
-        modifier = Modifier.padding(start = 8.dp),
-        text = stringResource(id = R.string.home_title_2),
-        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.primary
-    )
-}
-
-@Composable
-private fun QuestionAppBarLeftContent() {
-    Icon(
-        modifier = Modifier.size(44.dp),
-        painter = painterResource(id = R.drawable.profile_sample),
-        contentDescription = null,
-        tint = Color.Unspecified
-    )
-}
-
-@Composable
-fun QuestionAppBarRightContent() {
-
-    val rightIcons: List<Pair<ImageVector, () -> Unit>> = listOf(
-        Pair(Icons.Default.Home, {}),
-        Pair(Icons.Default.Menu, {}),
-        Pair(Icons.Default.Notifications, {}),
-    )
-
-    rightIcons.forEach {
-        Icon(modifier = Modifier
-            .size(40.dp)
-            .noDuplicationClickable {
-                it.second()
-            }
-            .padding(6.dp),
-            imageVector = it.first,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
-
-
 // 텍스트로 답하기(확장)
 @Composable
 private fun QuestionBottomBarTextAnswerExpanded(
@@ -190,7 +146,6 @@ private fun EmotionPercentView(modifier: Modifier) {
         Pair("\uD83D\uDE36", 37),
     )
 
-
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -207,93 +162,6 @@ private fun EmotionPercentView(modifier: Modifier) {
                 )
             }
 
-        }
-    }
-}
-
-
-// 음성으로 답하기(확장)
-@Composable
-private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
-
-    val isPlaying = remember { mutableStateOf(false) }
-
-    Box(
-        modifier = modifier,
-    ) {
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(7.dp),
-            progress = 0.5f,
-            color = Color.White.copy(alpha = 0.5f),
-            trackColor = MaterialTheme.colorScheme.primary
-        )
-
-
-        Column(
-            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(top = 20.dp),
-                text = "00:09",
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-
-            Box(
-                modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .noDuplicationClickable {
-                            isPlaying.value = !isPlaying.value
-                        }, horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (isPlaying.value) {
-                        WavesAnimation(
-                            waveSize = 80.dp, waveColor = Color.White.copy(alpha = 0.3f)
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.onPrimary)
-                                    .padding(0.dp),
-                                painter = painterResource(id = R.drawable.pause_circle),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    } else {
-                        Icon(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.onPrimary)
-                                .padding(if (isPlaying.value) 0.dp else 16.dp),
-                            painter = painterResource(id = R.drawable.align_right),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-
-                    Text(
-                        modifier = Modifier.padding(top = 14.dp),
-                        text = if (isPlaying.value) {
-                            stringResource(id = R.string.home_bottombar_answer_audio_stop)
-                        } else {
-                            stringResource(id = R.string.home_bottombar_answer_audio_play)
-                        },
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
         }
     }
 }

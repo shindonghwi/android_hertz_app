@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun WavesAnimation(
+    modifier: Modifier = Modifier,
     waveSize: Dp = 50.dp,
     waveDuration: Int = 2000,
     waveColor: Color = Color(0xFF77b538),
@@ -50,7 +51,7 @@ fun WavesAnimation(
     val dys = waves.map { it.value }
 
     Box(
-        modifier = Modifier.size(waveSize),
+        modifier = modifier.size(waveSize),
         contentAlignment = Alignment.Center
     ) {
         dys.forEach { dy ->
