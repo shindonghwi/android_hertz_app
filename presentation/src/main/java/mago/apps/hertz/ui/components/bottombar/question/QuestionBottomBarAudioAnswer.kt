@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
 
-// 음성으로 답하기(축소)
 @Composable
 fun QuestionBottomBarAudioAnswer(modifier: Modifier) {
     Column(

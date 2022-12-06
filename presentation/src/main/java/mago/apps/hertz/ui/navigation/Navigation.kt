@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import mago.apps.hertz.ui.navigation.model.RouteScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
+import mago.apps.hertz.ui.screens.answer.text.AnswerTextScreen
 import mago.apps.hertz.ui.screens.category.CategoryScreen
 import mago.apps.hertz.ui.screens.home.HomeScreen
 import mago.apps.hertz.ui.screens.question.QuestionScreen
@@ -26,7 +27,7 @@ fun Navigation(navController: NavHostController) {
             AnswerAudioScreen()
         }
         composable(route = RouteScreen.AnswerTextScreen.route) {
-//            AnswerTextScreen()
+            AnswerTextScreen()
         }
     }
 }
