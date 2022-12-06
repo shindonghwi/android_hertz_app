@@ -1,8 +1,10 @@
 package mago.apps.hertz.ui.screens.question
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -31,6 +33,9 @@ import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.screens.components.appbar.AppBar
 import mago.apps.hertz.ui.screens.components.appbar.AppbarType
+import mago.apps.hertz.ui.screens.components.dialog.CustomPopup
+import mago.apps.hertz.ui.screens.components.dialog.PopupCallback
+import mago.apps.hertz.ui.screens.components.dialog.PopupType
 import mago.apps.hertz.ui.screens.components.input.CustomTextField
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -43,12 +48,10 @@ enum class AnswerState { IDLE, TEXT, AUDIO }
 @Composable
 fun QuestionScreen(navController: NavHostController) {
     Scaffold(topBar = {
-        AppBar(
-            type = AppbarType.ICON_TITLE_ICON,
+        AppBar(type = AppbarType.ICON_TITLE_ICON,
             textContent = { QuestionAppBarTitleContent() },
             leftContent = { QuestionAppBarLeftContent() },
-            rightContent = { QuestionAppBarRightContent() }
-        )
+            rightContent = { QuestionAppBarRightContent() })
     }, bottomBar = {
         QuestionBottomBar(navController)
     }) {
@@ -74,6 +77,8 @@ fun QuestionBottomBar(navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val bottomHeight = configuration.screenHeightDp.dp * 0.4f
 
+    val isShowingDialog = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,6 +91,7 @@ fun QuestionBottomBar(navController: NavHostController) {
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.background)
                 .noDuplicationClickable {
+                    isShowingDialog.value = true
                 },
         )
 
@@ -95,9 +101,18 @@ fun QuestionBottomBar(navController: NavHostController) {
                 .fillMaxWidth()
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.primary)
-                .noDuplicationClickable {
-                },
+                .noDuplicationClickable {},
         )
+    }
+
+    if (isShowingDialog.value) {
+        CustomPopup(PopupType.PERMISSION, object : PopupCallback{
+            override fun onState(isVisible: Boolean) {
+                if (!isVisible){
+                    isShowingDialog.value = false
+                }
+            }
+        })
     }
 
 //    // 확장 UI
@@ -179,17 +194,15 @@ fun QuestionAppBarRightContent() {
     )
 
     rightIcons.forEach {
-        Icon(
-            modifier = Modifier
-                .size(40.dp)
-                .noDuplicationClickable {
-                    it.second()
-                }
-                .padding(6.dp),
+        Icon(modifier = Modifier
+            .size(40.dp)
+            .noDuplicationClickable {
+                it.second()
+            }
+            .padding(6.dp),
             imageVector = it.first,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.outlineVariant
-        )
+            tint = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
@@ -210,8 +223,7 @@ private fun QuestionBottomBarTextAnswer(
         )
 
         Box(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.Center
         ) {
             Row(
                 modifier = Modifier
@@ -220,8 +232,7 @@ private fun QuestionBottomBarTextAnswer(
                     .height(48.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(id = R.string.home_bottombar_answer_hint_text),
@@ -327,9 +338,7 @@ private fun QuestionBottomBarTextAnswerExpanded(
 
             /** TODO: 태그 자리 들어와야함 */
             Text(
-                text = "여기에 태그자리",
-                color = Color.Black,
-                style = MaterialTheme.typography.titleMedium
+                text = "여기에 태그자리", color = Color.Black, style = MaterialTheme.typography.titleMedium
             )
 
         }
@@ -426,8 +435,7 @@ private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
 
 
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier.padding(top = 20.dp),
@@ -437,8 +445,7 @@ private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
             )
 
             Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
             ) {
                 Column(
                     modifier = Modifier
@@ -449,8 +456,7 @@ private fun QuestionBottomBarAudioAnswerExpanded(modifier: Modifier) {
                 ) {
                     if (isPlaying.value) {
                         WavesAnimation(
-                            waveSize = 80.dp,
-                            waveColor = Color.White.copy(alpha = 0.3f)
+                            waveSize = 80.dp, waveColor = Color.White.copy(alpha = 0.3f)
                         ) {
                             Icon(
                                 modifier = Modifier
@@ -514,8 +520,7 @@ private fun QuestionContent(modifier: Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
-            contentAlignment = Alignment.BottomEnd
+                .padding(20.dp), contentAlignment = Alignment.BottomEnd
         ) {
             Icon(modifier = Modifier
                 .size(36.dp)
@@ -544,8 +549,7 @@ fun QuestionText(isVisible: Boolean) {
     )
     val max_num_value = textList.size - 1
     val min_num_value = 0
-    val randomText =
-        textList[Random().nextInt(max_num_value - min_num_value + 1) + min_num_value]
+    val randomText = textList[Random().nextInt(max_num_value - min_num_value + 1) + min_num_value]
 
     /** TODO: 질문 텍스트 동적 변경 필요 */
     AnimatedContent(
