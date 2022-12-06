@@ -11,34 +11,61 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
-fun AnswerAudioScreen() {
-    AnswerAudioContent()
+fun AnswerAudioScreen(answerAudioViewModel: AnswerAudioViewModel) {
+    answerAudioViewModel.run {
+        AnswerAudioContent(this)
+        AnswerAudioLifecycle(this)
+    }
 }
 
 @Composable
-private fun AnswerAudioContent() {
-    val isShowingDialog = remember { mutableStateOf(false) }
+private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    coroutineScopeOnDefault {
+                        answerAudioViewModel.updatePlayingState(false)
+                    }
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
+
+@Composable
+private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
+    val isShowingDialog = answerAudioViewModel.isShowingPopup.collectAsState().value
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -52,17 +79,19 @@ private fun AnswerAudioContent() {
                 .fillMaxWidth()
                 .weight(0.5f)
                 .background(MaterialTheme.colorScheme.primary),
-            isShowingDialog = isShowingDialog
+            answerAudioViewModel = answerAudioViewModel,
         )
     }
 
-    if (isShowingDialog.value) {
+    if (isShowingDialog) {
         CustomPopup(
             type = PopupType.RECORD_END_FREQUENCY,
             callback = object : PopupCallback {
                 override fun onState(isVisible: Boolean) {
                     if (!isVisible) {
-                        isShowingDialog.value = false
+                        coroutineScopeOnDefault {
+                            answerAudioViewModel.updatePopupState(false)
+                        }
                     }
                 }
             })
@@ -98,7 +127,7 @@ private fun QuestionContent(modifier: Modifier) {
 @Composable
 private fun AudioRecordingContent(
     modifier: Modifier,
-    isShowingDialog: MutableState<Boolean>
+    answerAudioViewModel: AnswerAudioViewModel,
 ) {
     Box(
         modifier = modifier,
@@ -115,15 +144,16 @@ private fun AudioRecordingContent(
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PlayTimeContent()
-
-            PlayingContent(isShowingDialog)
+            answerAudioViewModel.run {
+                PlayTimeContent(this)
+                PlayingContent(this)
+            }
         }
     }
 }
 
 @Composable
-private fun PlayTimeContent() {
+private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
     Text(
         modifier = Modifier.padding(top = 20.dp, bottom = 60.dp),
         text = "00:09 / 10:00",
@@ -133,12 +163,13 @@ private fun PlayTimeContent() {
 }
 
 @Composable
-private fun PlayingContent(isShowingDialog: MutableState<Boolean>) {
-    val isPlaying = remember { mutableStateOf(true) }
+private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
+
+    val isPlaying = answerAudioViewModel.isPlaying.collectAsState().value
 
     WavesAnimation(
         waveSize = 80.dp,
-        waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
+        waveColor = Color.White.copy(alpha = if (isPlaying) 0.4f else 0.05f),
     ) {
         Icon(
             modifier = Modifier
@@ -146,17 +177,19 @@ private fun PlayingContent(isShowingDialog: MutableState<Boolean>) {
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .noDuplicationClickable {
-                    isPlaying.value = !isPlaying.value
+                    coroutineScopeOnDefault {
+                        answerAudioViewModel.updatePlayingState(!isPlaying)
+                    }
                 }
                 .padding(5.dp),
-            painter = painterResource(id = if (isPlaying.value) R.drawable.pause else R.drawable.play),
+            painter = painterResource(id = if (isPlaying) R.drawable.pause else R.drawable.play),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )
     }
 
     /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
-    if (isPlaying.value){
+    if (isPlaying) {
         Text(
             modifier = Modifier
                 .padding(top = 80.dp)
@@ -164,8 +197,12 @@ private fun PlayingContent(isShowingDialog: MutableState<Boolean>) {
                 .clip(RoundedCornerShape(12.dp))
                 .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
                 .noDuplicationClickable {
-                    isPlaying.value = false
-                    isShowingDialog.value = true
+                    answerAudioViewModel.run {
+                        coroutineScopeOnDefault {
+                            updatePlayingState(false)
+                            updatePopupState(true)
+                        }
+                    }
                 }
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
