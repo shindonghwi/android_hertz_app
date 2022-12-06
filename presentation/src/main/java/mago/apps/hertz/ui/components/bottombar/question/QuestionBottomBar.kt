@@ -55,7 +55,7 @@ fun QuestionBottomBar(navController: NavHostController) {
     }
 
     if (isShowingDialog.value) {
-        CustomPopup(PopupType.PERMISSION, object : PopupCallback {
+        CustomPopup(type = PopupType.PERMISSION, callback = object : PopupCallback {
             override fun onState(isVisible: Boolean) {
                 if (!isVisible) {
                     isShowingDialog.value = false

@@ -12,6 +12,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,6 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.components.dialog.CustomPopup
+import mago.apps.hertz.ui.components.dialog.PopupCallback
+import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
@@ -34,6 +38,7 @@ fun AnswerAudioScreen() {
 
 @Composable
 private fun AnswerAudioContent() {
+    val isShowingDialog = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -46,9 +51,23 @@ private fun AnswerAudioContent() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.5f)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.primary),
+            isShowingDialog = isShowingDialog
         )
     }
+
+    if (isShowingDialog.value) {
+        CustomPopup(
+            type = PopupType.RECORD_END_FREQUENCY,
+            callback = object : PopupCallback {
+                override fun onState(isVisible: Boolean) {
+                    if (!isVisible) {
+                        isShowingDialog.value = false
+                    }
+                }
+            })
+    }
+
 }
 
 
@@ -77,7 +96,10 @@ private fun QuestionContent(modifier: Modifier) {
 }
 
 @Composable
-private fun AudioRecordingContent(modifier: Modifier) {
+private fun AudioRecordingContent(
+    modifier: Modifier,
+    isShowingDialog: MutableState<Boolean>
+) {
     Box(
         modifier = modifier,
     ) {
@@ -95,26 +117,7 @@ private fun AudioRecordingContent(modifier: Modifier) {
         ) {
             PlayTimeContent()
 
-            Box(
-                modifier = Modifier.weight(1f), contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier.wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    PlayingContent()
-//                        Icon(
-//                            modifier = Modifier
-//                                .size(80.dp)
-//                                .clip(CircleShape)
-//                                .background(MaterialTheme.colorScheme.onPrimary)
-//                                .padding(if (isPlaying.value) 0.dp else 16.dp),
-//                            painter = painterResource(id = R.drawable.align_right),
-//                            contentDescription = null,
-//                            tint = MaterialTheme.colorScheme.primary
-//                        )
-                }
-            }
+            PlayingContent(isShowingDialog)
         }
     }
 }
@@ -122,7 +125,7 @@ private fun AudioRecordingContent(modifier: Modifier) {
 @Composable
 private fun PlayTimeContent() {
     Text(
-        modifier = Modifier.padding(top = 20.dp),
+        modifier = Modifier.padding(top = 20.dp, bottom = 60.dp),
         text = "00:09 / 10:00",
         color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
@@ -130,11 +133,12 @@ private fun PlayTimeContent() {
 }
 
 @Composable
-private fun PlayingContent() {
+private fun PlayingContent(isShowingDialog: MutableState<Boolean>) {
     val isPlaying = remember { mutableStateOf(true) }
 
     WavesAnimation(
-        waveSize = 80.dp, waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
+        waveSize = 80.dp,
+        waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
     ) {
         Icon(
             modifier = Modifier
@@ -158,7 +162,8 @@ private fun PlayingContent() {
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
             .noDuplicationClickable {
-
+                isPlaying.value = false
+                isShowingDialog.value = true
             }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
@@ -169,9 +174,3 @@ private fun PlayingContent() {
         textAlign = TextAlign.Center
     )
 }
-
-@Composable
-private fun NotPlayingContent() {
-
-}
-

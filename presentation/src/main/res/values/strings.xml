@@ -24,4 +24,7 @@
     <string name="deny">거절</string>
     <string name="permission_mic_storage">헤르츠에서 마이크를 사용하여\n녹음하도록 허용하시겠습니까?</string>
 
+    <string name="dialog_record_end_frequency_title">고유 주파수 잡는 중…</string>
+    <string name="dialog_record_end_frequency_subtitle">잠시만 기다려주세요!\n오늘의 mago를 알려드릴게요</string>
+
 </resources>
