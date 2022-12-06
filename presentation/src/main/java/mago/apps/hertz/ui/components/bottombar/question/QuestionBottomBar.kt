@@ -49,7 +49,7 @@ fun QuestionBottomBar(navController: NavHostController) {
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.primary)
                 .noDuplicationClickable {
-                    navController.navigate(RouteScreen.AnswerTextScreen.route)
+                    navController.navigate(RouteScreen.AnswerAudioScreen.route)
                 },
         )
     }
