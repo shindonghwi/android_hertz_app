@@ -21,11 +21,8 @@ import mago.apps.hertz.ui.navigation.model.RouteScreen
 fun AppBar(currentRoute: String?, navController: NavHostController) {
     currentRoute?.let { route ->
         when (route) {
-            RouteScreen.NotificationScreen.route,
-            RouteScreen.AnswerAudioScreen.route,
-            RouteScreen.QuestionScreen.route -> {
-                IconTitleIconsAppbar(navController)
-            }
+            RouteScreen.HomeScreen.route -> {}
+            else -> { IconTitleIconsAppbar(navController) }
         }
     }
 }

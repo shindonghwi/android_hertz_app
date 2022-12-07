@@ -13,6 +13,10 @@
 
     <string name="matching_title">주파수를 맞추고\n싶은 상대의\n전화번호를 입력해주세요</string>
 
+    <string name="episode_save_title">소중한 에피소드가\n저장되었습니다</string>
+    <string name="episode_save_button_keep_alone">혼자 간직하기</string>
+    <string name="episode_save_button_noti_opponent">상대에게 삐삐</string>
+
 
     <!-- 공통 -->
     <string name="id">아이디</string>

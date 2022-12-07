@@ -10,6 +10,7 @@ import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioViewModel
 import mago.apps.hertz.ui.screens.answer.text.AnswerTextScreen
 import mago.apps.hertz.ui.screens.category.CategoryScreen
+import mago.apps.hertz.ui.screens.episode_save.EpisodeSaveScreen
 import mago.apps.hertz.ui.screens.home.HomeScreen
 import mago.apps.hertz.ui.screens.notification.NotificationScreenScreen
 import mago.apps.hertz.ui.screens.question.QuestionScreen
@@ -35,6 +36,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(route = RouteScreen.NotificationScreen.route) {
             NotificationScreenScreen()
+        }
+        composable(route = RouteScreen.EpisodeSaveScreen.route) {
+            EpisodeSaveScreen()
         }
     }
 }

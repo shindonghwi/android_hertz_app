@@ -7,4 +7,5 @@ sealed class RouteScreen(val route: String){
     object AnswerAudioScreen : RouteScreen("AnswerAudio")
     object AnswerTextScreen : RouteScreen("AnswerText")
     object NotificationScreen : RouteScreen("Notification")
+    object EpisodeSaveScreen : RouteScreen("EpisodeSave")
 }
