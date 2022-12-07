@@ -84,6 +84,7 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
 
     CustomPopup(
         isVisible = isFrequencyPopUpVisible,
+        backgroundTouchEnable = false,
         type = PopupType.RECORD_END_FREQUENCY,
     )
 }

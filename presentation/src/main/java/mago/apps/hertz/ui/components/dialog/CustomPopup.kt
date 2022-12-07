@@ -43,6 +43,7 @@ interface PopupPermissionCallback {
 @Composable
 fun CustomPopup(
     isVisible: MutableState<Boolean>,
+    backgroundTouchEnable: Boolean = true,
     type: PopupType,
     fallbackMessage: String? = null,
     permissionCallback: PopupPermissionCallback? = null,
@@ -57,7 +58,7 @@ fun CustomPopup(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
-                    .noDuplicationClickable {
+                    .noDuplicationClickable(backgroundTouchEnable) {
                         popupDisable(isVisible)
                     },
                 contentAlignment = Alignment.Center
@@ -94,7 +95,9 @@ fun CustomPopup(
     }
 
     BackHandler(enabled = isVisible.value) {
-        popupDisable(isVisible)
+        if (backgroundTouchEnable){
+            popupDisable(isVisible)
+        }
     }
 }
 
