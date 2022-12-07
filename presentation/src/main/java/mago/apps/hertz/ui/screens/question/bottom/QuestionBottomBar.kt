@@ -41,7 +41,7 @@ fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.background)
                 .noDuplicationClickable {
-                    Toast.makeText(context, "아직 개발이 안되었어요", Toast.LENGTH_SHORT).show()
+                    navController.navigate(RouteScreen.AnswerTextScreen.route)
                 },
         )
         QuestionBottomBarAudioAnswer(
