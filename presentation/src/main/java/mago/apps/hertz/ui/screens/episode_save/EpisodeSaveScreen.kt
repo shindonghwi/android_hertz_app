@@ -37,12 +37,18 @@ private fun EpisodeSaveContent() {
             textAlign = TextAlign.Center
         )
 
-        EpisodeSaveButtonList()
+        FrequencyExistContent()
+        FrequencyNotExistContent()
     }
 }
 
 @Composable
-private fun EpisodeSaveButtonList() {
+private fun FrequencyExistContent() {
+
+}
+
+@Composable
+private fun FrequencyNotExistContent() {
 
     val menuList = listOf(
         Triple(
