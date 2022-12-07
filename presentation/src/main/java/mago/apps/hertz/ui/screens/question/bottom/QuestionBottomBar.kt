@@ -65,12 +65,10 @@ fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
         permissionCallback = object : PopupPermissionCallback {
             override fun allAllow() {
                 isPermissionPopUpVisible.value = false
-                Toast.makeText(context, "allAllow", Toast.LENGTH_SHORT).show()
             }
 
             override fun deny() {
                 isPermissionPopUpVisible.value = false
-                Toast.makeText(context, "deny", Toast.LENGTH_SHORT).show()
             }
         }
     )

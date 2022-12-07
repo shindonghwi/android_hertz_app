@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import mago.apps.hertz.ui.utils.permission.PermissionsHandler
+import mago.apps.hertz.ui.utils.scope.onDefault
 import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -26,18 +26,20 @@ class AnswerAudioViewModel @Inject constructor() : ViewModel() {
         isFrequencyPopUpVisible.value = flag
     }
 
-    val permissionsHandler: PermissionsHandler = PermissionsHandler()
     private val _state = MutableStateFlow(PermissionsHandler.State())
     val state: StateFlow<PermissionsHandler.State> = _state
 
-    init {
-        permissionsHandler
+    private fun onPermissionHandlerState() =  onDefault {
+        PermissionsHandler()
             .state
             .onEach { handlerState ->
                 _state.update { it.copy(multiplePermissionsState = handlerState.multiplePermissionsState) }
             }
-            .catch { Log.e("asdasdasd", "$it") }
-            .launchIn(viewModelScope)
+            .catch { Log.e("permissionsHandler", "$it") }
+    }
+
+    init {
+        onPermissionHandlerState()
     }
 
 }
