@@ -102,43 +102,34 @@ private fun PopupPermissionButton(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     })
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 40.dp)
-        .height(40.dp)
-        .clip(RoundedCornerShape(14.dp))
-        .background(MaterialTheme.colorScheme.primary.copy(alpha = buttonAlpha))
-        .noDuplicationClickable {
-            callback?.run {
-                if (content == context.resources.getString(R.string.allow)) {
-                    if (permissionsHandler.isAllGranted(permissions)) {
-                        allAllow()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 40.dp)
+            .height(40.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = buttonAlpha))
+            .noDuplicationClickable {
+                callback?.run {
+                    if (content == context.resources.getString(R.string.allow)) {
+                        if (permissionsHandler.isAllGranted(permissions)) {
+                            allAllow()
+                        } else {
+                            permissionsHandler.onEvent(PermissionsHandler.Event.PermissionRequired)
+                        }
                     } else {
-                        permissionsHandler.onEvent(PermissionsHandler.Event.PermissionRequired)
+                        deny()
                     }
-                } else {
-                    deny()
                 }
-            }
-        }) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = content,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
-            )
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .padding(8.dp),
-                painter = painterResource(id = R.drawable.arrow_circle_up),
-                tint = MaterialTheme.colorScheme.onPrimary,
-                contentDescription = null,
-            )
-        }
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = content,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onPrimary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -189,7 +180,11 @@ fun HandlePermissionAction(
             }
         }
         PermissionsHandler.Action.SHOW_NEVER_ASK_AGAIN -> {
-            Toast.makeText(context, context.getString(R.string.toast_permission_required), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.toast_permission_required),
+                Toast.LENGTH_SHORT
+            ).show()
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = Uri.parse("package:" + context.packageName)
                 context.startActivity(this)
