@@ -23,6 +23,7 @@ object Versions {
         const val navigation = "2.5.2"
         const val constraintLayout = "1.0.0-rc01"
         const val material3 = "1.0.1"
+        const val accompanistPermission = "0.23.1"
     }
 
     object Hilt{
@@ -73,6 +74,7 @@ object Libraries {
         const val animation = "androidx.compose.animation:animation:${Versions.Compose.compose}"
         const val material3 = "androidx.compose.material3:material3:${Versions.Compose.material3}"
         const val material3window = "androidx.compose.material3:material3-window-size-class:${Versions.Compose.material3}"
+        const val accompanistPermission = "com.google.accompanist:accompanist-permissions:${Versions.Compose.accompanistPermission}"
 
     }
 

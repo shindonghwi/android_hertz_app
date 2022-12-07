@@ -6,18 +6,27 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import kotlinx.coroutines.delay
+import mago.apps.hertz.ui.components.dialog.fallback.PopupFallback
 import mago.apps.hertz.ui.components.dialog.permission.PopupPermission
 import mago.apps.hertz.ui.components.dialog.record_end_frequency.PopupRecordEndFrequency
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
-import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 
 enum class PopupType {
@@ -26,27 +35,18 @@ enum class PopupType {
     RECORD_END_FREQUENCY
 }
 
-interface PopupCallback {
-    fun onState(isVisible: Boolean)
+interface PopupPermissionCallback {
+    fun allAllow()
+    fun deny()
 }
 
 @Composable
 fun CustomPopup(
+    isVisible: MutableState<Boolean>,
     type: PopupType,
     fallbackMessage: String? = null,
-    callback: PopupCallback
+    permissionCallback: PopupPermissionCallback? = null,
 ) {
-
-    val isVisible = remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = Unit) {
-        coroutineScopeOnDefault {
-            delay(50)
-            isVisible.value = true
-            callback.onState(isVisible.value)
-        }
-    }
-
     Popup {
         AnimatedVisibility(
             visible = isVisible.value,
@@ -58,19 +58,35 @@ fun CustomPopup(
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
                     .noDuplicationClickable {
-                        PopupDisable(isVisible, callback)
+                        popupDisable(isVisible)
                     },
                 contentAlignment = Alignment.Center
             ) {
+                val configuration = LocalConfiguration.current
+                val size = configuration.screenWidthDp.dp * 0.75f
+
+                val popupModifier = Modifier
+                    .size(size)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(MaterialTheme.colorScheme.onPrimary)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null,
+                        onClick = {})
+                    .padding(top = 40.dp, bottom = 40.dp)
+
                 when (type) {
                     PopupType.PERMISSION -> {
-                        PopupPermission()
+                        PopupPermission(
+                            modifier = popupModifier,
+                            permissionCallback = permissionCallback
+                        )
                     }
                     PopupType.FALLBACK -> {
-                        PopupFallback(fallbackMessage)
+                        PopupFallback(modifier = popupModifier, fallbackMessage = fallbackMessage)
                     }
                     PopupType.RECORD_END_FREQUENCY -> {
-                        PopupRecordEndFrequency()
+                        PopupRecordEndFrequency(modifier = popupModifier)
                     }
                 }
             }
@@ -78,14 +94,10 @@ fun CustomPopup(
     }
 
     BackHandler(enabled = isVisible.value) {
-        PopupDisable(isVisible, callback)
+        popupDisable(isVisible)
     }
 }
 
-private fun PopupDisable(isVisible: MutableState<Boolean>, callback: PopupCallback) {
+private fun popupDisable(isVisible: MutableState<Boolean>) {
     isVisible.value = false
-    coroutineScopeOnDefault {
-        delay(300)
-        callback.onState(false)
-    }
 }

@@ -26,7 +26,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.dialog.CustomPopup
-import mago.apps.hertz.ui.components.dialog.PopupCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -65,7 +64,7 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 
 @Composable
 private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
-    val isShowingDialog = answerAudioViewModel.isShowingPopup.collectAsState().value
+    val isVisible = remember { answerAudioViewModel.isShowingPopup }
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -83,20 +82,10 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
         )
     }
 
-    if (isShowingDialog) {
-        CustomPopup(
-            type = PopupType.RECORD_END_FREQUENCY,
-            callback = object : PopupCallback {
-                override fun onState(isVisible: Boolean) {
-                    if (!isVisible) {
-                        coroutineScopeOnDefault {
-                            answerAudioViewModel.updatePopupState(false)
-                        }
-                    }
-                }
-            })
-    }
-
+    CustomPopup(
+        isVisible = isVisible,
+        type = PopupType.RECORD_END_FREQUENCY,
+    )
 }
 
 
@@ -165,11 +154,11 @@ private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
 @Composable
 private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
 
-    val isPlaying = answerAudioViewModel.isPlaying.collectAsState().value
+    val isPlaying = remember { answerAudioViewModel.isPlaying }
 
     WavesAnimation(
         waveSize = 80.dp,
-        waveColor = Color.White.copy(alpha = if (isPlaying) 0.4f else 0.05f),
+        waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
     ) {
         Icon(
             modifier = Modifier
@@ -178,18 +167,18 @@ private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .noDuplicationClickable {
                     coroutineScopeOnDefault {
-                        answerAudioViewModel.updatePlayingState(!isPlaying)
+                        answerAudioViewModel.updatePlayingState(!isPlaying.value)
                     }
                 }
                 .padding(5.dp),
-            painter = painterResource(id = if (isPlaying) R.drawable.pause else R.drawable.play),
+            painter = painterResource(id = if (isPlaying.value) R.drawable.pause else R.drawable.play),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )
     }
 
     /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
-    if (isPlaying) {
+    if (isPlaying.value) {
         Text(
             modifier = Modifier
                 .padding(top = 80.dp)

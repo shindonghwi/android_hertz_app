@@ -1,8 +1,9 @@
-package mago.apps.hertz.ui.components.dialog
+package mago.apps.hertz.ui.components.dialog.fallback
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -10,9 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,16 +20,9 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.theme.TitleXLarge
 
 @Composable
-fun PopupFallback(fallbackMessage: String?) {
-    val configuration = LocalConfiguration.current
-    val size = configuration.screenWidthDp.dp * 0.75f
-
+fun PopupFallback(modifier: Modifier, fallbackMessage: String?) {
     Column(
-        modifier = Modifier
-            .size(size)
-            .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(top = 40.dp, bottom = 40.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

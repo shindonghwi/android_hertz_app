@@ -65,6 +65,7 @@ dependencies {
             implementation(uiTooling)
             implementation(navigation)
             implementation(constraintLayout)
+            implementation(accompanistPermission)
         }
 
         Libraries.Hilt.apply {
