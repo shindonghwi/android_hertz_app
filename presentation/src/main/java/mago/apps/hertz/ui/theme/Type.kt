@@ -51,7 +51,7 @@ val PretendardTypography = Typography(
         fontFamily = Pretendard,
         fontWeight = FontWeight.W400,
         letterSpacing = 0.5.sp,
-        lineHeight = 24.sp,
+        lineHeight = 20.sp,
         fontSize = 16.sp
     ),
     bodyMedium = TextStyle(

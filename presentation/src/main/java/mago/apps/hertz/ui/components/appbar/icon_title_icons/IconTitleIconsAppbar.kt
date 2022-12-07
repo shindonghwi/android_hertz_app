@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.components.appbar.question
+package mago.apps.hertz.ui.components.appbar.icon_title_icons
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,13 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.appbar.AppbarType
+import mago.apps.hertz.ui.navigation.model.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
-fun QuestionAppbar() {
+fun IconTitleIconsAppbar(navController: NavHostController) {
     AppBarContent(
         type = AppbarType.ICON_TITLE_ICON,
         textContent = {
@@ -46,7 +48,9 @@ fun QuestionAppbar() {
             val rightIcons: List<Pair<ImageVector, () -> Unit>> = listOf(
                 Pair(Icons.Default.Home, {}),
                 Pair(Icons.Default.Menu, {}),
-                Pair(Icons.Default.Notifications, {}),
+                Pair(Icons.Default.Notifications) {
+                    navController.navigate(RouteScreen.NotificationScreen.route)
+                },
             )
 
             rightIcons.forEach {

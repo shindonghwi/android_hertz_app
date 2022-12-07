@@ -1,11 +1,12 @@
 package mago.apps.hertz.ui.screens.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,14 +30,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.navigation.model.RouteScreen
-import mago.apps.hertz.ui.components.appbar.AppBar
-import mago.apps.hertz.ui.components.appbar.AppbarType
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
+import mago.apps.hertz.ui.navigation.model.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     HomeContent(

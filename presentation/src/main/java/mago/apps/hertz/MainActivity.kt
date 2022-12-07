@@ -40,7 +40,7 @@ private fun MainApp() {
     val currentRoute: String? = navBackStackEntry?.destination?.route
 
     Scaffold(topBar = {
-        AppBar(currentRoute)
+        AppBar(currentRoute, navController)
     }) {
         Box(
             modifier = Modifier

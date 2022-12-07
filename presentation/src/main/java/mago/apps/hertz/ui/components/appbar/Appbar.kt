@@ -13,16 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import mago.apps.hertz.ui.components.appbar.question.QuestionAppbar
+import androidx.navigation.NavHostController
+import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
 import mago.apps.hertz.ui.navigation.model.RouteScreen
 
 @Composable
-fun AppBar(currentRoute: String?) {
+fun AppBar(currentRoute: String?, navController: NavHostController) {
     currentRoute?.let { route ->
         when (route) {
+            RouteScreen.NotificationScreen.route,
             RouteScreen.AnswerAudioScreen.route,
             RouteScreen.QuestionScreen.route -> {
-                QuestionAppbar()
+                IconTitleIconsAppbar(navController)
             }
         }
     }

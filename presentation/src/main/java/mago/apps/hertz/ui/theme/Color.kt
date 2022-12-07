@@ -14,13 +14,16 @@ val light_onBackground = Color(0xFF001E2F) // 배경위에 올라오는 텍스�
 
 val light_outline = Color(0xFFB1B1B1)
 
+val light_surface = Color(0xFFFCFCFF) // 배경 위 카드, 시트의 색상
+//val light_surface = Color(0xFFFF0000) // 배경 위 카드, 시트의 색상
+val light_onSurface = Color(0xFF001E2F) // 카드, 시트 위에 올라오는 색상
+
 /** Dark */
 
 /** 사용하지 않는 색상 */
 val light_tertiary = Color(0xFF4AC6FF) // 3차 색상
 val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
-val light_surface = Color(0xFFFCFCFF) // 배경 위 카드, 시트의 색상
-val light_onSurface = Color(0xFF001E2F) // 카드, 시트 위에 올라오는 색상
+
 val light_primaryContainer = Color(0xFFDDE1FF)
 val light_onPrimaryContainer = Color(0xFF001257)
 val light_secondaryContainer = Color(0xFF004D67)
