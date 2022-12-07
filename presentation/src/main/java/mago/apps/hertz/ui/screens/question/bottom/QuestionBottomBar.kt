@@ -22,7 +22,7 @@ import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
-    val isShowingDialog = remember { mutableStateOf(false) }
+    val isPermissionPopUpVisible = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val permissionState = rememberMultiplePermissionsState(
@@ -41,7 +41,7 @@ fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.background)
                 .noDuplicationClickable {
-                    isShowingDialog.value = true
+                    Toast.makeText(context, "아직 개발이 안되었어요", Toast.LENGTH_SHORT).show()
                 },
         )
         QuestionBottomBarAudioAnswer(
@@ -53,23 +53,23 @@ fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
                     if (permissionState.allPermissionsGranted) {
                         navController.navigate(RouteScreen.AnswerAudioScreen.route)
                     } else {
-                        isShowingDialog.value = true
+                        isPermissionPopUpVisible.value = true
                     }
                 },
         )
     }
 
     CustomPopup(
-        isVisible = isShowingDialog,
+        isVisible = isPermissionPopUpVisible,
         type = PopupType.PERMISSION,
         permissionCallback = object : PopupPermissionCallback {
             override fun allAllow() {
-                isShowingDialog.value = false
+                isPermissionPopUpVisible.value = false
                 Toast.makeText(context, "allAllow", Toast.LENGTH_SHORT).show()
             }
 
             override fun deny() {
-                isShowingDialog.value = false
+                isPermissionPopUpVisible.value = false
                 Toast.makeText(context, "deny", Toast.LENGTH_SHORT).show()
             }
         }

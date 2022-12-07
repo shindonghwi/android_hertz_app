@@ -16,14 +16,14 @@ import javax.inject.Inject
 class AnswerAudioViewModel @Inject constructor() : ViewModel() {
 
     val isPlaying: MutableState<Boolean> = mutableStateOf(true)
-    val isShowingPopup: MutableState<Boolean> = mutableStateOf(false)
+    val isFrequencyPopUpVisible: MutableState<Boolean> = mutableStateOf(false)
 
     fun updatePlayingState(flag: Boolean) {
         isPlaying.value = flag
     }
 
     fun updatePopupState(flag: Boolean) {
-        isShowingPopup.value = flag
+        isFrequencyPopUpVisible.value = flag
     }
 
     val permissionsHandler: PermissionsHandler = PermissionsHandler()

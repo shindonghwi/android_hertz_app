@@ -49,7 +49,9 @@ fun IconTitleIconsAppbar(navController: NavHostController) {
                 Pair(Icons.Default.Home, {}),
                 Pair(Icons.Default.Menu, {}),
                 Pair(Icons.Default.Notifications) {
-                    navController.navigate(RouteScreen.NotificationScreen.route)
+                    navController.navigate(RouteScreen.NotificationScreen.route){
+                        launchSingleTop = true
+                    }
                 },
             )
 

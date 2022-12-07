@@ -64,7 +64,7 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 
 @Composable
 private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
-    val isVisible = remember { answerAudioViewModel.isShowingPopup }
+    val isFrequencyPopUpVisible = remember { answerAudioViewModel.isFrequencyPopUpVisible }
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -83,7 +83,7 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
     }
 
     CustomPopup(
-        isVisible = isVisible,
+        isVisible = isFrequencyPopUpVisible,
         type = PopupType.RECORD_END_FREQUENCY,
     )
 }
