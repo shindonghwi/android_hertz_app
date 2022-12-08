@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.navigation.model
+package mago.apps.hertz.ui.model.screen
 
 sealed class RouteScreen(val route: String){
     object HomeScreen : RouteScreen("Home")

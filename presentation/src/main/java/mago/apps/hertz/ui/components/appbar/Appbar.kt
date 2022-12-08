@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
-import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.model.screen.RouteScreen
 
 @Composable
 fun AppBar(currentRoute: String?, navController: NavHostController) {

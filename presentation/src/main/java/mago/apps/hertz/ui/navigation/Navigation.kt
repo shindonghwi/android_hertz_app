@@ -5,10 +5,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioViewModel
 import mago.apps.hertz.ui.screens.answer.text.AnswerTextScreen
+import mago.apps.hertz.ui.screens.answer.text.AnswerTextViewModel
 import mago.apps.hertz.ui.screens.category.CategoryScreen
 import mago.apps.hertz.ui.screens.episode_save.EpisodeSaveScreen
 import mago.apps.hertz.ui.screens.home.HomeScreen
@@ -22,8 +23,7 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController)
         }
         composable(route = RouteScreen.QuestionScreen.route) {
-            EpisodeSaveScreen()
-//            QuestionScreen(navController)
+            QuestionScreen(navController)
         }
         composable(route = RouteScreen.CategoryScreen.route) {
             CategoryScreen()
@@ -33,7 +33,8 @@ fun Navigation(navController: NavHostController) {
             AnswerAudioScreen(answerAudioViewModel)
         }
         composable(route = RouteScreen.AnswerTextScreen.route) {
-            AnswerTextScreen()
+            val answerTextViewModel = hiltViewModel<AnswerTextViewModel>()
+            AnswerTextScreen(answerTextViewModel)
         }
         composable(route = RouteScreen.NotificationScreen.route) {
             NotificationScreenScreen()

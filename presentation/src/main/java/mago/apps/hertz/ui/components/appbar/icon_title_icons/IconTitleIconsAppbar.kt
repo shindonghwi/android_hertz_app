@@ -21,7 +21,7 @@ import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.appbar.AppbarType
-import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable

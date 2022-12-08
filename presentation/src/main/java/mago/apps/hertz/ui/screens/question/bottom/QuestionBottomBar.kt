@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.question.bottom
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +15,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
-import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalPermissionsApi::class)

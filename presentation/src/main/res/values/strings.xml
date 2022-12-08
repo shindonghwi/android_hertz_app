@@ -8,8 +8,6 @@
     <string name="home_bottombar_answer_title_audio">음성으로 답하기</string>
     <string name="home_bottombar_answer_audio_stop">녹음 완료</string>
     <string name="home_bottombar_answer_audio_play">답변하기</string>수
-    <string name="home_bottombar_answer_today_emotion_title">오늘의 감정 주파수</string>
-    <string name="home_bottombar_answer_today_tag">태그</string>
 
     <string name="matching_title">주파수를 맞추고\n싶은 상대의\n전화번호를 입력해주세요</string>
 
@@ -23,6 +21,13 @@
     <string name="episode_save_card_keyword_hezzibbong">헤찌뽕 키워드</string>
 
 
+    <string name="answer_text_placeholder">질문에 대한 답변을 작성해주세요</string>
+    <string name="answer_text_title_today_emotion_frequency">오늘의 감정 주파수</string>
+    <string name="answer_text_title_tag">태그</string>
+    <string name="answer_text_title_tag_placeholder">태그를 입력해주세요</string>
+    <string name="answer_text_title_tag_max_placeholder">태그는 최대 5개까지 입력 가능합니다</string>
+
+
     <!-- 공통 -->
     <string name="id">아이디</string>
     <string name="pw">비밀번호</string>
@@ -31,6 +36,7 @@
     <string name="company">Mago</string>
     <string name="allow">허용</string>
     <string name="deny">거절</string>
+    <string name="save">저장</string>
     <string name="permission_mic_storage">헤르츠에서 마이크를 사용하여\n녹음하도록 허용하시겠습니까?</string>
 
     <!-- 팝업 메세지 -->

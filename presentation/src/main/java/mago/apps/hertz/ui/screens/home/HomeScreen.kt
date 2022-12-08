@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
-import mago.apps.hertz.ui.navigation.model.RouteScreen
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
@@ -150,6 +150,7 @@ private fun InputId() {
             )
         },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
+        textAlignment = Alignment.CenterStart
     )
 }
 
@@ -197,6 +198,7 @@ private fun InputPw(navController: NavController) {
                 textAlign = TextAlign.Center
             )
         },
-        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary)
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
+        textAlignment = Alignment.CenterStart
     )
 }

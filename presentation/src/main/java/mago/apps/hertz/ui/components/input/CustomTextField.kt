@@ -1,9 +1,11 @@
 package mago.apps.hertz.ui.components.input
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +22,10 @@ import androidx.compose.ui.unit.dp
 
 interface ITextCallback {
     fun renderText(content: String)
+}
+
+interface IFocusCallback {
+    fun onFocus(isFocus: Boolean)
 }
 
 data class KeyBoardActionUnit(
@@ -39,21 +45,26 @@ fun CustomTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
     trailingPaddingValues: PaddingValues = PaddingValues(0.dp),
     innerTextPaddingValues: PaddingValues = PaddingValues(horizontal = 0.dp),
+    defaultText: String = "",
     placeholderText: (@Composable () -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     isSingleLine: Boolean = true,
     textLimit: Int = Int.MAX_VALUE,
+    textAlignment: Alignment = Alignment.Center,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
         keyboardType = KeyboardType.Text,
         imeAction = ImeAction.Next
     ),
     keyBoardActionUnit: KeyBoardActionUnit? = null,
+    actionDoneAfterClearText: Boolean = false,
+    enable: Boolean = true,
     iTextCallback: ITextCallback? = null
 ) {
-    var text by rememberSaveable { mutableStateOf("") }
+    var text by rememberSaveable { mutableStateOf(defaultText) }
 
-    Box(modifier = modifier) {
-        BasicTextField(value = text,
+    Column(modifier = modifier) {
+        BasicTextField(
+            value = text,
             onValueChange = {
                 if (it.length <= textLimit) {
                     text = it
@@ -65,7 +76,14 @@ fun CustomTextField(
             textStyle = textStyle,
             keyboardOptions = keyboardOptions,
             keyboardActions = KeyboardActions(
-                onDone = { keyBoardActionUnit?.onDone?.let { it() } },
+                onDone = {
+                    keyBoardActionUnit?.onDone?.let {
+                        if (actionDoneAfterClearText) {
+                            text = ""
+                        }
+                        it()
+                    }
+                },
                 onGo = { keyBoardActionUnit?.onGo?.let { it() } },
                 onNext = { keyBoardActionUnit?.onNext?.let { it() } },
                 onPrevious = { keyBoardActionUnit?.onPrevious?.let { it() } },
@@ -87,6 +105,7 @@ fun CustomTextField(
                             Modifier
                                 .weight(1f)
                                 .padding(innerTextPaddingValues),
+                            contentAlignment = textAlignment
                         ) {
                             if (text.isEmpty()) {
                                 placeholderText?.let { it() }
@@ -98,6 +117,8 @@ fun CustomTextField(
                         }
                     }
                 }
-            })
+            },
+            enabled = enable
+        )
     }
 }

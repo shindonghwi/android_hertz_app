@@ -9,8 +9,13 @@ val light_onPrimary = Color(0xFFFFFFFF) // 주 색상 위에 표시되는 텍스
 val light_secondary = Color(0xFF3C3C42) // 부 색상
 val light_onSecondary = Color(0xFFFFFFFF) // 부 색상 위에 표시되는 텍스트, 아이콘등 색상
 
+val light_tertiary = Color(0xFF4655EE) // 3차 색상
+val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
+
 val light_background = Color(0xFFFCFCFF) // 가장 기본이 되는 배경 색상( 스크롤 하위 )
 val light_onBackground = Color(0xFF001E2F) // 배경위에 올라오는 텍스트 색상
+
+val light_error = Color(0xFFE72222)
 
 val light_outline = Color(0xFFB1B1B1)
 
@@ -20,8 +25,7 @@ val light_onSurface = Color(0xFF1A1A1A) // 카드, 시트 위에 올라오는 �
 /** Dark */
 
 /** 사용하지 않는 색상 */
-val light_tertiary = Color(0xFF4AC6FF) // 3차 색상
-val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
+
 
 val light_primaryContainer = Color(0xFFDDE1FF)
 val light_onPrimaryContainer = Color(0xFF001257)
@@ -29,7 +33,6 @@ val light_secondaryContainer = Color(0xFF004D67)
 val light_onSecondaryContainer = Color(0xFFC2E8FF)
 val light_tertiaryContainer = Color(0xFFFFD9DF)
 val light_onTertiaryContainer = Color(0xFF3F0017)
-val light_error = Color(0xFFBA1A1A)
 val light_errorContainer = Color(0xFFFFDAD6)
 val light_onError = Color(0xFFFFFFFF)
 val light_onErrorContainer = Color(0xFF410002)
