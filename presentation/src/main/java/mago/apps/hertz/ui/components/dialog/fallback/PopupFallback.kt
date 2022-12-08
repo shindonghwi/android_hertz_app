@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.theme.TitleXLarge
+import mago.apps.hertz.ui.theme.titleXLarge
 
 @Composable
 fun PopupFallback(modifier: Modifier, fallbackMessage: String?) {
@@ -44,7 +44,7 @@ fun PopupFallback(modifier: Modifier, fallbackMessage: String?) {
             ) {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.TitleXLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleXLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
                     textAlign = TextAlign.Center
                 )

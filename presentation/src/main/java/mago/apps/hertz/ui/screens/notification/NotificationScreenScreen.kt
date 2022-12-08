@@ -63,7 +63,7 @@ private fun NotificationItem(agoTimeText: String, content: String) {
                 shape = cardShape
             )
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.background,
                 shape = cardShape,
             )
             .padding(vertical = 8.dp, horizontal = 15.dp)

@@ -22,7 +22,8 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController)
         }
         composable(route = RouteScreen.QuestionScreen.route) {
-            QuestionScreen(navController)
+            EpisodeSaveScreen()
+//            QuestionScreen(navController)
         }
         composable(route = RouteScreen.CategoryScreen.route) {
             CategoryScreen()

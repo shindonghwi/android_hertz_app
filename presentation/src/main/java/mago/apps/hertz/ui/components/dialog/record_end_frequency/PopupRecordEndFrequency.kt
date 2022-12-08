@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.theme.TitleXLarge
+import mago.apps.hertz.ui.theme.titleXLarge
 
 @Composable
 fun PopupRecordEndFrequency(modifier: Modifier) {
@@ -41,7 +41,7 @@ fun PopupRecordEndFrequency(modifier: Modifier) {
         ) {
             Text(
                 text = "Mago 님의\n" + stringResource(id = R.string.dialog_record_end_frequency_title),
-                style = MaterialTheme.typography.TitleXLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleXLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.secondary,
                 textAlign = TextAlign.Center
             )

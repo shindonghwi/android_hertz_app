@@ -29,7 +29,7 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
-import mago.apps.hertz.ui.theme.TitleXLarge
+import mago.apps.hertz.ui.theme.titleXLarge
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.permission.PermissionsHandler
 
@@ -43,7 +43,7 @@ fun PopupPermission(modifier: Modifier, permissionCallback: PopupPermissionCallb
         Text(
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 30.dp),
             text = stringResource(id = R.string.permission_mic_storage),
-            style = MaterialTheme.typography.TitleXLarge.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleXLarge.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
         )

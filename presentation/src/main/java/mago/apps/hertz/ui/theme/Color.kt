@@ -14,9 +14,8 @@ val light_onBackground = Color(0xFF001E2F) // 배경위에 올라오는 텍스�
 
 val light_outline = Color(0xFFB1B1B1)
 
-val light_surface = Color(0xFFFCFCFF) // 배경 위 카드, 시트의 색상
-//val light_surface = Color(0xFFFF0000) // 배경 위 카드, 시트의 색상
-val light_onSurface = Color(0xFF001E2F) // 카드, 시트 위에 올라오는 색상
+val light_surface = Color(0xFFE5E8ED) // 배경 위 카드, 시트의 색상
+val light_onSurface = Color(0xFF1A1A1A) // 카드, 시트 위에 올라오는 색상
 
 /** Dark */
 

@@ -133,7 +133,7 @@ val PretendardTypography = Typography(
     ),
 )
 
-val Typography.TitleXLarge: TextStyle
+val Typography.titleXLarge: TextStyle
     @Composable get() = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.W400,
