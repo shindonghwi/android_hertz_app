@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.utils.compose.animation
+package mago.apps.hertz.ui.components.animation
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background

@@ -27,7 +27,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
-import mago.apps.hertz.ui.utils.compose.animation.WavesAnimation
+import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
