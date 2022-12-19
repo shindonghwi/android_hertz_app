@@ -8,6 +8,10 @@ object Versions {
         const val version = "1.7.10"
     }
 
+    object Coroutine{
+        const val version = "1.6.4"
+    }
+
     object AndroidX{
         const val constraintLayout = "2.1.4"
     }
@@ -62,6 +66,10 @@ object Libraries {
         const val core = "androidx.core:core-ktx:${Versions.KTX.core}"
         const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.KTX.lifecycleVersion}"
         const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.KTX.lifecycleVersion}"
+    }
+
+    object Coroutine {
+        const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Coroutine.version}"
     }
 
     object Compose {

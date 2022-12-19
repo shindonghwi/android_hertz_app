@@ -13,6 +13,10 @@ dependencies {
         implementation(dagger)
     }
 
+    Libraries.Coroutine.apply {
+        implementation(core)
+    }
+
     Kapts.apply {
         Kapts.Hilt.apply {
             kapt(hiltCompiler)
