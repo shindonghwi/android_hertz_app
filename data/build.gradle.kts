@@ -11,4 +11,14 @@ java {
 dependencies {
     implementation(project(":domain"))
 
+    Libraries.Hilt.apply {
+        implementation(dagger)
+    }
+
+    Kapts.apply {
+        Kapts.Hilt.apply {
+            kapt(hiltCompiler)
+        }
+    }
+
 }

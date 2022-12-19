@@ -49,6 +49,9 @@ android {
 
 dependencies {
 
+    implementation(project(":data"))
+    implementation(project(":domain"))
+
     Libraries.apply {
 
         Libraries.KTX.apply {

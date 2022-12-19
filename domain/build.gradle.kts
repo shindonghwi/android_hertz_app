@@ -9,5 +9,13 @@ java {
 }
 
 dependencies {
+    Libraries.Hilt.apply {
+        implementation(dagger)
+    }
 
+    Kapts.apply {
+        Kapts.Hilt.apply {
+            kapt(hiltCompiler)
+        }
+    }
 }
