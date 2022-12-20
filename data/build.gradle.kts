@@ -1,11 +1,34 @@
 plugins {
-    id("kotlin")
+    id("com.android.library")
     id("kotlin-kapt")
+    id("org.jetbrains.kotlin.android")
 }
 
-java {
-    sourceCompatibility = AppConfig.javaVersion
-    targetCompatibility = AppConfig.javaVersion
+android {
+    namespace = "mago.apps.data"
+    compileSdk = AppConfig.compileSdk
+    defaultConfig {
+        minSdk = AppConfig.minSdk
+        targetSdk = AppConfig.targetSdk
+    }
+
+    buildTypes {
+        getByName("debug") {}
+        getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = AppConfig.javaVersion
+        targetCompatibility = AppConfig.javaVersion
+    }
+    kotlinOptions {
+        jvmTarget = AppConfig.jvmTarget
+    }
 }
 
 dependencies {
@@ -26,7 +49,7 @@ dependencies {
     }
 
     Libraries.Hilt.apply {
-        implementation(dagger)
+        implementation(core)
     }
 
     Kapts.apply {

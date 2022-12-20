@@ -4,12 +4,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +17,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,66 +28,86 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.input.CustomTextField
+import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.utils.compose.findMainActivity
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.compose.showToast
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
     HomeContent(
-        modifier = Modifier
-            .fillMaxSize(),
-        navController = navController
+        modifier = Modifier.fillMaxSize(),
+        navController = navController,
+        homeViewModel = homeViewModel
     )
 }
 
 @Composable
 private fun HomeContent(
-    modifier: Modifier = Modifier, navController: NavController
+    modifier: Modifier = Modifier, navController: NavController, homeViewModel: HomeViewModel
 ) {
+    val homeState = homeViewModel.login.collectAsState().value
+    val sharedViewModel = LocalContext.current.findMainActivity().sharedViewModel
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val imageHeight = configuration.screenHeightDp.dp * 0.1f
 
-    ConstraintLayout(
-        modifier = modifier, constraintSet = createConstraintSet()
-    ) {
-        Text(
-            modifier = Modifier.layoutId("title"),
-            text = stringResource(id = R.string.home_title),
-            style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary
-        )
-        Column(
-            modifier = Modifier.layoutId("profileImage"),
-            horizontalAlignment = Alignment.CenterHorizontally
+    LaunchedEffect(key1 = homeState, block = {
+        homeState.data?.token?.let {
+            homeViewModel.initLoginState()
+            sharedViewModel.updateToken(token = it)
+            navController.navigate(RouteScreen.QuestionScreen.route)
+            return@LaunchedEffect
+        }
+        if (homeState.error.isNotEmpty()) {
+            context.showToast(homeState.error)
+        }
+    })
+
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        ConstraintLayout(
+            modifier = modifier, constraintSet = createConstraintSet()
         ) {
-            Icon(
-                modifier = Modifier.size(imageHeight),
-                painter = painterResource(id = R.drawable.profile_sample),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
             Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = stringResource(id = R.string.company),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary
+                modifier = Modifier.layoutId("title"),
+                text = stringResource(id = R.string.home_title),
+                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
             )
+            Column(
+                modifier = Modifier.layoutId("profileImage"),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = Modifier.size(imageHeight),
+                    painter = painterResource(id = R.drawable.profile_sample),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .layoutId("buttonGroup")
+                    .padding(horizontal = 20.dp)
+            ) {
+                InputId(homeViewModel)
+                InputPw(homeViewModel)
+            }
         }
 
-        Column(
-            modifier = Modifier
-                .layoutId("buttonGroup")
-                .padding(horizontal = 20.dp)
-        ) {
-            InputId()
-            InputPw(navController)
+        if (homeState.isLoading) {
+            CircularProgressIndicator()
         }
-
     }
+
 }
 
 private fun createConstraintSet() = ConstraintSet {
@@ -97,42 +117,41 @@ private fun createConstraintSet() = ConstraintSet {
 
     constrain(title) {
         linkTo(start = parent.start, end = parent.end, bias = 0.5f)
-        bottom.linkTo(profileImage.top, margin = 52.dp)
+        bottom.linkTo(profileImage.top, margin = 30.dp)
     }
 
     constrain(profileImage) {
         linkTo(start = parent.start, end = parent.end, bias = 0.5f)
-        linkTo(top = parent.top, bottom = parent.bottom, bias = 0.5f)
+        linkTo(top = parent.top, bottom = parent.bottom, bias = 0.3f)
     }
 
     constrain(buttonGroup) {
         linkTo(start = parent.start, end = parent.end, bias = 0.5f)
-        top.linkTo(profileImage.bottom, margin = 30.dp)
+        linkTo(top = profileImage.bottom, bottom = parent.bottom, bias = 0.7f)
     }
 }
 
 @Composable
-private fun InputId() {
+private fun InputId(homeViewModel: HomeViewModel) {
 
     val focused = remember { mutableStateOf(false) }
     val localFocusManager = LocalFocusManager.current
 
-    CustomTextField(
-        modifier = Modifier
-            .onFocusChanged {
-                focused.value = it.hasFocus
-            }
-            .padding(top = 16.dp)
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = 1.dp, color = if (focused.value) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.outline
-                }, shape = RoundedCornerShape(16.dp)
-            ),
+    CustomTextField(modifier = Modifier
+        .onFocusChanged {
+            focused.value = it.hasFocus
+        }
+        .padding(top = 16.dp)
+        .fillMaxWidth()
+        .height(48.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .border(
+            width = 1.dp, color = if (focused.value) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outline
+            }, shape = RoundedCornerShape(16.dp)
+        ),
         innerTextPaddingValues = PaddingValues(start = 12.dp),
         trailingPaddingValues = PaddingValues(end = 8.dp),
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -150,14 +169,21 @@ private fun InputId() {
             )
         },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
-        textAlignment = Alignment.CenterStart
+        textAlignment = Alignment.CenterStart,
+        iTextCallback = object : ITextCallback {
+            override fun renderText(content: String) {
+                homeViewModel.updateId(content)
+            }
+        }
     )
 }
 
 
 @Composable
-private fun InputPw(navController: NavController) {
+private fun InputPw(homeViewModel: HomeViewModel) {
+
     val focused = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     CustomTextField(modifier = Modifier
         .onFocusChanged {
@@ -180,7 +206,13 @@ private fun InputPw(navController: NavController) {
                     .padding(end = 0.dp)
                     .size(36.dp)
                     .noDuplicationClickable {
-                        navController.navigate(RouteScreen.QuestionScreen.route)
+                        if (homeViewModel.isExistIdPw()) {
+                            homeViewModel.run {
+                                coroutineScopeOnDefault { requestLogin(getId(), getPw()) }
+                            }
+                        } else {
+                            context.showToast(context.getString(R.string.toast_empty_input))
+                        }
                     }
                     .padding(6.dp),
                 painter = painterResource(id = R.drawable.arrow_circle_up),
@@ -199,6 +231,11 @@ private fun InputPw(navController: NavController) {
             )
         },
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
-        textAlignment = Alignment.CenterStart
+        textAlignment = Alignment.CenterStart,
+        iTextCallback = object : ITextCallback {
+            override fun renderText(content: String) {
+                homeViewModel.updatePw(content)
+            }
+        }
     )
 }

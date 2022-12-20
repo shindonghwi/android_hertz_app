@@ -1,4 +1,4 @@
-package mago.apps.data
+package mago.apps.data1
 
 import org.junit.Test
 

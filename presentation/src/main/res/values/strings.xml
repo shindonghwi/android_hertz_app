@@ -45,6 +45,7 @@
 
     <!-- 토스트 메세지 -->
     <string name="toast_permission_required">저장공간과 마이크 권한이 필요해요</string>
+    <string name="toast_empty_input">정보를 모두 입력해주세요</string>
 
 
 </resources>

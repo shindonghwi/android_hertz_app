@@ -89,6 +89,7 @@ object Libraries {
     object Hilt {
         const val NavigationCompose = "androidx.hilt:hilt-navigation-compose:${Versions.Hilt.compose_hilt}"
         const val dagger = "com.google.dagger:hilt-android:${Versions.Hilt.version}"
+        const val core = "com.google.dagger:hilt-core:${Versions.Hilt.version}"
     }
 
     object OkHttp{
