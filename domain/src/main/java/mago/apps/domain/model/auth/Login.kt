@@ -1,4 +1,4 @@
-package mago.apps.domain.model.login
+package mago.apps.domain.model.auth
 
 data class Login(
     val token: String,

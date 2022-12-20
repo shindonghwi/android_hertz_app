@@ -1,5 +1,6 @@
 package mago.apps.data.network.di
 
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -7,8 +8,11 @@ import mago.apps.data.constants.BASE_URL
 import mago.apps.data.constants.HEADER_KEY
 import mago.apps.data.constants.HEADER_VALUE
 import mago.apps.data.network.api.auth.AuthApi
-import mago.apps.data.repository.AuthRepositoryImpl
+import mago.apps.data.network.api.question.QuestionApi
+import mago.apps.data.repository.auth.AuthRepositoryImpl
+import mago.apps.data.repository.question.QuestionRepositoryImpl
 import mago.apps.domain.repository.AuthRepository
+import mago.apps.domain.repository.QuestionRepository
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -17,7 +21,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @InstallIn(SingletonComponent::class)
-@dagger.Module
+@Module
 object DataModule {
 
     @Provides
@@ -54,4 +58,11 @@ object DataModule {
         return AuthRepositoryImpl(authApi)
     }
 
+    @Provides
+    fun provideQuestionApi(retrofit: Retrofit): QuestionApi = retrofit.create(QuestionApi::class.java)
+
+    @Provides
+    fun provideQuestionRepository(questionApi: QuestionApi): QuestionRepository{
+        return QuestionRepositoryImpl(questionApi)
+    }
 }

@@ -1,6 +1,6 @@
 package mago.apps.hertz.ui.screens.home
 
-import mago.apps.domain.model.login.Login
+import mago.apps.domain.model.auth.Login
 
 data class HomeState(
     val isLoading: Boolean = false,

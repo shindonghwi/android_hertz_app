@@ -1,6 +1,6 @@
-package mago.apps.data.mappers
+package mago.apps.data.mappers.auth
 
-import mago.apps.data.network.model.LoginDTO
+import mago.apps.data.network.model.auth.LoginDTO
 import mago.apps.domain.model.auth.Login
 
 fun LoginDTO.toDomain(): Login {
