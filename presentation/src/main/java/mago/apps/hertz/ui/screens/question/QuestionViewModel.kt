@@ -23,6 +23,8 @@ class QuestionViewModel @Inject constructor(
     private val _currentQuestion = MutableStateFlow("")
     val currentQuestion: StateFlow<String> = _currentQuestion
 
+    var currentExample: String? = null
+
     suspend fun fetchQuestion() {
         getQuestionRandomUseCase.invoke().onEach {
             when (it) {
@@ -33,6 +35,7 @@ class QuestionViewModel @Inject constructor(
                 is Resource.Success -> {
                     _questionVisible.value = true
                     _currentQuestion.emit(it.data?.question.toString())
+                    currentExample = it.data?.example.toString()
                 }
             }
         }.launchIn(viewModelScope)

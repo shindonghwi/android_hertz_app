@@ -15,6 +15,16 @@ import javax.inject.Inject
 @HiltViewModel
 class AnswerAudioViewModel @Inject constructor() : ViewModel() {
 
+    /** 질문 & 예시 */
+    var question: String? = null
+        private set
+    var example: String? = null
+        private set
+    fun updateQuestionInfo(question: String?, example: String?){
+        this.question = question
+        this.example = example
+    }
+
     val isPlaying: MutableState<Boolean> = mutableStateOf(true)
     val isFrequencyPopUpVisible: MutableState<Boolean> = mutableStateOf(false)
 

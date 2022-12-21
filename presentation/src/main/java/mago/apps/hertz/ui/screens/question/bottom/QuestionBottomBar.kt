@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -16,13 +15,17 @@ import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.screens.question.QuestionViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
+fun QuestionBottomBar(
+    modifier: Modifier,
+    navController: NavHostController,
+    questionViewModel: QuestionViewModel
+) {
     val isPermissionPopUpVisible = remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     val permissionState = rememberMultiplePermissionsState(
         listOf(
@@ -50,7 +53,11 @@ fun QuestionBottomBar(modifier: Modifier, navController: NavHostController) {
                 .background(MaterialTheme.colorScheme.primary)
                 .noDuplicationClickable {
                     if (permissionState.allPermissionsGranted) {
-                        navController.navigate(RouteScreen.AnswerAudioScreen.route)
+                        navController.navigate(
+                            RouteScreen.AnswerAudioScreen.route +
+                                    "?question=${questionViewModel.currentQuestion.value}" +
+                                    "&example=${questionViewModel.currentExample}"
+                        )
                     } else {
                         isPermissionPopUpVisible.value = true
                     }

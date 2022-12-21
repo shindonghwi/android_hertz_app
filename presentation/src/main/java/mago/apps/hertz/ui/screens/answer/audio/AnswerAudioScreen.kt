@@ -32,8 +32,13 @@ import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
-fun AnswerAudioScreen(answerAudioViewModel: AnswerAudioViewModel) {
+fun AnswerAudioScreen(
+    answerAudioViewModel: AnswerAudioViewModel,
+    question: String?,
+    example: String?
+) {
     answerAudioViewModel.run {
+        updateQuestionInfo(question, example)
         AnswerAudioContent(this)
         AnswerAudioLifecycle(this)
     }
@@ -71,7 +76,8 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(0.5f)
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onPrimary),
+            answerAudioViewModel = answerAudioViewModel
         )
         AudioRecordingContent(
             modifier = Modifier
@@ -91,14 +97,14 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
 
 
 @Composable
-private fun QuestionContent(modifier: Modifier) {
+private fun QuestionContent(modifier: Modifier, answerAudioViewModel: AnswerAudioViewModel) {
     Column(
         modifier = modifier.verticalScroll(state = rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "내가 어른이 됐다고\n느낄 때는?",
+            text = answerAudioViewModel.question.toString(),
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
@@ -106,7 +112,7 @@ private fun QuestionContent(modifier: Modifier) {
 
         Text(
             modifier = Modifier.padding(top = 30.dp),
-            text = "예: 2만원짜리 스파게티 먹을 때 왜냐하면,,,",
+            text = answerAudioViewModel.example.toString(),
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight(700)),
             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
             textAlign = TextAlign.Center

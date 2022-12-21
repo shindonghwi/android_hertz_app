@@ -8,7 +8,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -31,8 +34,15 @@ fun QuestionScreen(
     questionViewModel: QuestionViewModel = hiltViewModel()
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        QuestionContent(modifier = Modifier.weight(0.6f), questionViewModel = questionViewModel)
-        QuestionBottomBar(modifier = Modifier.weight(0.4f), navController = navController)
+        QuestionContent(
+            modifier = Modifier.weight(0.6f),
+            questionViewModel = questionViewModel
+        )
+        QuestionBottomBar(
+            modifier = Modifier.weight(0.4f),
+            navController = navController,
+            questionViewModel = questionViewModel
+        )
     }
 
     QuestionLifecycle(questionViewModel)
