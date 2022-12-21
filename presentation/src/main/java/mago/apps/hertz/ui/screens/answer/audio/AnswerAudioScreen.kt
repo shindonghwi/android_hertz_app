@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,17 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
-import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
 fun AnswerAudioScreen(
-    answerAudioViewModel: AnswerAudioViewModel,
-    question: String?,
-    example: String?
+    answerAudioViewModel: AnswerAudioViewModel, question: String?, example: String?
 ) {
     answerAudioViewModel.run {
         updateQuestionInfo(question, example)
@@ -150,12 +149,40 @@ private fun AudioRecordingContent(
 
 @Composable
 private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
+    val context = LocalContext.current
+    val currentTime = answerAudioViewModel.pcmRecorder.getCurrentTime().collectAsState().value
+
     Text(
         modifier = Modifier.padding(top = 20.dp, bottom = 60.dp),
-        text = "00:09 / 10:00",
+        text = "$currentTime / 5:00",
         color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
     )
+
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+    DisposableEffect(key1 = Unit) {
+
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    answerAudioViewModel.pcmRecorder.run {
+                        createRecorder(context = context)
+                        start()
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    answerAudioViewModel.pcmRecorder.run {
+                        stop()
+                    }
+                }
+                else -> {}
+            }
+        }
+        val lifecycle = lifecycleOwner.value.lifecycle
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+
 }
 
 @Composable
@@ -167,46 +194,42 @@ private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
         waveSize = 80.dp,
         waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
     ) {
-        Icon(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onPrimary)
-                .noDuplicationClickable {
-                    coroutineScopeOnDefault {
-                        answerAudioViewModel.updatePlayingState(!isPlaying.value)
-                    }
+        Icon(modifier = Modifier
+            .size(80.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .noDuplicationClickable {
+                coroutineScopeOnDefault {
+                    answerAudioViewModel.updatePlayingState(!isPlaying.value)
                 }
-                .padding(5.dp),
+            }
+            .padding(5.dp),
             painter = painterResource(id = if (isPlaying.value) R.drawable.pause else R.drawable.play),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
+            tint = MaterialTheme.colorScheme.primary)
     }
 
     /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
     if (isPlaying.value) {
-        Text(
-            modifier = Modifier
-                .padding(top = 80.dp)
-                .wrapContentWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
-                .noDuplicationClickable {
-                    answerAudioViewModel.run {
-                        coroutineScopeOnDefault {
-                            updatePlayingState(false)
-                            updatePopupState(true)
-                        }
+        Text(modifier = Modifier
+            .padding(top = 80.dp)
+            .wrapContentWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
+            .noDuplicationClickable {
+                answerAudioViewModel.run {
+                    coroutineScopeOnDefault {
+                        updatePlayingState(false)
+                        updatePopupState(true)
                     }
                 }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+            }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
             text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold
             ),
-            textAlign = TextAlign.Center
-        )
+            textAlign = TextAlign.Center)
     }
 }

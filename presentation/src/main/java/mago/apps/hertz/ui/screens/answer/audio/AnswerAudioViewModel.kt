@@ -8,6 +8,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import mago.apps.hertz.ui.utils.permission.PermissionsHandler
+import mago.apps.hertz.ui.utils.recorder.PcmRecorder
 import mago.apps.hertz.ui.utils.scope.onDefault
 import javax.inject.Inject
 
@@ -20,11 +21,13 @@ class AnswerAudioViewModel @Inject constructor() : ViewModel() {
         private set
     var example: String? = null
         private set
-    fun updateQuestionInfo(question: String?, example: String?){
+
+    fun updateQuestionInfo(question: String?, example: String?) {
         this.question = question
         this.example = example
     }
 
+    val pcmRecorder = PcmRecorder()
     val isPlaying: MutableState<Boolean> = mutableStateOf(true)
     val isFrequencyPopUpVisible: MutableState<Boolean> = mutableStateOf(false)
 
@@ -39,13 +42,10 @@ class AnswerAudioViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(PermissionsHandler.State())
     val state: StateFlow<PermissionsHandler.State> = _state
 
-    private fun onPermissionHandlerState() =  onDefault {
-        PermissionsHandler()
-            .state
-            .onEach { handlerState ->
-                _state.update { it.copy(multiplePermissionsState = handlerState.multiplePermissionsState) }
-            }
-            .catch { Log.e("permissionsHandler", "$it") }
+    private fun onPermissionHandlerState() = onDefault {
+        PermissionsHandler().state.onEach { handlerState ->
+            _state.update { it.copy(multiplePermissionsState = handlerState.multiplePermissionsState) }
+        }.catch { Log.e("permissionsHandler", "$it") }
     }
 
     init {
