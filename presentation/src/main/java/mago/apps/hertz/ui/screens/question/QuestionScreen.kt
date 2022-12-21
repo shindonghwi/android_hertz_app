@@ -8,32 +8,57 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
-import java.util.*
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
-fun QuestionScreen(navController: NavHostController) {
+fun QuestionScreen(
+    navController: NavHostController,
+    questionViewModel: QuestionViewModel = hiltViewModel()
+) {
     Column(modifier = Modifier.fillMaxSize()) {
-        QuestionContent(modifier = Modifier.weight(0.6f))
+        QuestionContent(modifier = Modifier.weight(0.6f), questionViewModel = questionViewModel)
         QuestionBottomBar(modifier = Modifier.weight(0.4f), navController = navController)
+    }
+
+    QuestionLifecycle(questionViewModel)
+}
+
+@Composable
+private fun QuestionLifecycle(questionViewModel: QuestionViewModel) {
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+    DisposableEffect(key1 = Unit) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    coroutineScopeOnDefault { questionViewModel.fetchQuestion() }
+                }
+                else -> {}
+            }
+        }
+        val lifecycle = lifecycleOwner.value.lifecycle
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
     }
 }
 
 @Composable
-private fun QuestionContent(modifier: Modifier) {
-    val isVisible = remember { mutableStateOf(false) }
+private fun QuestionContent(modifier: Modifier, questionViewModel: QuestionViewModel) {
+    val isVisible = questionViewModel.questionVisible.collectAsState().value
 
     Box(modifier = modifier) {
         // 질문 영역
@@ -43,7 +68,7 @@ private fun QuestionContent(modifier: Modifier) {
                 .padding(horizontal = 20.dp),
             contentAlignment = Alignment.Center
         ) {
-            QuestionText(isVisible.value)
+            QuestionText(isVisible, questionViewModel)
         }
 
         // 셔플 아이콘 영역
@@ -55,7 +80,9 @@ private fun QuestionContent(modifier: Modifier) {
             Icon(modifier = Modifier
                 .size(36.dp)
                 .noDuplicationClickable {
-                    isVisible.value = !isVisible.value
+                    coroutineScopeOnDefault {
+                        questionViewModel.fetchQuestion()
+                    }
                 }
                 .padding(6.dp),
                 painter = painterResource(id = R.drawable.random),
@@ -67,21 +94,10 @@ private fun QuestionContent(modifier: Modifier) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun QuestionText(isVisible: Boolean) {
+fun QuestionText(isVisible: Boolean, questionViewModel: QuestionViewModel) {
 
-    val textList = listOf<String>(
-        "내가 어른이 됐다고\n느낄 때는?",
-        "당신이 가장 좋아했던\n사람은 누구인가요?",
-        "지금 있는 곳에서\n누군가에게\n들려주고픈 노래는?",
-        "인생이란 무엇인가?",
-        "퇴근할때 듣고 싶은\n노래는 무엇인가요?",
-        "맛있게 먹는 야식은\n살찐다 VS 안찐다",
-    )
-    val max_num_value = textList.size - 1
-    val min_num_value = 0
-    val randomText = textList[Random().nextInt(max_num_value - min_num_value + 1) + min_num_value]
+    val question = questionViewModel.currentQuestion.collectAsState().value
 
-    /** TODO: 질문 텍스트 동적 변경 필요 */
     AnimatedContent(
         targetState = isVisible,
         transitionSpec = {
@@ -91,10 +107,10 @@ fun QuestionText(isVisible: Boolean) {
                 animationSpec = tween(300)
             )
         },
-    ) { targetState ->
+    ) { _ ->
         Text(
             modifier = Modifier.verticalScroll(state = rememberScrollState()),
-            text = randomText,
+            text = question,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight(
                     800
