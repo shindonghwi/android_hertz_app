@@ -4,9 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import mago.apps.data.constants.BASE_URL
-import mago.apps.data.constants.HEADER_KEY
-import mago.apps.data.constants.HEADER_VALUE
+import mago.apps.data.constants.*
 import mago.apps.data.network.api.auth.AuthApi
 import mago.apps.data.network.api.question.QuestionApi
 import mago.apps.data.repository.auth.AuthRepositoryImpl
@@ -38,6 +36,7 @@ object DataModule {
         override fun intercept(chain: Interceptor.Chain) : Response = with(chain) {
             val newRequest = request().newBuilder()
                 .addHeader(HEADER_KEY, HEADER_VALUE)
+                .addHeader(HEADER_AUTH_KEY, HEADER_AUTH_VALUE)
                 .build()
             proceed(newRequest)
         }

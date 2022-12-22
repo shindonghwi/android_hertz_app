@@ -1,6 +1,7 @@
 package mago.apps.hertz
 
 import androidx.lifecycle.ViewModel
+import mago.apps.data.constants.HEADER_AUTH_VALUE
 import javax.annotation.Nonnull
 
 data class Token(
@@ -9,14 +10,12 @@ data class Token(
 
 class SharedViewModel : ViewModel() {
 
-    private var token: Token = Token(null)
-
     fun updateToken(@Nonnull token: String) {
-        this.token = this.token.copy(value = token)
+        HEADER_AUTH_VALUE = token
     }
 
     fun removeToken() {
-        this.token = this.token.copy(value = null)
+        HEADER_AUTH_VALUE = ""
     }
 
 }
