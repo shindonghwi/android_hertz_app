@@ -1,55 +1,65 @@
 package mago.apps.hertz.ui.screens.answer.audio
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
-import mago.apps.hertz.ui.utils.permission.PermissionsHandler
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import mago.apps.domain.model.common.Resource
+import mago.apps.domain.model.question.QuestionRandom
+import mago.apps.domain.usecases.question.PostAnswerVoiceUseCase
 import mago.apps.hertz.ui.utils.recorder.PcmRecorder
-import mago.apps.hertz.ui.utils.scope.onDefault
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
-class AnswerAudioViewModel @Inject constructor() : ViewModel() {
+class AnswerAudioViewModel @Inject constructor(
+    private val postAnswerVoiceUseCase: PostAnswerVoiceUseCase
+) : ViewModel() {
 
     /** 질문 & 예시 */
-    var question: String? = null
-        private set
-    var example: String? = null
+    var questionInfo: QuestionRandom? = null
         private set
 
-    fun updateQuestionInfo(question: String?, example: String?) {
-        this.question = question
-        this.example = example
+    fun updateQuestionInfo(question: QuestionRandom) {
+        questionInfo = question
     }
 
     val pcmRecorder = PcmRecorder()
-    val isPlaying: MutableState<Boolean> = mutableStateOf(true)
-    val isFrequencyPopUpVisible: MutableState<Boolean> = mutableStateOf(false)
 
-    fun updatePlayingState(flag: Boolean) {
-        isPlaying.value = flag
+    private val _postAnswerVoiceState = MutableStateFlow(VoiceRegisterState())
+    val postAnswerVoiceState: StateFlow<VoiceRegisterState> = _postAnswerVoiceState
+
+    suspend fun postAnswerVoice(questionSeq: Int, file: MultipartBody.Part) {
+        postAnswerVoiceUseCase.invoke(questionSeq, file).onEach {
+            when (it) {
+                is Resource.Loading -> {
+                    _postAnswerVoiceState.value = VoiceRegisterState(
+                        isLoading = mutableStateOf(true)
+                    )
+                }
+                is Resource.Error -> {
+                    _postAnswerVoiceState.value = VoiceRegisterState(
+                        isLoading = mutableStateOf(false),
+                        isErrorState = mutableStateOf(true),
+                        error = it.message.toString()
+                    )
+                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
+                }
+                is Resource.Success -> {
+                    _postAnswerVoiceState.value = VoiceRegisterState(
+                        isLoading = mutableStateOf(false),
+                        data = it.data,
+                    )
+                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
+                }
+            }
+        }.launchIn(viewModelScope)
     }
-
-    fun updatePopupState(flag: Boolean) {
-        isFrequencyPopUpVisible.value = flag
-    }
-
-    private val _state = MutableStateFlow(PermissionsHandler.State())
-    val state: StateFlow<PermissionsHandler.State> = _state
-
-    private fun onPermissionHandlerState() = onDefault {
-        PermissionsHandler().state.onEach { handlerState ->
-            _state.update { it.copy(multiplePermissionsState = handlerState.multiplePermissionsState) }
-        }.catch { Log.e("permissionsHandler", "$it") }
-    }
-
-    init {
-        onPermissionHandlerState()
-    }
-
 }

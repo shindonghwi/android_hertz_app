@@ -77,11 +77,12 @@ class PcmRecorder {
             countUpTimer.remove()
             stop()
             release()
-            null
         }
+        mAudioRecord = null
         closeFos()
     }
 
+    fun getZipFile() = saveZipPath
     fun getCurrentTime() = countUpTimer.getTime()
 
     private fun getFrame() {
@@ -111,8 +112,7 @@ class PcmRecorder {
 
     private fun createFos() {
 
-        removeFileFromFilePath("wav") // filePath에 생성되었던 wav 파일 삭제
-        removeFileFromFilePath("zip") // filePath에 생성되었던 zip 파일 삭제
+        removeFileFromFilePath(listOf("wav","zip")) // filePath에 생성되었던 wav,zip 파일 삭제
 
         try {
             file = File(saveAudioPath)
@@ -152,14 +152,17 @@ class PcmRecorder {
         }
     }
 
-    private fun removeFileFromFilePath(ext: String){
+    fun removeFileFromFilePath(ext: List<String>){
         val path = defaultFilePath
         val file = File(path)
 
         file.listFiles()?.let { fList ->
-            repeat(fList.size){
-                if (fList[it].path.endsWith(".${ext}")){
-                    fList[it].delete()
+            repeat(fList.size){ idx ->
+
+                ext.forEach {
+                    if (fList[idx].path.endsWith(".${it}")){
+                        fList[idx].delete()
+                    }
                 }
             }
         }

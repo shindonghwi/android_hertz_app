@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.question
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.common.Resource
+import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.domain.usecases.question.GetQuestionRandomUseCase
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ class QuestionViewModel @Inject constructor(
     private val _currentQuestion = MutableStateFlow("")
     val currentQuestion: StateFlow<String> = _currentQuestion
 
-    var currentExample: String? = null
+    var questionInfo: QuestionRandom? = null
 
     suspend fun fetchQuestion() {
         getQuestionRandomUseCase.invoke().onEach {
@@ -34,8 +34,8 @@ class QuestionViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _questionVisible.value = true
-                    _currentQuestion.emit(it.data?.question.toString())
-                    currentExample = it.data?.example.toString()
+                    _currentQuestion.emit(it.data?.text.toString())
+                    questionInfo = it.data
                 }
             }
         }.launchIn(viewModelScope)

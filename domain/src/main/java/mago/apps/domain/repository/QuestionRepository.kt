@@ -9,7 +9,10 @@ interface QuestionRepository {
 
     suspend fun getQuestionRandom(): ApiResponse<QuestionRandom>
 
-    suspend fun postAnswerVoice(questionSeq: Int, file: MultipartBody.Part): ApiResponse<Answer>
+    suspend fun postAnswerVoice(
+        questionSeq: Int,
+        file: MultipartBody.Part
+    ): ApiResponse<Answer>
 
     suspend fun postAnswerText(
         questionSeq: Int,

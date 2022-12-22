@@ -7,6 +7,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.gson.Gson
+import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioViewModel
@@ -31,18 +33,17 @@ fun Navigation(navController: NavHostController) {
             CategoryScreen()
         }
         composable(
-            route = RouteScreen.AnswerAudioScreen.route +
-                    "?question={question}" +
-                    "&example={example}",
+            route = RouteScreen.AnswerAudioScreen.route + "?question={question}",
             arguments = listOf(
                 navArgument("question") { type = NavType.StringType },
-                navArgument("example") { type = NavType.StringType }
             ),
         ) {
             val question = it.arguments?.getString("question")
-            val example = it.arguments?.getString("example")
             val answerAudioViewModel = hiltViewModel<AnswerAudioViewModel>()
-            AnswerAudioScreen(answerAudioViewModel, question, example)
+            AnswerAudioScreen(
+                answerAudioViewModel,
+                Gson().fromJson(question, QuestionRandom::class.java)
+            )
         }
         composable(route = RouteScreen.AnswerTextScreen.route) {
             val answerTextViewModel = hiltViewModel<AnswerTextViewModel>()

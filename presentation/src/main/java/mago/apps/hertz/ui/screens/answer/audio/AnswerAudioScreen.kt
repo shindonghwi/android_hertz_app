@@ -25,19 +25,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
-import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
+import mago.apps.hertz.ui.utils.recorder.FileMultipart
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
+
 
 @Composable
 fun AnswerAudioScreen(
-    answerAudioViewModel: AnswerAudioViewModel, question: String?, example: String?
+    answerAudioViewModel: AnswerAudioViewModel, question: QuestionRandom
 ) {
     answerAudioViewModel.run {
-        updateQuestionInfo(question, example)
+        updateQuestionInfo(question)
         AnswerAudioContent(this)
         AnswerAudioLifecycle(this)
     }
@@ -52,9 +55,6 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
                 Lifecycle.Event.ON_CREATE -> {
                 }
                 Lifecycle.Event.ON_PAUSE -> {
-                    coroutineScopeOnDefault {
-                        answerAudioViewModel.updatePlayingState(false)
-                    }
                 }
                 else -> {}
             }
@@ -68,7 +68,6 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 
 @Composable
 private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
-    val isFrequencyPopUpVisible = remember { answerAudioViewModel.isFrequencyPopUpVisible }
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -87,8 +86,27 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
         )
     }
 
+    PostAnswerVoicePopup(answerAudioViewModel)
+    ErrorAnswerVoicePopup(answerAudioViewModel)
+
+}
+
+@Composable
+fun ErrorAnswerVoicePopup(answerAudioViewModel: AnswerAudioViewModel) {
+    val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
     CustomPopup(
-        isVisible = isFrequencyPopUpVisible,
+        isVisible = answerVoiceState.isErrorState,
+        backgroundTouchEnable = true,
+        type = PopupType.FALLBACK,
+        fallbackMessage = answerVoiceState.error
+    )
+}
+
+@Composable
+fun PostAnswerVoicePopup(answerAudioViewModel: AnswerAudioViewModel) {
+    val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
+    CustomPopup(
+        isVisible = answerVoiceState.isLoading,
         backgroundTouchEnable = false,
         type = PopupType.RECORD_END_FREQUENCY,
     )
@@ -103,7 +121,7 @@ private fun QuestionContent(modifier: Modifier, answerAudioViewModel: AnswerAudi
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = answerAudioViewModel.question.toString(),
+            text = answerAudioViewModel.questionInfo?.text.toString(),
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
@@ -111,7 +129,7 @@ private fun QuestionContent(modifier: Modifier, answerAudioViewModel: AnswerAudi
 
         Text(
             modifier = Modifier.padding(top = 30.dp),
-            text = answerAudioViewModel.example.toString(),
+            text = answerAudioViewModel.questionInfo?.example.toString(),
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight(700)),
             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
             textAlign = TextAlign.Center
@@ -188,48 +206,53 @@ private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
 @Composable
 private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
 
-    val isPlaying = remember { answerAudioViewModel.isPlaying }
-
     WavesAnimation(
         waveSize = 80.dp,
-        waveColor = Color.White.copy(alpha = if (isPlaying.value) 0.4f else 0.05f),
+        waveColor = Color.White.copy(alpha = 0.4f),
     ) {
-        Icon(modifier = Modifier
-            .size(80.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .noDuplicationClickable {
-                coroutineScopeOnDefault {
-                    answerAudioViewModel.updatePlayingState(!isPlaying.value)
+        Icon(
+            modifier = Modifier
+                .size(80.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.onPrimary)
+                .noDuplicationClickable {
+                    answerAudioViewModel.run {
+                        pcmRecorder.stop()
+                        coroutineScopeOnMain {
+                            val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
+                            postAnswerVoice(3, body)
+                        }
+                    }
                 }
-            }
-            .padding(5.dp),
-            painter = painterResource(id = if (isPlaying.value) R.drawable.pause else R.drawable.play),
+                .padding(25.dp),
+            painter = painterResource(id = R.drawable.stop),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary)
+            tint = MaterialTheme.colorScheme.primary,
+        )
     }
 
     /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
-    if (isPlaying.value) {
-        Text(modifier = Modifier
+    Text(
+        modifier = Modifier
             .padding(top = 80.dp)
             .wrapContentWidth()
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
             .noDuplicationClickable {
                 answerAudioViewModel.run {
-                    coroutineScopeOnDefault {
-                        updatePlayingState(false)
-                        updatePopupState(true)
+                    pcmRecorder.stop()
+                    coroutineScopeOnMain {
+                        val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
+                        postAnswerVoice(3, body)
                     }
                 }
             }
             .padding(horizontal = 12.dp, vertical = 8.dp),
-            text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            textAlign = TextAlign.Center)
-    }
+        text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
+        color = MaterialTheme.colorScheme.onPrimary,
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.Bold
+        ),
+        textAlign = TextAlign.Center,
+    )
 }

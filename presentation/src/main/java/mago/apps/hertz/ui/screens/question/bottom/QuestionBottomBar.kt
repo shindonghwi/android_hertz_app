@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.gson.Gson
+import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
@@ -55,8 +57,7 @@ fun QuestionBottomBar(
                     if (permissionState.allPermissionsGranted) {
                         navController.navigate(
                             RouteScreen.AnswerAudioScreen.route +
-                                    "?question=${questionViewModel.currentQuestion.value}" +
-                                    "&example=${questionViewModel.currentExample}"
+                                    "?question=${Gson().toJson(questionViewModel.questionInfo)}"
                         )
                     } else {
                         isPermissionPopUpVisible.value = true
