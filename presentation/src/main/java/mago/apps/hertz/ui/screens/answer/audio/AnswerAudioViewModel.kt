@@ -47,19 +47,19 @@ class AnswerAudioViewModel @Inject constructor(
                     )
                 }
                 is Resource.Error -> {
+                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
                     _postAnswerVoiceState.value = VoiceRegisterState(
                         isLoading = mutableStateOf(false),
                         isErrorState = mutableStateOf(true),
                         error = it.message.toString()
                     )
-                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
                 }
                 is Resource.Success -> {
+                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
                     _postAnswerVoiceState.value = VoiceRegisterState(
                         isLoading = mutableStateOf(false),
                         data = it.data,
                     )
-                    pcmRecorder.removeFileFromFilePath(listOf("wav", "zip"))
                 }
             }
         }.launchIn(viewModelScope)
