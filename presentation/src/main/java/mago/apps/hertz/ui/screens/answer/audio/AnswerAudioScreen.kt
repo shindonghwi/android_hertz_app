@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.audio
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -25,11 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavController
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.components.dialog.CustomPopup
+import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -37,11 +41,13 @@ import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
 @Composable
 fun AnswerAudioScreen(
-    answerAudioViewModel: AnswerAudioViewModel, question: QuestionRandom
+    navController: NavController,
+    answerAudioViewModel: AnswerAudioViewModel,
+    question: QuestionRandom
 ) {
     answerAudioViewModel.run {
         updateQuestionInfo(question)
-        AnswerAudioContent(this)
+        AnswerAudioContent(this, navController)
         AnswerAudioLifecycle(this)
     }
 }
@@ -67,7 +73,10 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 }
 
 @Composable
-private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
+private fun AnswerAudioContent(
+    answerAudioViewModel: AnswerAudioViewModel,
+    navController: NavController
+) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         QuestionContent(
@@ -87,19 +96,37 @@ private fun AnswerAudioContent(answerAudioViewModel: AnswerAudioViewModel) {
     }
 
     PostAnswerVoicePopup(answerAudioViewModel)
-    ErrorAnswerVoicePopup(answerAudioViewModel)
+    ResultAnswerVoicePopup(answerAudioViewModel, navController)
 
 }
 
 @Composable
-fun ErrorAnswerVoicePopup(answerAudioViewModel: AnswerAudioViewModel) {
+fun ResultAnswerVoicePopup(
+    answerAudioViewModel: AnswerAudioViewModel,
+    navController: NavController
+) {
+    val context = LocalContext.current
     val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
-    CustomPopup(
-        isVisible = answerVoiceState.isErrorState,
-        backgroundTouchEnable = true,
-        type = PopupType.FALLBACK,
-        fallbackMessage = answerVoiceState.error
-    )
+
+    if (answerVoiceState.isErrorState.value) {
+        CustomPopup(
+            isVisible = answerVoiceState.isErrorState,
+            backgroundTouchEnable = true,
+            type = PopupType.FALLBACK,
+            fallbackMessage = answerVoiceState.error,
+            iBackPressEvent = object : IBackPressEvent {
+                override fun onPress() {
+                    navController.popBackStack()
+                }
+            }
+        )
+    }
+
+    LaunchedEffect(key1 = answerVoiceState, block = {
+        answerVoiceState.data?.run {
+            Toast.makeText(context, " 화면이동 ", Toast.LENGTH_SHORT).show()
+        }
+    })
 }
 
 @Composable

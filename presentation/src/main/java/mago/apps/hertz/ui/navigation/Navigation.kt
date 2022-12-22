@@ -41,6 +41,7 @@ fun Navigation(navController: NavHostController) {
             val question = it.arguments?.getString("question")
             val answerAudioViewModel = hiltViewModel<AnswerAudioViewModel>()
             AnswerAudioScreen(
+                navController,
                 answerAudioViewModel,
                 Gson().fromJson(question, QuestionRandom::class.java)
             )

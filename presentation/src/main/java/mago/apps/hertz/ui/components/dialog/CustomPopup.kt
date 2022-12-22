@@ -40,12 +40,17 @@ interface PopupPermissionCallback {
     fun deny()
 }
 
+interface IBackPressEvent{
+    fun onPress()
+}
+
 @Composable
 fun CustomPopup(
     isVisible: MutableState<Boolean>,
     backgroundTouchEnable: Boolean = true,
     type: PopupType,
     fallbackMessage: String? = null,
+    iBackPressEvent: IBackPressEvent? = null,
     permissionCallback: PopupPermissionCallback? = null,
 ) {
     Popup {
@@ -59,6 +64,7 @@ fun CustomPopup(
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
                     .noDuplicationClickable(backgroundTouchEnable) {
+                        iBackPressEvent?.onPress()
                         popupDisable(isVisible)
                     },
                 contentAlignment = Alignment.Center
@@ -96,6 +102,7 @@ fun CustomPopup(
 
     BackHandler(enabled = isVisible.value) {
         if (backgroundTouchEnable){
+            iBackPressEvent?.onPress()
             popupDisable(isVisible)
         }
     }
