@@ -19,7 +19,6 @@ import mago.apps.hertz.ui.utils.recorder.PcmRecorder
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-@OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
 class AnswerAudioViewModel @Inject constructor(
     private val postAnswerVoiceUseCase: PostAnswerVoiceUseCase

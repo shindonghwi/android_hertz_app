@@ -82,8 +82,10 @@ class PcmRecorder {
         closeFos()
     }
 
+    fun getMaxTime() = countUpTimer.MAX_TIME
     fun getZipFile() = saveZipPath
     fun getCurrentTime() = countUpTimer.getTime()
+    fun convertTimeToString(time: Int) = countUpTimer.timeToString(time)
 
     private fun getFrame() {
         coroutineScopeOnIO {

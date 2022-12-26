@@ -33,7 +33,6 @@ import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
-import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -54,21 +53,29 @@ fun AnswerAudioScreen(
 
 @Composable
 private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
+    val context = LocalContext.current
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+    DisposableEffect(key1 = Unit) {
+
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    answerAudioViewModel.pcmRecorder.run {
+                        createRecorder(context = context)
+                        start()
+                    }
                 }
                 Lifecycle.Event.ON_PAUSE -> {
+                    answerAudioViewModel.pcmRecorder.run {
+                        stop()
+                    }
                 }
                 else -> {}
             }
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        val lifecycle = lifecycleOwner.value.lifecycle
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
     }
 }
 
@@ -172,14 +179,7 @@ private fun AudioRecordingContent(
     Box(
         modifier = modifier,
     ) {
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(7.dp),
-            progress = 0.5f,
-            color = Color.White.copy(alpha = 0.5f),
-            trackColor = MaterialTheme.colorScheme.primary
-        )
+        LinearProgressBar(answerAudioViewModel)
 
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
@@ -193,41 +193,43 @@ private fun AudioRecordingContent(
 }
 
 @Composable
+private fun LinearProgressBar(answerAudioViewModel: AnswerAudioViewModel) {
+
+    val currentTimeInfo = answerAudioViewModel.pcmRecorder.getCurrentTime().collectAsState().value
+    val timeToInt = currentTimeInfo.first
+
+    LaunchedEffect(key1 = timeToInt, block = {
+        if (timeToInt == answerAudioViewModel.pcmRecorder.getMaxTime()) {
+            requestRecordEnd(answerAudioViewModel)
+        }
+    })
+
+    LinearProgressIndicator(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(7.dp),
+        progress = if (timeToInt == 0) {
+            0f
+        } else {
+            timeToInt / answerAudioViewModel.pcmRecorder.getMaxTime().toFloat()
+        },
+        color = Color.White.copy(alpha = 0.5f),
+        trackColor = MaterialTheme.colorScheme.primary
+    )
+}
+
+@Composable
 private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
-    val context = LocalContext.current
     val currentTime = answerAudioViewModel.pcmRecorder.getCurrentTime().collectAsState().value
+    val timeText = currentTime.second
+    val maxTime = answerAudioViewModel.pcmRecorder.getMaxTime()
 
     Text(
         modifier = Modifier.padding(top = 20.dp, bottom = 60.dp),
-        text = "$currentTime / 5:00",
+        text = "$timeText / ${answerAudioViewModel.pcmRecorder.convertTimeToString(maxTime)}",
         color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
     )
-
-    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
-    DisposableEffect(key1 = Unit) {
-
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    answerAudioViewModel.pcmRecorder.run {
-                        createRecorder(context = context)
-                        start()
-                    }
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    answerAudioViewModel.pcmRecorder.run {
-                        stop()
-                    }
-                }
-                else -> {}
-            }
-        }
-        val lifecycle = lifecycleOwner.value.lifecycle
-        lifecycle.addObserver(observer)
-        onDispose { lifecycle.removeObserver(observer) }
-    }
-
 }
 
 @Composable
@@ -243,13 +245,7 @@ private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .noDuplicationClickable {
-                    answerAudioViewModel.run {
-                        pcmRecorder.stop()
-                        coroutineScopeOnMain {
-                            val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
-                            postAnswerVoice(3, body)
-                        }
-                    }
+                    requestRecordEnd(answerAudioViewModel)
                 }
                 .padding(25.dp),
             painter = painterResource(id = R.drawable.stop),
@@ -266,13 +262,7 @@ private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
             .noDuplicationClickable {
-                answerAudioViewModel.run {
-                    pcmRecorder.stop()
-                    coroutineScopeOnMain {
-                        val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
-                        postAnswerVoice(3, body)
-                    }
-                }
+                requestRecordEnd(answerAudioViewModel)
             }
             .padding(horizontal = 12.dp, vertical = 8.dp),
         text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
@@ -282,4 +272,14 @@ private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
         ),
         textAlign = TextAlign.Center,
     )
+}
+
+fun requestRecordEnd(answerAudioViewModel: AnswerAudioViewModel) {
+    answerAudioViewModel.run {
+        pcmRecorder.stop()
+        coroutineScopeOnMain {
+            val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
+            postAnswerVoice(3, body)
+        }
+    }
 }
