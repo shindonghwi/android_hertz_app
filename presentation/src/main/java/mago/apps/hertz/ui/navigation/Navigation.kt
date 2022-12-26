@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.gson.Gson
+import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
@@ -33,9 +34,12 @@ fun Navigation(navController: NavHostController) {
             CategoryScreen()
         }
         composable(
-            route = RouteScreen.AnswerAudioScreen.route + "?question={question}",
+            route = RouteScreen.AnswerAudioScreen.route
+                    + "?question={question}",
             arguments = listOf(
-                navArgument("question") { type = NavType.StringType },
+                navArgument("question") {
+                    type = NavType.StringType
+                },
             ),
         ) {
             val question = it.arguments?.getString("question")
@@ -46,9 +50,30 @@ fun Navigation(navController: NavHostController) {
                 Gson().fromJson(question, QuestionRandom::class.java)
             )
         }
-        composable(route = RouteScreen.AnswerTextScreen.route) {
+        composable(
+            route = RouteScreen.AnswerTextScreen.route
+                    + "?question={question}"
+                    + "&answer={answer}",
+            arguments = listOf(
+                navArgument("question") {
+                    type = NavType.StringType
+                },
+                navArgument("answer") {
+                    type = NavType.StringType
+                    nullable = true // 수정모드때문에 nullable
+                    defaultValue = null
+                }
+            ),
+        ) {
+            val question = it.arguments?.getString("question")
+            val answer = it.arguments?.getString("answer")
             val answerTextViewModel = hiltViewModel<AnswerTextViewModel>()
-            AnswerTextScreen(answerTextViewModel)
+            AnswerTextScreen(
+                navController,
+                answerTextViewModel,
+                Gson().fromJson(question, QuestionRandom::class.java),
+                Gson().fromJson(answer, Answer::class.java)
+            )
         }
         composable(route = RouteScreen.NotificationScreen.route) {
             NotificationScreenScreen()

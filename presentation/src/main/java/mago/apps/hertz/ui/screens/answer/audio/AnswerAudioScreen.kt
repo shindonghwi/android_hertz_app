@@ -27,12 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -131,6 +133,10 @@ fun ResultAnswerVoicePopup(
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         answerVoiceState.data?.run {
+//            navController.navigate(
+//                RouteScreen.AnswerTextScreen.route +
+//                        "?answer=${Gson().toJson()}"
+//            )
             Toast.makeText(context, " 화면이동 ", Toast.LENGTH_SHORT).show()
         }
     })
@@ -279,7 +285,9 @@ fun requestRecordEnd(answerAudioViewModel: AnswerAudioViewModel) {
         pcmRecorder.stop()
         coroutineScopeOnMain {
             val body = FileMultipart.getFileBody("file", pcmRecorder.getZipFile())
-            postAnswerVoice(3, body)
+            answerAudioViewModel.questionInfo?.questionSeq?.let { seq ->
+                postAnswerVoice(seq, body)
+            }
         }
     }
 }

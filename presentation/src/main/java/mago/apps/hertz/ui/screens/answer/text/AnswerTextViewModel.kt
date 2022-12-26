@@ -9,21 +9,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import mago.apps.domain.model.question.QuestionRandom
 import javax.inject.Inject
 
 @HiltViewModel
 class AnswerTextViewModel @Inject constructor() : ViewModel() {
 
+    /** 질문 & 예시 */
+    var questionInfo: QuestionRandom? = null
+        private set
+
+    fun updateQuestionInfo(question: QuestionRandom) {
+        questionInfo = question
+    }
+
+    /** 태그 관련 UI */
     lateinit var screenScrollState: ScrollState
     lateinit var tagListScrollState: LazyListState
     var scrollToBottomAction: MutableStateFlow<Boolean> = MutableStateFlow(false)
     var scrollToEndAction: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    val isFrequencyExistState = mutableStateOf(false)
-
-    fun updateFrequencyExistState(isExist: Boolean) {
-        isFrequencyExistState.value = isExist
-    }
 
     val tagList = mutableStateListOf<String>()
 

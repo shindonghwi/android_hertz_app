@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.gson.Gson
-import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
@@ -45,7 +44,10 @@ fun QuestionBottomBar(
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.background)
                 .noDuplicationClickable {
-                    navController.navigate(RouteScreen.AnswerTextScreen.route)
+                    navController.navigate(
+                        RouteScreen.AnswerTextScreen.route +
+                                "?question=${Gson().toJson(questionViewModel.questionInfo)}"
+                    )
                 },
         )
         QuestionBottomBarAudioAnswer(
