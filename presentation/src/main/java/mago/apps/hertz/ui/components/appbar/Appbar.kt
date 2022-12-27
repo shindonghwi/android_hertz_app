@@ -8,26 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
-import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
-import mago.apps.hertz.ui.model.screen.RouteScreen
-
-@Composable
-fun AppBar(currentRoute: String?, navController: NavHostController) {
-    currentRoute?.let { route ->
-        if (route.contains(RouteScreen.AnswerTextScreen.route)) {
-            EmptyTitleText(navController)
-        } else {
-            when (route) {
-                RouteScreen.HomeScreen.route -> {}
-                else -> {
-                    IconTitleIconsAppbar(navController)
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun AppBarContent(
