@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun QuestionContent() {
+fun QuestionContent(content: String?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,7 +30,7 @@ fun QuestionContent() {
             .padding(14.dp), contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "내가 어른이 됐다고\n느낄 때는?",
+            text = content.toString(),
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center,

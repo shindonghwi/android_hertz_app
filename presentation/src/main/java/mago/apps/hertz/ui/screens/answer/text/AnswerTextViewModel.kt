@@ -3,12 +3,12 @@ package mago.apps.hertz.ui.screens.answer.text
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.question.QuestionRandom
 import javax.inject.Inject
 

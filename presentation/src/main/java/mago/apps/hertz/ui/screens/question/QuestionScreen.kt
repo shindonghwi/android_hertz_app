@@ -5,9 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -24,27 +22,34 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
     navController: NavHostController,
     questionViewModel: QuestionViewModel = hiltViewModel()
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        QuestionContent(
-            modifier = Modifier.weight(0.6f),
-            questionViewModel = questionViewModel
-        )
+    Scaffold(topBar = {
+        IconTitleIconsAppbar(navController = navController)
+    }, bottomBar = {
         QuestionBottomBar(
-            modifier = Modifier.weight(0.4f),
+            modifier = Modifier
+                .fillMaxHeight(0.4f),
             navController = navController,
             questionViewModel = questionViewModel
         )
+    }) {
+        QuestionContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            questionViewModel = questionViewModel
+        )
     }
-
     QuestionLifecycle(questionViewModel)
 }
 

@@ -52,27 +52,19 @@ fun Navigation(navController: NavHostController) {
         }
         composable(
             route = RouteScreen.AnswerTextScreen.route
-                    + "?question={question}"
-                    + "&answer={answer}",
+                    + "?question={question}",
             arguments = listOf(
                 navArgument("question") {
                     type = NavType.StringType
                 },
-                navArgument("answer") {
-                    type = NavType.StringType
-                    nullable = true // 수정모드때문에 nullable
-                    defaultValue = null
-                }
             ),
         ) {
             val question = it.arguments?.getString("question")
-            val answer = it.arguments?.getString("answer")
             val answerTextViewModel = hiltViewModel<AnswerTextViewModel>()
             AnswerTextScreen(
                 navController,
                 answerTextViewModel,
                 Gson().fromJson(question, QuestionRandom::class.java),
-                Gson().fromJson(answer, Answer::class.java)
             )
         }
         composable(route = RouteScreen.NotificationScreen.route) {

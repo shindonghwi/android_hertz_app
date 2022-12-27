@@ -8,10 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,30 +24,44 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
-import com.google.gson.Gson
+import androidx.navigation.NavHostController
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
+import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
+import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
-import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnswerAudioScreen(
-    navController: NavController,
+    navController: NavHostController,
     answerAudioViewModel: AnswerAudioViewModel,
     question: QuestionRandom
 ) {
     answerAudioViewModel.run {
         updateQuestionInfo(question)
-        AnswerAudioContent(this, navController)
         AnswerAudioLifecycle(this)
     }
+
+    Scaffold(topBar = {
+        IconTitleIconsAppbar(navController = navController)
+    }) {
+        AnswerAudioContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            answerAudioViewModel = answerAudioViewModel,
+            navController = navController
+        )
+    }
+
 }
 
 @Composable
@@ -83,11 +94,12 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 
 @Composable
 private fun AnswerAudioContent(
+    modifier: Modifier,
     answerAudioViewModel: AnswerAudioViewModel,
     navController: NavController
 ) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         QuestionContent(
             modifier = Modifier
                 .fillMaxWidth()
