@@ -5,14 +5,10 @@ import mago.apps.data.network.model.answer.AnswerDTO
 import mago.apps.data.network.model.question.QuestionRandomDTO
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
+import mago.apps.domain.model.common.EmotionType
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface QuestionApi {
 
@@ -27,11 +23,12 @@ interface QuestionApi {
     ): Response<ApiResponse<AnswerDTO>>
 
     @POST("$API_VERSION/question/{questionSeq}/answer/text")
+    @FormUrlEncoded
     suspend fun postAnswerText(
         @Path(value = "questionSeq") questionSeq: Int,
         @Field("text") text: String,
         @Field("emotion") emotion: String,
-        @Field("tags") tags: String,
+        @Field("tags") tags: String?,
     ): Response<ApiResponse<Unit>>
 
 }

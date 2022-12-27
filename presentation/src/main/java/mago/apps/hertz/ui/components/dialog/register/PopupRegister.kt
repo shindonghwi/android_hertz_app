@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.components.dialog.fallback
+package mago.apps.hertz.ui.components.dialog.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.theme.titleXLarge
 
 @Composable
-fun PopupFallback(modifier: Modifier, showingMessage: String?) {
+fun PopupRegister(modifier: Modifier, showingMessage: String?) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally

@@ -2,6 +2,7 @@ package mago.apps.domain.repository
 
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
+import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import okhttp3.MultipartBody
 
@@ -17,8 +18,8 @@ interface QuestionRepository {
     suspend fun postAnswerText(
         questionSeq: Int,
         text: String,
-        emotion: String,
-        tags: String
+        emotion: EmotionType,
+        tags: String?
     ): ApiResponse<Unit>
 
 }

@@ -9,13 +9,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,15 +22,23 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
+import mago.apps.hertz.ui.components.dialog.CustomPopup
+import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
+import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
-import mago.apps.hertz.ui.model.emotion.EmotionType
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.text.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.text.common.TagInfo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.compose.showToast
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,13 +49,33 @@ fun AnswerTextScreen(
     answerTextViewModel: AnswerTextViewModel,
     question: QuestionRandom,
 ) {
+    val context = LocalContext.current
+
     answerTextViewModel.run {
         updateQuestionInfo(question)
         screenScrollState = rememberScrollState()
     }
 
     Scaffold(topBar = {
-        EmptyTitleText(navController = navController)
+        EmptyTitleText(action = {
+            answerTextViewModel.run {
+                coroutineScopeOnMain {
+                    when (postAnswerText()) {
+                        // 등록 하지 못하는 질문 유형
+                        TOAST_CODE_QUESTION_1 -> {
+                            context.showToast(TOAST_CODE_QUESTION_1)
+                            navController.popBackStack()
+                        }
+                        TOAST_CODE_QUESTION_2 -> {
+                            context.showToast(TOAST_CODE_QUESTION_2)
+                        }
+                        TOAST_CODE_QUESTION_3 -> {
+                            context.showToast(TOAST_CODE_QUESTION_3)
+                        }
+                    }
+                }
+            }
+        })
     }) {
         AnswerTextContent(
             modifier = Modifier
@@ -62,8 +89,7 @@ fun AnswerTextScreen(
 
 @Composable
 private fun AnswerTextContent(
-    modifier: Modifier,
-    answerTextViewModel: AnswerTextViewModel
+    modifier: Modifier, answerTextViewModel: AnswerTextViewModel
 ) {
     Column(modifier = modifier) {
         QuestionContent(answerTextViewModel.questionInfo?.text)
@@ -83,14 +109,13 @@ private fun AnswerTextContent(
                 .height(130.dp)
                 .clip(RoundedCornerShape(9.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                .padding(14.dp)
+                .padding(14.dp), answerTextViewModel = answerTextViewModel
         )
 
         // 감정 주파수 선택
         TodayFrequencyTitle(
-            modifier = Modifier.padding(
-                top = 30.dp, start = 20.dp, end = 20.dp
-            )
+            modifier = Modifier.padding(top = 30.dp, start = 20.dp, end = 20.dp),
+            answerTextViewModel = answerTextViewModel
         )
 
         // 태그 정보
@@ -99,6 +124,7 @@ private fun AnswerTextContent(
             answerTextViewModel = answerTextViewModel
         )
     }
+    PostAnswerTextPopup(answerTextViewModel)
 }
 
 
@@ -130,7 +156,7 @@ private fun DayAndLikeContent(modifier: Modifier) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun InputAnswer(modifier: Modifier) {
+private fun InputAnswer(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     CustomTextField(
@@ -145,15 +171,18 @@ private fun InputAnswer(modifier: Modifier) {
             )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyBoardActionUnit = KeyBoardActionUnit(
-            onDone = { keyboardController?.hide() }
-        )
+        keyBoardActionUnit = KeyBoardActionUnit(onDone = { keyboardController?.hide() }),
+        iTextCallback = object : ITextCallback {
+            override fun renderText(content: String) {
+                answerTextViewModel.updateCurrentEditingText(content)
+            }
+        },
     )
 }
 
 
 @Composable
-private fun TodayFrequencyTitle(modifier: Modifier) {
+private fun TodayFrequencyTitle(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
     Column(
         modifier = modifier,
     ) {
@@ -166,13 +195,14 @@ private fun TodayFrequencyTitle(modifier: Modifier) {
         EmotionPercentSelectView(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .wrapContentHeight(),
+            answerTextViewModel = answerTextViewModel
         )
     }
 }
 
 @Composable
-private fun EmotionPercentSelectView(modifier: Modifier) {
+private fun EmotionPercentSelectView(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
     val selectedValue = remember { mutableStateOf(EmotionType.HAPPINESS) }
     val emotionList = listOf(
         Pair("\uD83D\uDE04", EmotionType.HAPPINESS),
@@ -190,9 +220,33 @@ private fun EmotionPercentSelectView(modifier: Modifier) {
                     text = emotionList[it].first,
                     style = MaterialTheme.typography.titleMedium,
                 )
-                RadioButton(selected = selectedValue.value == emotionList[it].second,
-                    onClick = { selectedValue.value = emotionList[it].second })
+                RadioButton(
+                    selected = selectedValue.value == emotionList[it].second,
+                    onClick = {
+                        answerTextViewModel.updateEmotion(emotionList[it].second)
+                        selectedValue.value = emotionList[it].second
+                    },
+                )
             }
         }
     }
+}
+
+@Composable
+private fun PostAnswerTextPopup(answerTextViewModel: AnswerTextViewModel) {
+    val context = LocalContext.current
+    val answerVoiceState = answerTextViewModel.postAnswerTextState.collectAsState().value
+
+    CustomPopup(
+        isVisible = answerVoiceState.isLoading,
+        backgroundTouchEnable = true,
+        type = PopupType.REGISTER,
+        showingMessage = "답변을 등록중입니다",
+    )
+
+    LaunchedEffect(key1 = answerVoiceState, block = {
+        if (answerVoiceState.isSuccessState.value) {
+            context.showToast(" 화면이동 ")
+        }
+    })
 }

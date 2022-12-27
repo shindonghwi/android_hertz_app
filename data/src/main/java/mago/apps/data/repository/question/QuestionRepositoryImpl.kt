@@ -6,6 +6,7 @@ import mago.apps.data.network.api.question.QuestionApi
 import mago.apps.data.network.utils.SafeApiRequest
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
+import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.domain.repository.QuestionRepository
 import okhttp3.MultipartBody
@@ -30,10 +31,10 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
     }
 
     override suspend fun postAnswerText(
-        questionSeq: Int, text: String, emotion: String, tags: String
+        questionSeq: Int, text: String, emotion: EmotionType, tags: String?
     ): ApiResponse<Unit> {
         val response =
-            safeApiRequest { questionApi.postAnswerText(questionSeq, text, emotion, tags) }
+            safeApiRequest { questionApi.postAnswerText(questionSeq, text, emotion.name, tags) }
         return ApiResponse(
             status = response.status, message = response.message, data = null
         )

@@ -134,7 +134,7 @@ fun ResultAnswerVoicePopup(
             isVisible = answerVoiceState.isErrorState,
             backgroundTouchEnable = true,
             type = PopupType.FALLBACK,
-            fallbackMessage = answerVoiceState.error,
+            showingMessage = answerVoiceState.error,
             iBackPressEvent = object : IBackPressEvent {
                 override fun onPress() {
                     navController.popBackStack()
@@ -155,7 +155,7 @@ fun ResultAnswerVoicePopup(
 }
 
 @Composable
-fun PostAnswerVoicePopup(answerAudioViewModel: AnswerAudioViewModel) {
+private fun PostAnswerVoicePopup(answerAudioViewModel: AnswerAudioViewModel) {
     val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
     CustomPopup(
         isVisible = answerVoiceState.isLoading,

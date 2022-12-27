@@ -26,13 +26,15 @@ import androidx.compose.ui.window.Popup
 import mago.apps.hertz.ui.components.dialog.fallback.PopupFallback
 import mago.apps.hertz.ui.components.dialog.permission.PopupPermission
 import mago.apps.hertz.ui.components.dialog.record_end_frequency.PopupRecordEndFrequency
+import mago.apps.hertz.ui.components.dialog.register.PopupRegister
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 
 enum class PopupType {
     PERMISSION,
     FALLBACK,
-    RECORD_END_FREQUENCY
+    RECORD_END_FREQUENCY,
+    REGISTER
 }
 
 interface PopupPermissionCallback {
@@ -49,7 +51,7 @@ fun CustomPopup(
     isVisible: MutableState<Boolean>,
     backgroundTouchEnable: Boolean = true,
     type: PopupType,
-    fallbackMessage: String? = null,
+    showingMessage: String? = null,
     iBackPressEvent: IBackPressEvent? = null,
     permissionCallback: PopupPermissionCallback? = null,
 ) {
@@ -90,7 +92,10 @@ fun CustomPopup(
                         )
                     }
                     PopupType.FALLBACK -> {
-                        PopupFallback(modifier = popupModifier, fallbackMessage = fallbackMessage)
+                        PopupFallback(modifier = popupModifier, showingMessage = showingMessage)
+                    }
+                    PopupType.REGISTER -> {
+                        PopupRegister(modifier = popupModifier, showingMessage = showingMessage)
                     }
                     PopupType.RECORD_END_FREQUENCY -> {
                         PopupRecordEndFrequency(modifier = popupModifier)
