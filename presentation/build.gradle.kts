@@ -69,6 +69,8 @@ dependencies {
             implementation(navigation)
             implementation(constraintLayout)
             implementation(accompanistPermission)
+            implementation(pager)
+            implementation(pagerPermission)
         }
 
         Libraries.OkHttp.apply {

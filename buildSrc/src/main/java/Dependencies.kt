@@ -28,6 +28,7 @@ object Versions {
         const val constraintLayout = "1.0.0-rc01"
         const val material3 = "1.0.1"
         const val accompanistPermission = "0.23.1"
+        const val accompanistPager = "0.28.0"
     }
 
     object Hilt{
@@ -83,7 +84,8 @@ object Libraries {
         const val material3 = "androidx.compose.material3:material3:${Versions.Compose.material3}"
         const val material3window = "androidx.compose.material3:material3-window-size-class:${Versions.Compose.material3}"
         const val accompanistPermission = "com.google.accompanist:accompanist-permissions:${Versions.Compose.accompanistPermission}"
-
+        const val pager = "com.google.accompanist:accompanist-pager:${Versions.Compose.accompanistPager}"
+        const val pagerPermission = "com.google.accompanist:accompanist-pager-indicators:${Versions.Compose.accompanistPager}"
     }
 
     object Hilt {
