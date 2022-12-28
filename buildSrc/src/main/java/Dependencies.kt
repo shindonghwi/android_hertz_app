@@ -31,6 +31,10 @@ object Versions {
         const val accompanistPager = "0.28.0"
     }
 
+    object Paging{
+        const val version = "3.1.1"
+    }
+
     object Hilt{
         const val compose_hilt = "1.0.0"
         const val version = "2.44"
@@ -86,6 +90,11 @@ object Libraries {
         const val accompanistPermission = "com.google.accompanist:accompanist-permissions:${Versions.Compose.accompanistPermission}"
         const val pager = "com.google.accompanist:accompanist-pager:${Versions.Compose.accompanistPager}"
         const val pagerPermission = "com.google.accompanist:accompanist-pager-indicators:${Versions.Compose.accompanistPager}"
+    }
+
+    object Paging {
+        const val pagingRuntime = "androidx.paging:paging-runtime:${Versions.Paging.version}"
+        const val pagingCommon = "androidx.paging:paging-common:${Versions.Paging.version}"
     }
 
     object Hilt {

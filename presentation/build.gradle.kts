@@ -78,6 +78,10 @@ dependencies {
             implementation(logging)
         }
 
+        Libraries.Paging.apply {
+            implementation(pagingRuntime)
+        }
+
         Libraries.Retrofit.apply {
             implementation(retrofit)
             implementation(retrofit_gson)

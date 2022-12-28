@@ -52,6 +52,10 @@ dependencies {
         implementation(core)
     }
 
+    Libraries.Paging.apply {
+        implementation(pagingCommon)
+    }
+
     Kapts.apply {
         Kapts.Hilt.apply {
             kapt(hiltCompiler)

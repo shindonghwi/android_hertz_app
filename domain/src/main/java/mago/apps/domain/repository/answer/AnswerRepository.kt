@@ -1,11 +1,8 @@
-package mago.apps.domain.repository
+package mago.apps.domain.repository.answer
 
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
 import mago.apps.domain.model.common.DataListType
-import mago.apps.domain.model.common.EmotionType
-import mago.apps.domain.model.question.QuestionRandom
-import okhttp3.MultipartBody
 
 interface AnswerRepository {
 
@@ -14,7 +11,7 @@ interface AnswerRepository {
      * @description{
      *  answerSeq: Int // 질문 번호(seq)
      * }
-    */
+     */
     suspend fun getAnswerInfo(answerSeq: Int): ApiResponse<Answer>
 
 
@@ -25,7 +22,12 @@ interface AnswerRepository {
      *  isConnected false -> 연결 제외
      *  isConnected null -> 전체 목록
      * }
-    */
-    suspend fun getAnswerList(isConnected: Boolean?): ApiResponse<DataListType<Answer>>
+     */
+    suspend fun getAnswerList(
+        isConnected: Boolean?,
+        page: Int = 1,
+        size: Int = 20,
+        offsetTime: Long? = null
+    ): ApiResponse<DataListType<Answer>>
 
 }
