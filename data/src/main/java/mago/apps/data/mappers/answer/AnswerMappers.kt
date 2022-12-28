@@ -11,7 +11,7 @@ fun AnswerDTO.toDomain(): Answer {
     return Answer(
         answerSeq,
         question.toDomain(),
-        voice.toDomain(),
+        voice?.toDomain(),
         tagList,
         shareType,
         timeAgo,

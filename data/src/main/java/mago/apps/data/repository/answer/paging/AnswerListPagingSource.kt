@@ -14,7 +14,7 @@ import mago.apps.domain.model.common.DataListType
  * @description{
  *  스크롤 최 하단으로 내려가면 20개의 데이터씩 불러온다.
  * }
-*/
+ */
 class AnswerListPagingSource(
     private val answerApi: AnswerApi,
     private val isConnected: Boolean?,
@@ -56,6 +56,7 @@ class AnswerListPagingSource(
                 }
             }
         } catch (exception: Exception) {
+            Throwable(exception.message.toString())
             return LoadResult.Error(Throwable(exception.message.toString()))
         }
     }

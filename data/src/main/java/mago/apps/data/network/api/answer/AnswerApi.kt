@@ -36,7 +36,7 @@ interface AnswerApi {
     suspend fun getAnswerList(
         @Query("isConnected") isConnected: Boolean?,
         @Query("page") page: Int,
-        @Query("size") size: Int?,
+        @Query("size") size: Int,
         @Query("offsetTime") offsetTime: Long?,
     ): ApiResponse<DataListType<AnswerDTO>>
 }
