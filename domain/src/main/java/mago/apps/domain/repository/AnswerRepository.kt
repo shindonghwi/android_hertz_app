@@ -1,4 +1,4 @@
-package mago.apps.domain.repository.answer
+package mago.apps.domain.repository
 
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse

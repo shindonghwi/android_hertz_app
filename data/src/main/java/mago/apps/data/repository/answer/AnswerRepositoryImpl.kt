@@ -21,8 +21,14 @@ class AnswerRepositoryImpl @Inject constructor(private val answerApi: AnswerApi)
         )
     }
 
-    override suspend fun getAnswerList(isConnected: Boolean?): ApiResponse<DataListType<Answer>> {
-        val response = safeApiRequest { answerApi.getAnswerList(isConnected) }
+    override suspend fun getAnswerList(
+        isConnected: Boolean?,
+        page: Int,
+        size: Int,
+        offsetTime: Long?
+    ): ApiResponse<DataListType<Answer>> {
+        val response =
+            safeApiRequest { answerApi.getAnswerList(isConnected, page, size, offsetTime) }
         return ApiResponse(
             status = response.status, message = response.message, data = response.data
         )
