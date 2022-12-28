@@ -1,48 +1,57 @@
 package mago.apps.hertz.ui.screens.episode_list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.utils.date.DateUtil
 
 @Composable
-fun EpisodeListScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onPrimary)
-    ) {
-        EpisodeListContent()
+fun EpisodeListScreen(
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        EpisodeListContent(navController, episodeListViewModel)
     }
+
 }
 
 @Composable
-private fun EpisodeListContent() {
-    EpisodeTabList()
+private fun EpisodeListContent(
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+) {
+    EpisodeTabList(navController, episodeListViewModel)
 }
 
 /** 탭 레이아웃 [ 내 에피소드, 우리의 감정주파수, 좋아요 ] */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun EpisodeTabList() {
+private fun EpisodeTabList(
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
     val pages = listOf<String>(
@@ -68,14 +77,11 @@ private fun EpisodeTabList() {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .selectable(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(page = index)
-                                }
+                        .selectable(selected = pagerState.currentPage == index, onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(page = index)
                             }
-                        ),
+                        }),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -104,28 +110,99 @@ private fun EpisodeTabList() {
         count = pages.size,
         state = pagerState,
     ) { page ->
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            repeat(300) {
-                Text(text = page.toString())
-            }
+        when (page) {
+            0 -> EpisodeMyItemList(navController, episodeListViewModel)
+            1 -> EpisodeOurItemList(navController, episodeListViewModel)
         }
     }
 }
 
-/** 아이템 목록 */
-@Composable
-private fun EpisodeListView() {
-
-}
-
 /** 나의 고유주파수 아이템 */
 @Composable
-private fun EpisodeMyItem() {
+private fun EpisodeMyItemList(
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+) {
+    val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
+
+    var recentlyTimeAgo: String? = remember { null }
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(myItemList) { item ->
+            if (recentlyTimeAgo == null || recentlyTimeAgo != item?.timeAgo) {
+                recentlyTimeAgo = item?.timeAgo
+                Text(
+                    text = "$recentlyTimeAgo",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Red
+                )
+            }
+            Text(
+                text = item?.question?.text.toString(),
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.Red
+            )
+        }
+        myItemList.apply {
+            when (val currentState = loadState.refresh) {
+                is LoadState.Loading -> {
+                    Log.w("ASDasd", "EpisodeListScreen: loading")
+                }
+                is LoadState.Error -> {
+                    val extractedException = currentState.error // SomeCatchableException
+                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
+                }
+                else -> {}
+            }
+        }
+    }
 
 }
 
 /** 우리의 감정주파수 아이템 */
 @Composable
-private fun EpisodeOurItem() {
+private fun EpisodeOurItemList(
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+) {
+    val ourItemList = episodeListViewModel.getAnswerOurList.collectAsLazyPagingItems()
+    LazyColumn {
+        items(ourItemList) { item ->
+            Text(
+                text = item.toString(),
+                style = MaterialTheme.typography.displayLarge,
+                color = Color.Red
+            )
+        }
+//        myItemList.apply {
+//            when (val currentState = loadState.refresh) {
+//                is LoadState.Loading -> {
+//                    Log.w("ASDasd", "EpisodeListScreen: loading")
+//                }
+//                is LoadState.Error -> {
+//                    val extractedException = currentState.error // SomeCatchableException
+//                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
+//                }
+//                else -> {}
+//            }
+//        }
+    }
 
 }
+
+
+//LazyColumn {
+//    items(userListItems) { item ->
+//        Text(text = item.toString(), style = MaterialTheme.typography.displayLarge)
+//    }
+//    userListItems.apply {
+//        when (val currentState = loadState.refresh) {
+//            is LoadState.Loading -> {
+//                Log.w("ASDasd", "EpisodeListScreen: loading")
+//            }
+//            is LoadState.Error -> {
+//                val extractedException = currentState.error // SomeCatchableException
+//                Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
+//            }
+//            else -> {}
+//        }
+//    }
+//}

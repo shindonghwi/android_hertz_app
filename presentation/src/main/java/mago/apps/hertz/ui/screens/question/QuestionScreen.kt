@@ -25,6 +25,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_BACK_PRESS
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
+import mago.apps.hertz.ui.utils.compose.findMainActivity
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
@@ -58,14 +59,14 @@ fun QuestionScreen(
 
 @Composable
 private fun BackPressEvent() {
-    val context = LocalContext.current
+    val activity = LocalContext.current.findMainActivity()
     var waitTime = remember { 0L }
     BackHandler(enabled = true) {
         if (System.currentTimeMillis() - waitTime >= 1500) {
             waitTime = System.currentTimeMillis()
-            context.showToast(TOAST_CODE_BACK_PRESS)
+            activity.showToast(TOAST_CODE_BACK_PRESS)
         } else {
-            (context as ComponentActivity).finish()
+            activity.finish()
         }
     }
 }
