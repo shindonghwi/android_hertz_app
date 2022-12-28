@@ -5,10 +5,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import mago.apps.data.constants.*
+import mago.apps.data.network.api.answer.AnswerApi
 import mago.apps.data.network.api.auth.AuthApi
 import mago.apps.data.network.api.question.QuestionApi
+import mago.apps.data.repository.answer.AnswerRepositoryImpl
 import mago.apps.data.repository.auth.AuthRepositoryImpl
 import mago.apps.data.repository.question.QuestionRepositoryImpl
+import mago.apps.domain.repository.AnswerRepository
 import mago.apps.domain.repository.AuthRepository
 import mago.apps.domain.repository.QuestionRepository
 import okhttp3.Interceptor
@@ -49,6 +52,9 @@ object DataModule {
     }
 
 
+    /** @feature: 권한 관련 api, repository
+     * @author: 2022/12/28 11:14 AM donghwishin
+     */
     @Provides
     fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
@@ -57,11 +63,25 @@ object DataModule {
         return AuthRepositoryImpl(authApi)
     }
 
+    /** @feature: 질문 관련 api, repository
+     * @author: 2022/12/28 11:14 AM donghwishin
+     */
     @Provides
     fun provideQuestionApi(retrofit: Retrofit): QuestionApi = retrofit.create(QuestionApi::class.java)
 
     @Provides
     fun provideQuestionRepository(questionApi: QuestionApi): QuestionRepository{
         return QuestionRepositoryImpl(questionApi)
+    }
+
+    /** @feature: 답변 관련 api, repository
+     * @author: 2022/12/28 11:14 AM donghwishin
+    */
+    @Provides
+    fun provideAnswerApi(retrofit: Retrofit): AnswerApi = retrofit.create(AnswerApi::class.java)
+
+    @Provides
+    fun provideAnswerRepository(answerApi: AnswerApi): AnswerRepository{
+        return AnswerRepositoryImpl(answerApi)
     }
 }
