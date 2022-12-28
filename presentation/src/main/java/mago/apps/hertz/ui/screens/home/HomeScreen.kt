@@ -180,6 +180,7 @@ private fun InputId(homeViewModel: HomeViewModel) {
 @Composable
 private fun InputPw(homeViewModel: HomeViewModel) {
 
+    val localFocusManager = LocalFocusManager.current
     val focused = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -206,6 +207,7 @@ private fun InputPw(homeViewModel: HomeViewModel) {
                     .noDuplicationClickable {
                         if (homeViewModel.isExistIdPw()) {
                             homeViewModel.run {
+                                localFocusManager.clearFocus()
                                 coroutineScopeOnDefault { requestLogin(getId(), getPw()) }
                             }
                         } else {
