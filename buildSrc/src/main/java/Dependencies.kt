@@ -29,6 +29,7 @@ object Versions {
         const val material3 = "1.0.1"
         const val accompanistPermission = "0.23.1"
         const val accompanistPager = "0.28.0"
+        const val paging = "1.0.0-alpha17"
     }
 
     object Paging{
@@ -90,6 +91,7 @@ object Libraries {
         const val accompanistPermission = "com.google.accompanist:accompanist-permissions:${Versions.Compose.accompanistPermission}"
         const val pager = "com.google.accompanist:accompanist-pager:${Versions.Compose.accompanistPager}"
         const val pagerPermission = "com.google.accompanist:accompanist-pager-indicators:${Versions.Compose.accompanistPager}"
+        const val paging = "androidx.paging:paging-compose:${Versions.Compose.paging}"
     }
 
     object Paging {

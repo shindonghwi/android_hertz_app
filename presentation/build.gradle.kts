@@ -71,6 +71,7 @@ dependencies {
             implementation(accompanistPermission)
             implementation(pager)
             implementation(pagerPermission)
+            implementation(paging)
         }
 
         Libraries.OkHttp.apply {
