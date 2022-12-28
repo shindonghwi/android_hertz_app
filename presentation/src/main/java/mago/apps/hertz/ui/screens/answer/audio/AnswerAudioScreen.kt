@@ -149,7 +149,7 @@ fun ResultAnswerVoicePopup(
 //                RouteScreen.AnswerTextScreen.route +
 //                        "?answer=${Gson().toJson()}"
 //            )
-            Toast.makeText(context, " 화면이동 ", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, " 등록완료 ", Toast.LENGTH_SHORT).show()
         }
     })
 }

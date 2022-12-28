@@ -8,7 +8,15 @@ import mago.apps.domain.model.answer.AnswerQuestion
 import mago.apps.domain.model.answer.AnswerVoice
 
 fun AnswerDTO.toDomain(): Answer {
-    return Answer(answerSeq, question.toDomain(), voice.toDomain(), tagList, createdAt)
+    return Answer(
+        answerSeq,
+        question.toDomain(),
+        voice.toDomain(),
+        tagList,
+        shareType,
+        timeAgo,
+        createdAt
+    )
 }
 
 fun AnswerQuestionDTO.toDomain(): AnswerQuestion {

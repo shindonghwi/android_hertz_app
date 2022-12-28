@@ -5,5 +5,7 @@ data class AnswerDTO(
     val question: AnswerQuestionDTO,
     val voice: AnswerVoiceDTO,
     val tagList: List<String>,
+    val shareType: String,
+    val timeAgo: String,
     val createdAt: String
 )

@@ -5,6 +5,8 @@ data class Answer(
     val question: AnswerQuestion,
     val voice: AnswerVoice,
     val tagList: List<String>,
+    val shareType: String,
+    val timeAgo: String,
     val createdAt: String
 )
 
