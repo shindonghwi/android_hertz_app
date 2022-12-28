@@ -1,8 +1,9 @@
 package mago.apps.domain.repository
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
-import mago.apps.domain.model.common.DataListType
 
 interface AnswerRepository {
 
@@ -23,11 +24,6 @@ interface AnswerRepository {
      *  isConnected null -> 전체 목록
      * }
      */
-    suspend fun getAnswerList(
-        isConnected: Boolean?,
-        page: Int = 1,
-        size: Int = 20,
-        offsetTime: Long? = null
-    ): ApiResponse<DataListType<Answer>>
+    fun getAnswerList(isConnected: Boolean?): Flow<PagingData<Answer>>
 
 }

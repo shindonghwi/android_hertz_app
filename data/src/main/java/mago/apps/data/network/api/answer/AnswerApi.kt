@@ -32,11 +32,11 @@ interface AnswerApi {
      *  isConnected null -> 전체 목록
      * }
     */
-    @GET("$API_VERSION/answers/random")
+    @GET("$API_VERSION/answers")
     suspend fun getAnswerList(
         @Query("isConnected") isConnected: Boolean?,
         @Query("page") page: Int,
         @Query("size") size: Int?,
         @Query("offsetTime") offsetTime: Long?,
-    ): Response<ApiResponse<DataListType<Answer>>>
+    ): ApiResponse<DataListType<AnswerDTO>>
 }
