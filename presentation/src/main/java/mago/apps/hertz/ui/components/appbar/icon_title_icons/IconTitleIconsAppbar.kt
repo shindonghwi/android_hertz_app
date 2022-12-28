@@ -47,7 +47,11 @@ fun IconTitleIconsAppbar(navController: NavHostController) {
         rightContent = {
             val rightIcons: List<Pair<ImageVector, () -> Unit>> = listOf(
                 Pair(Icons.Default.Home, {}),
-                Pair(Icons.Default.Menu, {}),
+                Pair(Icons.Default.Menu) {
+                    navController.navigate(RouteScreen.EpisodeListScreen.route) {
+                        launchSingleTop = true
+                    }
+                },
                 Pair(Icons.Default.Notifications) {
                     navController.navigate(RouteScreen.NotificationScreen.route) {
                         launchSingleTop = true
