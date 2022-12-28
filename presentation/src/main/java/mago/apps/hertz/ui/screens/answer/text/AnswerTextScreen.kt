@@ -207,7 +207,7 @@ private fun EmotionPercentSelectView(modifier: Modifier, answerTextViewModel: An
     val emotionList = listOf(
         Pair("\uD83D\uDE04", EmotionType.HAPPINESS),
         Pair("\uD83D\uDE22", EmotionType.SADNESS),
-        Pair("\uD83D\uDE21", EmotionType.ANGER),
+        Pair("\uD83D\uDE21", EmotionType.ANGRY),
         Pair("\uD83D\uDE36", EmotionType.NEUTRAL),
     )
 
@@ -246,7 +246,7 @@ private fun PostAnswerTextPopup(answerTextViewModel: AnswerTextViewModel) {
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         if (answerVoiceState.isSuccessState.value) {
-            context.showToast(" 화면이동 ")
+            context.showToast(" 등록완료 ")
         }
     })
 }
