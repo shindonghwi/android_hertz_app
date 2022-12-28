@@ -1,17 +1,17 @@
 package mago.apps.hertz.ui.screens.question
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,8 +23,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_BACK_PRESS
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +53,21 @@ fun QuestionScreen(
         )
     }
     QuestionLifecycle(questionViewModel)
+    BackPressEvent()
+}
+
+@Composable
+private fun BackPressEvent() {
+    val context = LocalContext.current
+    var waitTime = remember { 0L }
+    BackHandler(enabled = true) {
+        if (System.currentTimeMillis() - waitTime >= 1500) {
+            waitTime = System.currentTimeMillis()
+            context.showToast(TOAST_CODE_BACK_PRESS)
+        } else {
+            (context as ComponentActivity).finish()
+        }
+    }
 }
 
 @Composable

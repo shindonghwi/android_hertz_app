@@ -60,7 +60,6 @@ private fun HomeContent(
 
     LaunchedEffect(key1 = homeState, block = {
         homeState.data?.token?.let {
-            homeViewModel.initLoginState()
             sharedViewModel.updateToken(token = it)
             navController.navigate(RouteScreen.QuestionScreen.route)
             return@LaunchedEffect

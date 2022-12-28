@@ -19,10 +19,6 @@ class HomeViewModel @Inject constructor(
     private val _login = MutableStateFlow(HomeState())
     val login: StateFlow<HomeState> = _login
 
-    fun initLoginState() {
-        _login.value = HomeState()
-    }
-
     suspend fun requestLogin(id: String, password: String) {
         postLoginUseCase(id, password).onEach {
             when (it) {
