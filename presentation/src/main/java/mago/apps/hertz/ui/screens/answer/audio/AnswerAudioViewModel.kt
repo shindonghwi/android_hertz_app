@@ -1,17 +1,13 @@
 package mago.apps.hertz.ui.screens.answer.audio
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import mago.apps.data.constants.HEADER_AUTH_VALUE
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.domain.usecases.question.PostAnswerVoiceUseCase
@@ -38,7 +34,7 @@ class AnswerAudioViewModel @Inject constructor(
     val postAnswerVoiceState: StateFlow<VoiceRegisterState> = _postAnswerVoiceState
 
     suspend fun postAnswerVoice(questionSeq: Int, file: MultipartBody.Part) {
-        postAnswerVoiceUseCase.invoke(questionSeq, file).onEach {
+        postAnswerVoiceUseCase(questionSeq, file).onEach {
             when (it) {
                 is Resource.Loading -> {
                     _postAnswerVoiceState.value = VoiceRegisterState(
