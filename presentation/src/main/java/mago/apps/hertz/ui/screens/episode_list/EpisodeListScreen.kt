@@ -126,8 +126,6 @@ private fun EpisodeMyItemList(
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
 
-    var recentlyTimeAgo: String? = remember { null }
-
     LazyColumn(modifier = Modifier.fillMaxSize(), state = rememberLazyListState()) {
         itemsIndexed(myItemList, key = { index, item -> index }) { index, item ->
 
