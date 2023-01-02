@@ -37,6 +37,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.text.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.text.common.TagInfo
 import mago.apps.hertz.ui.utils.compose.showToast
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,27 +56,34 @@ fun AnswerTextScreen(
         screenScrollState = rememberScrollState()
     }
 
-    Scaffold(topBar = {
-        EmptyTitleText(action = {
-            answerTextViewModel.run {
-                coroutineScopeOnMain {
-                    when (postAnswerText()) {
-                        // 등록 하지 못하는 질문 유형
-                        TOAST_CODE_QUESTION_1 -> {
-                            context.showToast(TOAST_CODE_QUESTION_1)
-                            navController.popBackStack()
-                        }
-                        TOAST_CODE_QUESTION_2 -> {
-                            context.showToast(TOAST_CODE_QUESTION_2)
-                        }
-                        TOAST_CODE_QUESTION_3 -> {
-                            context.showToast(TOAST_CODE_QUESTION_3)
+    Scaffold(
+        topBar = {
+            EmptyTitleText(
+                action = {
+                    answerTextViewModel.run {
+                        coroutineScopeOnDefault {
+                            val response = postAnswerText()
+                            coroutineScopeOnMain {
+                                when (response) {
+                                    // 등록 하지 못하는 질문 유형
+                                    TOAST_CODE_QUESTION_1 -> {
+                                        context.showToast(TOAST_CODE_QUESTION_1)
+                                        navController.popBackStack()
+                                    }
+                                    TOAST_CODE_QUESTION_2 -> {
+                                        context.showToast(TOAST_CODE_QUESTION_2)
+                                    }
+                                    TOAST_CODE_QUESTION_3 -> {
+                                        context.showToast(TOAST_CODE_QUESTION_3)
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-            }
-        })
-    }) {
+                },
+            )
+        },
+    ) {
         AnswerTextContent(
             modifier = Modifier
                 .fillMaxSize()
