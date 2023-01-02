@@ -38,6 +38,7 @@ import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
 fun EpisodeListScreen(
@@ -234,6 +235,9 @@ private fun EpisodeItem(answerItem: Answer?) {
             .padding(horizontal = 20.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
+            .noDuplicationClickable {
+
+            }
             .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 30.dp),
     ) {
         Row(
