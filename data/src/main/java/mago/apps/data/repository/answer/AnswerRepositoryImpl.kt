@@ -19,8 +19,8 @@ import javax.inject.Inject
  */
 class AnswerRepositoryImpl @Inject constructor(
     private val answerApi: AnswerApi
-) :
-    AnswerRepository, SafeApiRequest() {
+) : AnswerRepository, SafeApiRequest() {
+
     override suspend fun getAnswerInfo(answerSeq: Int): ApiResponse<Answer> {
         val response = safeApiRequest { answerApi.getAnswerInfo(answerSeq) }
         return ApiResponse(
