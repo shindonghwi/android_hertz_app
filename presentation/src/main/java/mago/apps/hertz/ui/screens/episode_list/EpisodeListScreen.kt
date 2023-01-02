@@ -1,5 +1,9 @@
 package mago.apps.hertz.ui.screens.episode_list
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,13 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -130,34 +136,98 @@ private fun EpisodeMyItemList(
     episodeListViewModel: EpisodeListViewModel
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
+    MyItemListEmptyView(myItemList)
+    MyItemListExistView(myItemList)
+}
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = rememberLazyListState(),
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+@Composable
+private fun MyItemListExistView(myItemList: LazyPagingItems<Answer>) {
+    AnimatedVisibility(
+        visible = myItemList.loadState.refresh is LoadState.NotLoading,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 250)),
     ) {
-        items(myItemList, key = { item -> item.answerSeq }) { item ->
-            DayLineText(dayText = item?.firstDayInList)
-            EpisodeMyItem(answerItem = item)
+        if (myItemList.loadState.append.endOfPaginationReached && myItemList.itemCount < 1) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = stringResource(id = R.string.episode_list_menu_1_empty))
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(myItemList, key = { item -> item.answerSeq }) { item ->
+                    DayLineText(dayText = item?.firstDayInList)
+                    EpisodeItem(answerItem = item)
+                }
+            }
         }
-//        myItemList.apply {
-//            when (val currentState = loadState.refresh) {
-//                is LoadState.Loading -> {
-//                    Log.w("ASDasd", "EpisodeListScreen: loading")
-//                }
-//                is LoadState.Error -> {
-//                    val extractedException = currentState.error // SomeCatchableException
-//                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
-//                }
-//                else -> {}
-//            }
-//        }
     }
 }
 
 @Composable
-private fun EpisodeMyItem(answerItem: Answer?) {
+private fun OurItemListExistView(ourItemList: LazyPagingItems<Answer>) {
+    AnimatedVisibility(
+        visible = ourItemList.loadState.refresh is LoadState.NotLoading,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 250)),
+    ) {
+        if (ourItemList.loadState.append.endOfPaginationReached && ourItemList.itemCount < 1) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = stringResource(id = R.string.episode_list_menu_2_empty))
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(ourItemList, key = { item -> item.answerSeq }) { item ->
+                    DayLineText(dayText = item?.firstDayInList)
+                    EpisodeItem(answerItem = item)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MyItemListEmptyView(myItemList: LazyPagingItems<Answer>) {
+    AnimatedVisibility(
+        visible = myItemList.loadState.refresh == LoadState.Loading,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 250)),
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
+    }
+}
+
+@Composable
+private fun OurItemListEmptyView(ourItemList: LazyPagingItems<Answer>) {
+    AnimatedVisibility(
+        visible = ourItemList.loadState.refresh == LoadState.Loading,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 250)),
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
+    }
+}
+
+@Composable
+private fun EpisodeItem(answerItem: Answer?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,30 +282,37 @@ private fun EmotionShareTimeAgo(answerItem: Answer?) {
             text = EmotionList.find { it.second.name == answerItem?.emotion }?.first.toString(),
             style = MaterialTheme.typography.titleMedium,
         )
-        if (answerItem?.shareType == ShareType.ALONE.name) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
-                    .padding(vertical = 2.dp, horizontal = 4.dp),
-                text = stringResource(id = R.string.episode_list_label_type_my),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-            )
-        } else if (answerItem?.shareType == ShareType.WAIT.name) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-                    .padding(vertical = 2.dp, horizontal = 4.dp),
-                text = stringResource(id = R.string.episode_list_label_type_wait),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-            )
-        }
 
+        Text(
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(
+                    when (answerItem?.shareType) {
+                        ShareType.ALONE.name,
+                        ShareType.LINK.name -> {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                        }
+                        else -> {
+                            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                        }
+                    }
+                )
+                .padding(vertical = 2.dp, horizontal = 4.dp),
+            text = stringResource(
+                id = when (answerItem?.shareType) {
+                    ShareType.ALONE.name -> R.string.episode_list_label_type_my
+                    ShareType.LINK.name -> R.string.episode_list_label_type_our
+                    else -> R.string.episode_list_label_type_wait
+                }
+            ),
+            style = MaterialTheme.typography.labelSmall,
+            color = when (answerItem?.shareType) {
+                ShareType.ALONE.name,
+                ShareType.LINK.name -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+            },
+        )
     }
 
     Text(
@@ -280,45 +357,6 @@ private fun EpisodeOurItemList(
     navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val ourItemList = episodeListViewModel.getAnswerOurList.collectAsLazyPagingItems()
-    LazyColumn {
-        items(ourItemList) { item ->
-            Text(
-                text = item.toString(),
-                style = MaterialTheme.typography.displayLarge,
-                color = Color.Red
-            )
-        }
-//        myItemList.apply {
-//            when (val currentState = loadState.refresh) {
-//                is LoadState.Loading -> {
-//                    Log.w("ASDasd", "EpisodeListScreen: loading")
-//                }
-//                is LoadState.Error -> {
-//                    val extractedException = currentState.error // SomeCatchableException
-//                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
-//                }
-//                else -> {}
-//            }
-//        }
-    }
-
+    OurItemListEmptyView(ourItemList)
+    OurItemListExistView(ourItemList)
 }
-
-
-//LazyColumn {
-//    items(userListItems) { item ->
-//        Text(text = item.toString(), style = MaterialTheme.typography.displayLarge)
-//    }
-//    userListItems.apply {
-//        when (val currentState = loadState.refresh) {
-//            is LoadState.Loading -> {
-//                Log.w("ASDasd", "EpisodeListScreen: loading")
-//            }
-//            is LoadState.Error -> {
-//                val extractedException = currentState.error // SomeCatchableException
-//                Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
-//            }
-//            else -> {}
-//        }
-//    }
-//}

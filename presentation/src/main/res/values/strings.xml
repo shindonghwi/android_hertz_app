@@ -21,10 +21,12 @@
     <string name="episode_save_card_keyword_hezzibbong">헤찌뽕 키워드</string>
 
     <string name="episode_list_menu_1">내 에피소드</string>
+    <string name="episode_list_menu_1_empty">내 에피소드 목록이 비었어요</string>
     <string name="episode_list_menu_2">우리의 감정 주파수</string>
+    <string name="episode_list_menu_2_empty">우리의 감정 주파수 목록이 비었어요</string>
     <string name="episode_list_label_type_my">나의 고유주파수</string>
     <string name="episode_list_label_type_wait">응답 대기중...</string>
-    <string name="episode_list_label_type_out">우리의 감정 주파수</string>
+    <string name="episode_list_label_type_our">우리의 감정 주파수</string>
 
 
     <string name="answer_text_placeholder">질문에 대한 답변을 작성해주세요에 (최대 6자)</string>
