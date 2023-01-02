@@ -11,15 +11,16 @@ import java.util.*
 
 fun AnswerDTO.toDomain(): Answer {
     return Answer(
-        answerSeq,
-        question.toDomain(),
-        voice?.toDomain(),
-        tagList,
-        shareType,
-        emotion,
-        timeAgo,
-        createdAt.toDomainCreatedAt(),
-        null,
+        answerSeq = answerSeq,
+        property = property,
+        question = question.toDomain(),
+        voice = voice?.toDomain(),
+        tagList = tagList,
+        shareType = shareType,
+        emotion = emotion,
+        timeAgo = timeAgo,
+        createdAt = createdAt.toDomainCreatedAt(),
+        firstDayInList = null,
     )
 }
 
@@ -28,7 +29,7 @@ fun AnswerQuestionDTO.toDomain(): AnswerQuestion {
 }
 
 fun AnswerVoiceDTO.toDomain(): AnswerVoice {
-    return AnswerVoice(text, duration, voiceUrl, waveformUrl)
+    return AnswerVoice(text, emotionList, duration, voiceUrl, waveformUrl)
 }
 
 fun String.toDomainCreatedAt(): String {
