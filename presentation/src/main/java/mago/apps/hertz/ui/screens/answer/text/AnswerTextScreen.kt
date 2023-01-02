@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.text
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
@@ -82,14 +84,17 @@ fun AnswerTextScreen(
                 .fillMaxSize()
                 .padding(it)
                 .verticalScroll(answerTextViewModel.screenScrollState),
-            answerTextViewModel = answerTextViewModel
+            answerTextViewModel = answerTextViewModel,
+            navController = navController
         )
     }
 }
 
 @Composable
 private fun AnswerTextContent(
-    modifier: Modifier, answerTextViewModel: AnswerTextViewModel
+    modifier: Modifier,
+    answerTextViewModel: AnswerTextViewModel,
+    navController: NavHostController
 ) {
     Column(modifier = modifier) {
         QuestionContent(answerTextViewModel.questionInfo?.text)
@@ -124,7 +129,7 @@ private fun AnswerTextContent(
             answerTextViewModel = answerTextViewModel
         )
     }
-    PostAnswerTextPopup(answerTextViewModel)
+    PostAnswerTextPopup(answerTextViewModel, navController)
 }
 
 
@@ -141,15 +146,6 @@ private fun DayAndLikeContent(modifier: Modifier) {
             ).format(Calendar.getInstance().time),
             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
             style = MaterialTheme.typography.titleMedium
-        )
-        Icon(
-            modifier = Modifier
-                .size(46.dp)
-                .noDuplicationClickable {}
-                .padding(8.dp),
-            imageVector = Icons.Filled.FavoriteBorder,
-            tint = MaterialTheme.colorScheme.error,
-            contentDescription = null,
         )
     }
 }
@@ -233,8 +229,10 @@ private fun EmotionPercentSelectView(modifier: Modifier, answerTextViewModel: An
 }
 
 @Composable
-private fun PostAnswerTextPopup(answerTextViewModel: AnswerTextViewModel) {
-    val context = LocalContext.current
+private fun PostAnswerTextPopup(
+    answerTextViewModel: AnswerTextViewModel,
+    navController: NavHostController
+) {
     val answerVoiceState = answerTextViewModel.postAnswerTextState.collectAsState().value
 
     CustomPopup(
@@ -246,7 +244,9 @@ private fun PostAnswerTextPopup(answerTextViewModel: AnswerTextViewModel) {
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         if (answerVoiceState.isSuccessState.value) {
-            context.showToast(" 등록완료 ")
+            navController.navigate(route = RouteScreen.EpisodeListScreen.route){
+                popUpTo(RouteScreen.QuestionScreen.route)
+            }
         }
     })
 }

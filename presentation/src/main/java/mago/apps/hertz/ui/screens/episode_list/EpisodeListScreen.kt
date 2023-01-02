@@ -36,7 +36,6 @@ fun EpisodeListScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         EpisodeListContent(navController, episodeListViewModel)
     }
-
 }
 
 @Composable

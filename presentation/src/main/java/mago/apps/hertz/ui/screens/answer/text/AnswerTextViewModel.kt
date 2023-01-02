@@ -18,6 +18,7 @@ import mago.apps.domain.usecases.question.PostAnswerTextUseCase
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
+import mago.apps.hertz.ui.utils.scope.onDefault
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,10 +74,13 @@ class AnswerTextViewModel @Inject constructor(
                         )
                     }
                     is Resource.Success -> {
-                        _postAnswerTextState.value = TextRegisterState(
-                            isLoading = mutableStateOf(false),
-                            isSuccessState = mutableStateOf(true)
-                        )
+                        onDefault {
+                            delay(300)
+                            _postAnswerTextState.value = TextRegisterState(
+                                isLoading = mutableStateOf(false),
+                                isSuccessState = mutableStateOf(true)
+                            )
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
