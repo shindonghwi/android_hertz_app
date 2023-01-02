@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
@@ -22,12 +23,12 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.utils.date.DateUtil
 
 @Composable
 fun EpisodeListScreen(
@@ -42,7 +43,8 @@ fun EpisodeListScreen(
 private fun EpisodeListContent(
     navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
-    EpisodeTabList(navController, episodeListViewModel)
+    EpisodeMyItemList(navController, episodeListViewModel)
+//    EpisodeTabList(navController, episodeListViewModel)
 }
 
 /** 탭 레이아웃 [ 내 에피소드, 우리의 감정주파수, 좋아요 ] */
@@ -119,22 +121,26 @@ private fun EpisodeTabList(
 /** 나의 고유주파수 아이템 */
 @Composable
 private fun EpisodeMyItemList(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
 
     var recentlyTimeAgo: String? = remember { null }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(myItemList) { item ->
-            if (recentlyTimeAgo == null || recentlyTimeAgo != item?.timeAgo) {
-                recentlyTimeAgo = item?.timeAgo
-                Text(
-                    text = "$recentlyTimeAgo",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Red
-                )
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = rememberLazyListState()) {
+        itemsIndexed(myItemList, key = { index, item -> index }) { index, item ->
+
+            item?.timeAgoDisplay?.let {
+                if (it.isNotEmpty()){
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Red
+                    )
+                }
             }
+
             Text(
                 text = item?.question?.text.toString(),
                 style = MaterialTheme.typography.headlineSmall,

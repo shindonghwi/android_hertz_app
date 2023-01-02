@@ -17,6 +17,7 @@ fun AnswerDTO.toDomain(): Answer {
         tagList,
         shareType,
         timeAgo.toDomainTimeAgo(),
+        null,
         createdAt
     )
 }
