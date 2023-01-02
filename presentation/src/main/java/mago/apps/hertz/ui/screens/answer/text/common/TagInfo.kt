@@ -172,6 +172,7 @@ private fun InputTag(modifier: Modifier, answerTextViewModel: AnswerTextViewMode
                     },
                 ),
                 actionDoneAfterClearText = true,
+                textLimit = 6
             )
         }
 

@@ -111,7 +111,8 @@ private fun AnswerTextContent(
                 .height(130.dp)
                 .clip(RoundedCornerShape(9.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                .padding(14.dp), answerTextViewModel = answerTextViewModel
+                .padding(14.dp),
+            answerTextViewModel = answerTextViewModel
         )
 
         // 감정 주파수 선택
