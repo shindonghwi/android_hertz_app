@@ -17,9 +17,9 @@ fun AnswerDTO.toDomain(): Answer {
         tagList,
         shareType,
         emotion,
-        timeAgo.toDomainTimeAgo(),
+        timeAgo,
+        createdAt.toDomainCreatedAt(),
         null,
-        createdAt
     )
 }
 
@@ -31,7 +31,7 @@ fun AnswerVoiceDTO.toDomain(): AnswerVoice {
     return AnswerVoice(text, duration, voiceUrl, waveformUrl)
 }
 
-fun String.toDomainTimeAgo(): String {
+fun String.toDomainCreatedAt(): String {
     val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
     val yearMonthDay = this.split(" ")
         .elementAtOrNull(0).toString() // 2022-12-12

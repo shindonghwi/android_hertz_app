@@ -8,8 +8,8 @@ data class Answer(
     val shareType: String,
     val emotion: String,
     val timeAgo: String,
-    var timeAgoDisplay: String?, // 페이징에서 사용하는 정보
-    val createdAt: String?
+    val createdAt: String,
+    var firstDayInList: String?, // 페이징 목록중에 첫번째 날짜
 )
 
 

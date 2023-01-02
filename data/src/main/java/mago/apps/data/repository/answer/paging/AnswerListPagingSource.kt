@@ -21,7 +21,7 @@ class AnswerListPagingSource(
 ) : PagingSource<Int, Answer>() {
 
     private var offsetTime: Long? = null
-    private var timeAgoHashMap = HashMap<Int, String>()
+    private var createdAtHashMap = HashMap<Int, String>()
 
     override fun getRefreshKey(state: PagingState<Int, Answer>): Int? {
         return state.anchorPosition
@@ -46,12 +46,12 @@ class AnswerListPagingSource(
                         .map { it.toDomain() }
                         .apply {
                             mapIndexed { index, answer ->
-                                if (timeAgoHashMap.values.none { answer.timeAgo == it }) {
-                                    timeAgoHashMap[index] = answer.timeAgo
-                                    answer.timeAgoDisplay = answer.timeAgo
+                                if (createdAtHashMap.values.none { answer.createdAt == it }) {
+                                    createdAtHashMap[index] = answer.createdAt
+                                    answer.firstDayInList = answer.createdAt
                                 } else {
-                                    timeAgoHashMap[index] = ""
-                                    answer.timeAgoDisplay = null
+                                    createdAtHashMap[index] = ""
+                                    answer.firstDayInList = null
                                 }
                             }
                         }

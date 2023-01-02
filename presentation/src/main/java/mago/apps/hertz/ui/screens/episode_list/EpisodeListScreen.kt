@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.episode_list
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -32,11 +30,13 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
+import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
 
 @Composable
 fun EpisodeListScreen(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EpisodeListContent(navController, episodeListViewModel)
@@ -45,7 +45,8 @@ fun EpisodeListScreen(
 
 @Composable
 private fun EpisodeListContent(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
     EpisodeTabList(navController, episodeListViewModel)
 }
@@ -54,7 +55,8 @@ private fun EpisodeListContent(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun EpisodeTabList(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -124,36 +126,34 @@ private fun EpisodeTabList(
 /** 나의 고유주파수 아이템 */
 @Composable
 private fun EpisodeMyItemList(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxSize(),
         state = rememberLazyListState(),
-        contentPadding = PaddingValues(vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         items(myItemList, key = { item -> item.answerSeq }) { item ->
-            DayLineText(dayText = item?.timeAgoDisplay)
+            DayLineText(dayText = item?.firstDayInList)
             EpisodeMyItem(answerItem = item)
         }
-        myItemList.apply {
-            when (val currentState = loadState.refresh) {
-                is LoadState.Loading -> {
-                    Log.w("ASDasd", "EpisodeListScreen: loading")
-                }
-                is LoadState.Error -> {
-                    val extractedException = currentState.error // SomeCatchableException
-                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
-                }
-                else -> {}
-            }
-        }
+//        myItemList.apply {
+//            when (val currentState = loadState.refresh) {
+//                is LoadState.Loading -> {
+//                    Log.w("ASDasd", "EpisodeListScreen: loading")
+//                }
+//                is LoadState.Error -> {
+//                    val extractedException = currentState.error // SomeCatchableException
+//                    Log.w("ASDasd", "EpisodeListScreen: Error: $extractedException")
+//                }
+//                else -> {}
+//            }
+//        }
     }
-
 }
 
 @Composable
@@ -161,11 +161,10 @@ private fun EpisodeMyItem(answerItem: Answer?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 8.dp, shape = RoundedCornerShape(12.dp)
-            )
+            .padding(horizontal = 20.dp)
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 20.dp),
+            .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 30.dp),
     ) {
         Row(
             modifier = Modifier
@@ -174,15 +173,7 @@ private fun EpisodeMyItem(answerItem: Answer?) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = EmotionList.find { it.second.name == answerItem?.emotion }?.first.toString(),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = answerItem?.timeAgo.toString(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
-            )
+            EmotionShareTimeAgo(answerItem = answerItem)
         }
 
         Text(
@@ -194,7 +185,7 @@ private fun EpisodeMyItem(answerItem: Answer?) {
 
         Row(
             modifier = Modifier
-                .padding(top = 4.dp)
+                .padding(top = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -215,22 +206,69 @@ private fun EpisodeMyItem(answerItem: Answer?) {
 }
 
 @Composable
+private fun EmotionShareTimeAgo(answerItem: Answer?) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = EmotionList.find { it.second.name == answerItem?.emotion }?.first.toString(),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        if (answerItem?.shareType == ShareType.ALONE.name) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
+                    .padding(vertical = 2.dp, horizontal = 4.dp),
+                text = stringResource(id = R.string.episode_list_label_type_my),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+            )
+        } else if (answerItem?.shareType == ShareType.WAIT.name) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    .padding(vertical = 2.dp, horizontal = 4.dp),
+                text = stringResource(id = R.string.episode_list_label_type_wait),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+            )
+        }
+
+    }
+
+    Text(
+        text = answerItem?.timeAgo.toString(),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+    )
+}
+
+@Composable
 private fun DayLineText(dayText: String?) {
     if (!dayText.isNullOrEmpty()) {
         Row(
-            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Divider(
-                modifier = Modifier.weight(0.1f), color = MaterialTheme.colorScheme.outline
+                modifier = Modifier.weight(0.1f),
+                color = MaterialTheme.colorScheme.outline,
             )
             Text(
                 modifier = Modifier.padding(horizontal = 4.dp),
                 text = dayText,
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight(600)
+                ),
                 color = MaterialTheme.colorScheme.secondary
             )
             Divider(
-                modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.outline,
             )
         }
     }

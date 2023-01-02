@@ -8,5 +8,5 @@ data class AnswerDTO(
     val shareType: String,
     val emotion: String,
     val timeAgo: String,
-    val createdAt: String?
+    val createdAt: String
 )
