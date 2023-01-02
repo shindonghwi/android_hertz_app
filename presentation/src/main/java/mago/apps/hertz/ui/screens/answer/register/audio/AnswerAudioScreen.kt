@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.audio
+package mago.apps.hertz.ui.screens.answer.register.audio
 
 import android.widget.Toast
 import androidx.compose.foundation.background

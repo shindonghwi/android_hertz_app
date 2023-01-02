@@ -10,10 +10,10 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.model.screen.RouteScreen
-import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioScreen
-import mago.apps.hertz.ui.screens.answer.audio.AnswerAudioViewModel
-import mago.apps.hertz.ui.screens.answer.text.AnswerTextScreen
-import mago.apps.hertz.ui.screens.answer.text.AnswerTextViewModel
+import mago.apps.hertz.ui.screens.answer.register.audio.AnswerAudioScreen
+import mago.apps.hertz.ui.screens.answer.register.audio.AnswerAudioViewModel
+import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextScreen
+import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextViewModel
 import mago.apps.hertz.ui.screens.episode_list.EpisodeListScreen
 import mago.apps.hertz.ui.screens.episode_list.EpisodeListViewModel
 import mago.apps.hertz.ui.screens.episode_save.EpisodeSaveScreen

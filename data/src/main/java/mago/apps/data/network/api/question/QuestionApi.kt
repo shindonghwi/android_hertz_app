@@ -29,6 +29,6 @@ interface QuestionApi {
         @Field("text") text: String,
         @Field("emotion") emotion: String,
         @Field("tags") tags: String?,
-    ): Response<ApiResponse<Unit>>
+    ): Response<ApiResponse<AnswerDTO>>
 
 }

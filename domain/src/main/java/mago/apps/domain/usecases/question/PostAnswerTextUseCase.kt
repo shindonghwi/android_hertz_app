@@ -2,6 +2,7 @@ package mago.apps.domain.usecases.question
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.repository.QuestionRepository
@@ -14,7 +15,7 @@ class PostAnswerTextUseCase @Inject constructor(private val questionRepository: 
         text: String,
         emotion: EmotionType,
         tags: String?
-    ): Flow<Resource<Unit>> = flow {
+    ): Flow<Resource<Answer>> = flow {
         emit(Resource.Loading())
         try {
             val response = questionRepository.postAnswerText(questionSeq, text, emotion, tags)

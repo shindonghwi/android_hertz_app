@@ -20,6 +20,6 @@ interface QuestionRepository {
         text: String,
         emotion: EmotionType,
         tags: String?
-    ): ApiResponse<Unit>
+    ): ApiResponse<Answer>
 
 }

@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.audio
+package mago.apps.hertz.ui.screens.answer.register.audio
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

@@ -10,7 +10,10 @@ import javax.inject.Inject
 
 class PostAnswerVoiceUseCase @Inject constructor(private val questionRepository: QuestionRepository) {
 
-    suspend operator fun invoke(questionSeq: Int, file: MultipartBody.Part): Flow<Resource<Answer>> = flow {
+    suspend operator fun invoke(
+        questionSeq: Int,
+        file: MultipartBody.Part
+    ): Flow<Resource<Answer>> = flow {
         emit(Resource.Loading())
         try {
             val response = questionRepository.postAnswerVoice(questionSeq, file)

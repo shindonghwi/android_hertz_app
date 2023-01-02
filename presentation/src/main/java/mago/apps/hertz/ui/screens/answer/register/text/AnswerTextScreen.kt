@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.text
+package mago.apps.hertz.ui.screens.answer.register.text
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,8 +34,8 @@ import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
-import mago.apps.hertz.ui.screens.answer.text.common.QuestionContent
-import mago.apps.hertz.ui.screens.answer.text.common.TagInfo
+import mago.apps.hertz.ui.screens.answer.register.text.common.QuestionContent
+import mago.apps.hertz.ui.screens.answer.register.text.common.TagInfo
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain

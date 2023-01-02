@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.text.common
+package mago.apps.hertz.ui.screens.answer.register.text.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,7 +31,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
-import mago.apps.hertz.ui.screens.answer.text.AnswerTextViewModel
+import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable

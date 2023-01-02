@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.text.common
+package mago.apps.hertz.ui.screens.answer.register.text.common
 
 
 import androidx.compose.foundation.background

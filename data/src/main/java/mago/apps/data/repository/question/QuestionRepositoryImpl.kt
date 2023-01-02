@@ -32,7 +32,7 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
 
     override suspend fun postAnswerText(
         questionSeq: Int, text: String, emotion: EmotionType, tags: String?
-    ): ApiResponse<Unit> {
+    ): ApiResponse<Answer> {
         val response =
             safeApiRequest { questionApi.postAnswerText(questionSeq, text, emotion.name, tags) }
         return ApiResponse(

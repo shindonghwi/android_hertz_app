@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.text
+package mago.apps.hertz.ui.screens.answer.register.text
 
 import android.text.TextUtils
 import android.util.Log
@@ -54,7 +54,7 @@ class AnswerTextViewModel @Inject constructor(
         else if (editingAnswerText.isEmpty()) return TOAST_CODE_QUESTION_2
         else if (tagList.isEmpty()) return TOAST_CODE_QUESTION_3
         else {
-            postAnswerTextUseCase.invoke(
+            postAnswerTextUseCase(
                 questionInfo?.questionSeq!!,
                 editingAnswerText,
                 emotionType,
