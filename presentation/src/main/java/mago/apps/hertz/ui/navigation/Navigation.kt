@@ -25,7 +25,9 @@ import mago.apps.hertz.ui.screens.question.QuestionScreen
 fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = RouteScreen.HomeScreen.route) {
         composable(route = RouteScreen.HomeScreen.route) {
-            HomeScreen(navController)
+            val episodeListViewModel = hiltViewModel<EpisodeListViewModel>()
+            EpisodeListScreen(navController, episodeListViewModel)
+//            HomeScreen(navController)
         }
         composable(route = RouteScreen.QuestionScreen.route) {
             QuestionScreen(navController)

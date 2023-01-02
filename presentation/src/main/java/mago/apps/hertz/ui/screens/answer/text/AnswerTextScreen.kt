@@ -1,14 +1,11 @@
 package mago.apps.hertz.ui.screens.answer.text
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
@@ -38,7 +36,6 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.text.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.text.common.TagInfo
-import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 import java.text.SimpleDateFormat
@@ -200,27 +197,21 @@ private fun TodayFrequencyTitle(modifier: Modifier, answerTextViewModel: AnswerT
 @Composable
 private fun EmotionPercentSelectView(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
     val selectedValue = remember { mutableStateOf(EmotionType.HAPPINESS) }
-    val emotionList = listOf(
-        Pair("\uD83D\uDE04", EmotionType.HAPPINESS),
-        Pair("\uD83D\uDE22", EmotionType.SADNESS),
-        Pair("\uD83D\uDE21", EmotionType.ANGRY),
-        Pair("\uD83D\uDE36", EmotionType.NEUTRAL),
-    )
 
     Row(
         modifier = modifier, horizontalArrangement = Arrangement.SpaceAround
     ) {
-        repeat(emotionList.size) {
+        repeat(EmotionList.size) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = emotionList[it].first,
+                    text = EmotionList[it].first,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 RadioButton(
-                    selected = selectedValue.value == emotionList[it].second,
+                    selected = selectedValue.value == EmotionList[it].second,
                     onClick = {
-                        answerTextViewModel.updateEmotion(emotionList[it].second)
-                        selectedValue.value = emotionList[it].second
+                        answerTextViewModel.updateEmotion(EmotionList[it].second)
+                        selectedValue.value = EmotionList[it].second
                     },
                 )
             }
@@ -244,7 +235,7 @@ private fun PostAnswerTextPopup(
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         if (answerVoiceState.isSuccessState.value) {
-            navController.navigate(route = RouteScreen.EpisodeListScreen.route){
+            navController.navigate(route = RouteScreen.EpisodeListScreen.route) {
                 popUpTo(RouteScreen.QuestionScreen.route)
             }
         }

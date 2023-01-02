@@ -16,6 +16,7 @@ fun AnswerDTO.toDomain(): Answer {
         voice?.toDomain(),
         tagList,
         shareType,
+        emotion,
         timeAgo.toDomainTimeAgo(),
         null,
         createdAt

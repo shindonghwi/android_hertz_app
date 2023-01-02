@@ -6,6 +6,7 @@ data class Answer(
     val voice: AnswerVoice?,
     val tagList: List<String>,
     val shareType: String,
+    val emotion: String,
     val timeAgo: String,
     var timeAgoDisplay: String?, // 페이징에서 사용하는 정보
     val createdAt: String?
