@@ -54,7 +54,7 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
         )
     }
 
-    override suspend fun getLikes(): Flow<PagingData<Answer>> {
+    override fun getLikes(): Flow<PagingData<Answer>> {
         return Pager(
             PagingConfig(pageSize = PAGING_SIZE)
         ) {

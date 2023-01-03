@@ -44,7 +44,7 @@ interface QuestionRepository {
     /** @feature: 질문 좋아요 목록 조회
      * @author: 2023/01/03 3:01 PM donghwishin
      */
-    suspend fun getLikes(): Flow<PagingData<Answer>>
+    fun getLikes(): Flow<PagingData<Answer>>
 
     /** @feature: 질문 좋아요 등록
      * @author: 2023/01/03 3:04 PM donghwishin
