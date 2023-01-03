@@ -73,6 +73,7 @@ dependencies {
             implementation(pager)
             implementation(pagerPermission)
             implementation(paging)
+            implementation(coil)
         }
 
         Libraries.OkHttp.apply {

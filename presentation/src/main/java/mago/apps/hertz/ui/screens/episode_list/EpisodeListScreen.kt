@@ -281,7 +281,6 @@ private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
-                Log.w("asdasdasd", "EpisodeItem: ${answerItem?.answerSeq}")
                 navController.navigate(
                     route = RouteScreen.AnswerDetailScreen.route +
                             "?answerSeq=${answerItem?.answerSeq}"

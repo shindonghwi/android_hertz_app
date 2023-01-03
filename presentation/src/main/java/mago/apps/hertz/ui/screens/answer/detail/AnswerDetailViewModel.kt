@@ -14,6 +14,7 @@ import mago.apps.domain.usecases.answer.GetAnswerInfoUseCase
 import mago.apps.domain.usecases.question.DelLikeUseCase
 import mago.apps.domain.usecases.question.PostLikeUseCase
 import mago.apps.domain.usecases.question.PostSendQuestionFriendUseCase
+import mago.apps.hertz.ui.utils.recorder.CountUpTimer
 import javax.inject.Inject
 
 @HiltViewModel
@@ -71,7 +72,7 @@ class AnswerDetailViewModel @Inject constructor(
     private val _bbibbiState = MutableStateFlow(SendBBiBBiState())
     val bbibbiState: StateFlow<SendBBiBBiState> = _bbibbiState
 
-    suspend fun postSendQuestionFriend(questionSeq: Int){
+    suspend fun postSendQuestionFriend(questionSeq: Int) {
         postSendQuestionFriendUseCase(questionSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
@@ -98,4 +99,7 @@ class AnswerDetailViewModel @Inject constructor(
 
     suspend fun postLike(questionSeq: Int) = postLikeUseCase(questionSeq).launchIn(viewModelScope)
     suspend fun delLike(questionSeq: Int) = delLikeUseCase(questionSeq).launchIn(viewModelScope)
+
+    private val countUpTimer = CountUpTimer()
+    fun getTime(duration: Int?) = countUpTimer.timeToString(duration ?: 0)
 }

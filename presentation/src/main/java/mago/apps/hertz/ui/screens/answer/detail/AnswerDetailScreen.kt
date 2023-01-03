@@ -2,12 +2,14 @@ package mago.apps.hertz.ui.screens.answer.detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,13 +22,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.answer.AnswerEmotionList
 import mago.apps.domain.model.answer.AnswerProperty
@@ -96,7 +101,13 @@ private fun BBiBBiErrorPopUp(answerDetailViewModel: AnswerDetailViewModel) {
 @Composable
 private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
     val bbibbiState = answerDetailViewModel.bbibbiState.collectAsState().value
-
+    if (bbibbiState.isSuccessState.value) {
+        CustomPopup(
+            isVisible = bbibbiState.isSuccessState,
+            type = PopupType.REGISTER,
+            showingMessage = stringResource(id = R.string.dialog_bbibbi_send_success)
+        )
+    }
 }
 
 @Composable
@@ -184,16 +195,11 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                     }
                 })
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
-                    .height(60.dp)
-                    .background(Color.Red.copy(alpha = 0.2f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("오디오 재생기능")
-            }
+            AnswerAudioContent(
+                duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
+                voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
+                waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
+            )
 
             AnswerText(text = answerState.data?.voice?.text)
 
@@ -218,6 +224,59 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 answerDetailViewModel
             ) // 삐삐전송하기, 우리의 감정주파수
 
+        }
+    }
+}
+
+@Composable
+private fun AnswerAudioContent(
+    duration: String,
+    voiceUrl: String,
+    waveformImageUrl: String,
+) {
+    if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = duration,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            Image(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(waveformImageUrl)
+                        .size(Size.ORIGINAL)
+                        .crossfade(true)
+                        .build()
+                ),
+                contentDescription = null,
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .noDuplicationClickable { }
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(id = R.drawable.play),
+                    contentDescription = "play",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
@@ -304,7 +363,8 @@ private fun BBiBBiButton(
                     context.run { showToast(getString(R.string.toast_fail_bbibbi_send)) }
                 }
             })
-            .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.answer_detail_bbibbi_button),
@@ -316,22 +376,24 @@ private fun BBiBBiButton(
 
 @Composable
 private fun AnswerText(text: String?) {
-    Box(
-        modifier = Modifier
-            .padding(top = 13.dp, start = 20.dp, end = 20.dp)
-            .fillMaxWidth()
-            .height(140.dp)
-            .clip(RoundedCornerShape(9.dp))
-            .background(light_sub_primary)
-            .verticalScroll(rememberScrollState())
-            .padding(14.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text ?: "",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.secondary
-        )
+    text?.let {
+        Box(
+            modifier = Modifier
+                .padding(top = 13.dp, start = 20.dp, end = 20.dp)
+                .fillMaxWidth()
+                .height(140.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(light_sub_primary)
+                .verticalScroll(rememberScrollState())
+                .padding(14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
     }
 }
 
