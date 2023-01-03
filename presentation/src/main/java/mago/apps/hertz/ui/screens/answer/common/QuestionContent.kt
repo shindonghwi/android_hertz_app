@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.register.text.common
+package mago.apps.hertz.ui.screens.answer.common
 
 
 import androidx.compose.foundation.background
@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,17 +21,21 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun QuestionContent(content: String?) {
+fun QuestionContent(
+    content: String?,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(14.dp), contentAlignment = Alignment.Center
+            .background(backgroundColor)
+            .padding(14.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
-            text = content.toString(),
+            text = content ?: "",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center,

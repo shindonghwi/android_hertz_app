@@ -34,13 +34,12 @@ import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
-import mago.apps.hertz.ui.screens.answer.register.text.common.QuestionContent
-import mago.apps.hertz.ui.screens.answer.register.text.common.TagInfo
+import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
+import mago.apps.hertz.ui.screens.answer.common.QuestionContent
+import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
-import java.text.SimpleDateFormat
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,7 +115,7 @@ private fun AnswerTextContent(
             modifier = Modifier
                 .padding(top = 13.dp, start = 20.dp, end = 20.dp)
                 .fillMaxWidth()
-                .height(130.dp)
+                .height(160.dp)
                 .clip(RoundedCornerShape(9.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
                 .padding(14.dp),
@@ -124,13 +123,13 @@ private fun AnswerTextContent(
         )
 
         // 감정 주파수 선택
-        TodayFrequencyTitle(
+        TodayFrequencySelector(
             modifier = Modifier.padding(top = 30.dp, start = 20.dp, end = 20.dp),
             answerTextViewModel = answerTextViewModel
         )
 
         // 태그 정보
-        TagInfo(
+        TagInfoContent(
             modifier = Modifier.padding(top = 12.dp, start = 20.dp, end = 20.dp),
             answerTextViewModel = answerTextViewModel
         )
@@ -138,23 +137,6 @@ private fun AnswerTextContent(
     PostAnswerTextPopup(answerTextViewModel, navController)
 }
 
-
-@Composable
-private fun DayAndLikeContent(modifier: Modifier) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = SimpleDateFormat(
-                "yyyy년 MM월 dd일 EE요일", Locale.getDefault()
-            ).format(Calendar.getInstance().time),
-            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-            style = MaterialTheme.typography.titleMedium
-        )
-    }
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -184,7 +166,7 @@ private fun InputAnswer(modifier: Modifier, answerTextViewModel: AnswerTextViewM
 
 
 @Composable
-private fun TodayFrequencyTitle(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
+private fun TodayFrequencySelector(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
     Column(
         modifier = modifier,
     ) {

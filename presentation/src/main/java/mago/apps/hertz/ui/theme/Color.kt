@@ -22,6 +22,8 @@ val light_outline = Color(0xFFB1B1B1)
 val light_surface = Color(0xFFF2F4F8) // 배경 위 카드, 시트의 색상
 val light_onSurface = Color(0xFF1A1A1A) // 카드, 시트 위에 올라오는 색상
 
+val light_sub_primary = Color(0xFFCED9FF)
+
 /** Dark */
 
 /** 사용하지 않는 색상 */

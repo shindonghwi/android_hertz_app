@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.register.text.common
+package mago.apps.hertz.ui.screens.answer.register.text.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -35,7 +35,7 @@ import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
-fun TagInfo(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
+fun TagInfoContent(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
 
     answerTextViewModel.tagListScrollState = rememberLazyListState()
 
@@ -108,7 +108,8 @@ private fun TagList(answerTextViewModel: AnswerTextViewModel) {
                         }
                         .padding(6.dp),
                     imageVector = Icons.Filled.Close,
-                    contentDescription = null, tint = MaterialTheme.colorScheme.onSurface
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(

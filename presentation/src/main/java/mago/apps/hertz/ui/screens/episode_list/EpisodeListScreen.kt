@@ -33,17 +33,18 @@ import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
 fun EpisodeListScreen(
-    navController: NavHostController,
-    episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EpisodeListContent(navController, episodeListViewModel)
@@ -52,8 +53,7 @@ fun EpisodeListScreen(
 
 @Composable
 private fun EpisodeListContent(
-    navController: NavHostController,
-    episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     EpisodeTabList(navController, episodeListViewModel)
 }
@@ -62,8 +62,7 @@ private fun EpisodeListContent(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun EpisodeTabList(
-    navController: NavHostController,
-    episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -133,16 +132,17 @@ private fun EpisodeTabList(
 /** 나의 고유주파수 아이템 */
 @Composable
 private fun EpisodeMyItemList(
-    navController: NavHostController,
-    episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
-    MyItemListEmptyView(myItemList)
-    MyItemListExistView(myItemList)
+    MyItemListEmptyView(myItemList, navController)
+    MyItemListExistView(myItemList, navController)
 }
 
 @Composable
-private fun MyItemListExistView(myItemList: LazyPagingItems<Answer>) {
+private fun MyItemListExistView(
+    myItemList: LazyPagingItems<Answer>, navController: NavHostController
+) {
     AnimatedVisibility(
         visible = myItemList.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -150,8 +150,7 @@ private fun MyItemListExistView(myItemList: LazyPagingItems<Answer>) {
     ) {
         if (myItemList.loadState.append.endOfPaginationReached && myItemList.itemCount < 1) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(text = stringResource(id = R.string.episode_list_menu_1_empty))
             }
@@ -164,7 +163,7 @@ private fun MyItemListExistView(myItemList: LazyPagingItems<Answer>) {
             ) {
                 items(myItemList, key = { item -> item.answerSeq }) { item ->
                     DayLineText(dayText = item?.firstDayInList)
-                    EpisodeItem(answerItem = item)
+                    EpisodeItem(answerItem = item, navController = navController)
                 }
             }
         }
@@ -172,7 +171,9 @@ private fun MyItemListExistView(myItemList: LazyPagingItems<Answer>) {
 }
 
 @Composable
-private fun OurItemListExistView(ourItemList: LazyPagingItems<Answer>) {
+private fun OurItemListExistView(
+    ourItemList: LazyPagingItems<Answer>, navController: NavHostController
+) {
     AnimatedVisibility(
         visible = ourItemList.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -180,8 +181,7 @@ private fun OurItemListExistView(ourItemList: LazyPagingItems<Answer>) {
     ) {
         if (ourItemList.loadState.append.endOfPaginationReached && ourItemList.itemCount < 1) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(text = stringResource(id = R.string.episode_list_menu_2_empty))
             }
@@ -194,7 +194,7 @@ private fun OurItemListExistView(ourItemList: LazyPagingItems<Answer>) {
             ) {
                 items(ourItemList, key = { item -> item.answerSeq }) { item ->
                     DayLineText(dayText = item?.firstDayInList)
-                    EpisodeItem(answerItem = item)
+                    EpisodeItem(answerItem = item, navController = navController)
                 }
             }
         }
@@ -202,7 +202,9 @@ private fun OurItemListExistView(ourItemList: LazyPagingItems<Answer>) {
 }
 
 @Composable
-private fun MyItemListEmptyView(myItemList: LazyPagingItems<Answer>) {
+private fun MyItemListEmptyView(
+    myItemList: LazyPagingItems<Answer>, navController: NavHostController
+) {
     AnimatedVisibility(
         visible = myItemList.loadState.refresh == LoadState.Loading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -215,7 +217,9 @@ private fun MyItemListEmptyView(myItemList: LazyPagingItems<Answer>) {
 }
 
 @Composable
-private fun OurItemListEmptyView(ourItemList: LazyPagingItems<Answer>) {
+private fun OurItemListEmptyView(
+    ourItemList: LazyPagingItems<Answer>, navController: NavHostController
+) {
     AnimatedVisibility(
         visible = ourItemList.loadState.refresh == LoadState.Loading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -228,7 +232,7 @@ private fun OurItemListEmptyView(ourItemList: LazyPagingItems<Answer>) {
 }
 
 @Composable
-private fun EpisodeItem(answerItem: Answer?) {
+private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,7 +240,12 @@ private fun EpisodeItem(answerItem: Answer?) {
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
-
+                navController.navigate(
+                    RouteScreen.AnswerDetailScreen.route +
+                            "?answer=${Gson().toJson(answerItem)}"
+                ) {
+                    launchSingleTop = true
+                }
             }
             .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 30.dp),
     ) {
@@ -293,8 +302,7 @@ private fun EmotionShareTimeAgo(answerItem: Answer?) {
                 .clip(RoundedCornerShape(4.dp))
                 .background(
                     when (answerItem?.shareType) {
-                        ShareType.ALONE.name,
-                        ShareType.LINK.name -> {
+                        ShareType.ALONE.name, ShareType.LINK.name -> {
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                         }
                         else -> {
@@ -312,8 +320,9 @@ private fun EmotionShareTimeAgo(answerItem: Answer?) {
             ),
             style = MaterialTheme.typography.labelSmall,
             color = when (answerItem?.shareType) {
-                ShareType.ALONE.name,
-                ShareType.LINK.name -> MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                ShareType.ALONE.name, ShareType.LINK.name -> MaterialTheme.colorScheme.onPrimary.copy(
+                    alpha = 0.9f
+                )
                 else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
             },
         )
@@ -361,6 +370,6 @@ private fun EpisodeOurItemList(
     navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val ourItemList = episodeListViewModel.getAnswerOurList.collectAsLazyPagingItems()
-    OurItemListEmptyView(ourItemList)
-    OurItemListExistView(ourItemList)
+    OurItemListEmptyView(ourItemList, navController)
+    OurItemListExistView(ourItemList, navController)
 }
