@@ -21,6 +21,7 @@ android {
 
     buildTypes {
         getByName("debug") {
+//            isDebuggable = false
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
         }

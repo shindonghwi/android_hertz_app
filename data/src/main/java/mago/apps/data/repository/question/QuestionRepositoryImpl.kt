@@ -1,9 +1,15 @@
 package mago.apps.data.repository.question
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import mago.apps.data.mappers.answer.toDomain
 import mago.apps.data.mappers.question.toDomain
 import mago.apps.data.network.api.question.QuestionApi
 import mago.apps.data.network.utils.SafeApiRequest
+import mago.apps.data.repository.question.paging.LikeListPagingSource
+import mago.apps.data.repository.question.paging.LikeListPagingSource.Companion.PAGING_SIZE
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
 import mago.apps.domain.model.common.EmotionType
@@ -35,6 +41,39 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
     ): ApiResponse<Answer> {
         val response =
             safeApiRequest { questionApi.postAnswerText(questionSeq, text, emotion.name, tags) }
+        return ApiResponse(
+            status = response.status, message = response.message, data = null
+        )
+    }
+
+    override suspend fun postSendQuestionFriend(questionSeq: Int): ApiResponse<Unit> {
+        val response =
+            safeApiRequest { questionApi.postSendQuestionFriend(questionSeq) }
+        return ApiResponse(
+            status = response.status, message = response.message, data = null
+        )
+    }
+
+    override suspend fun getLikes(): Flow<PagingData<Answer>> {
+        return Pager(
+            PagingConfig(pageSize = PAGING_SIZE)
+        ) {
+            LikeListPagingSource(questionApi)
+        }.flow
+    }
+
+
+    override suspend fun postLike(questionSeq: Int): ApiResponse<Unit> {
+        val response =
+            safeApiRequest { questionApi.postLike(questionSeq) }
+        return ApiResponse(
+            status = response.status, message = response.message, data = null
+        )
+    }
+
+    override suspend fun delLike(questionSeq: Int): ApiResponse<Unit> {
+        val response =
+            safeApiRequest { questionApi.delLike(questionSeq) }
         return ApiResponse(
             status = response.status, message = response.message, data = null
         )
