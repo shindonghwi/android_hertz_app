@@ -175,9 +175,9 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                         answerState.data?.let {
                             coroutineScopeOnDefault {
                                 if (likeState) {
-                                    answerDetailViewModel.postLike(it.answerSeq)
+                                    answerDetailViewModel.postLike(it.question.questionSeq)
                                 } else {
-                                    answerDetailViewModel.delLike(it.answerSeq)
+                                    answerDetailViewModel.delLike(it.question.questionSeq)
                                 }
                             }
                         }
@@ -213,7 +213,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
             )
 
             BBiBBiFrequencyContent(
-                answerState.data?.answerSeq,
+                answerState.data?.question?.questionSeq,
                 answerState.data?.property,
                 answerDetailViewModel
             ) // 삐삐전송하기, 우리의 감정주파수
@@ -248,7 +248,7 @@ private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
 
 @Composable
 private fun BBiBBiFrequencyContent(
-    answerSeq: Int?,
+    questionSeq: Int?,
     property: AnswerProperty?,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
@@ -259,7 +259,7 @@ private fun BBiBBiFrequencyContent(
         .background(MaterialTheme.colorScheme.primary)
 
     property?.takeIf { !it.isSent }?.apply {
-        BBiBBiButton(boxModifier, answerSeq, answerDetailViewModel)
+        BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
     } ?: run {
         property?.takeIf { it.isSent && !it.isConnected }?.apply {
             FrequencyButton(boxModifier)
@@ -289,18 +289,18 @@ private fun FrequencyButton(modifier: Modifier) {
 @Composable
 private fun BBiBBiButton(
     modifier: Modifier,
-    answerSeq: Int?,
+    questionSeq: Int?,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
     val context = LocalContext.current
     Box(
         modifier = modifier
             .then(Modifier.noDuplicationClickable {
-                answerSeq?.let {
+                questionSeq?.let {
                     coroutineScopeOnDefault {
                         answerDetailViewModel.postSendQuestionFriend(it)
                     }
-                } ?: kotlin.run {
+                } ?: run {
                     context.run { showToast(getString(R.string.toast_fail_bbibbi_send)) }
                 }
             })

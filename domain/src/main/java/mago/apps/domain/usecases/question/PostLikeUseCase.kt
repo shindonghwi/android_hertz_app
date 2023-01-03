@@ -15,7 +15,6 @@ class PostLikeUseCase @Inject constructor(
     private val questionRepository: QuestionRepository
 ) {
     suspend operator fun invoke(questionSeq: Int): Flow<Resource<Answer>> = flow {
-        Log.w("Asdasdasd", "invoke: start", )
         emit(Resource.Loading())
         try {
             val response = questionRepository.postLike(questionSeq)

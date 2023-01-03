@@ -71,8 +71,8 @@ class AnswerDetailViewModel @Inject constructor(
     private val _bbibbiState = MutableStateFlow(SendBBiBBiState())
     val bbibbiState: StateFlow<SendBBiBBiState> = _bbibbiState
 
-    suspend fun postSendQuestionFriend(answerSeq: Int){
-        postSendQuestionFriendUseCase(answerSeq).onEach {
+    suspend fun postSendQuestionFriend(questionSeq: Int){
+        postSendQuestionFriendUseCase(questionSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
                     _bbibbiState.value = SendBBiBBiState(
@@ -96,6 +96,6 @@ class AnswerDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    suspend fun postLike(answerSeq: Int) = postLikeUseCase(answerSeq).launchIn(viewModelScope)
-    suspend fun delLike(answerSeq: Int) = delLikeUseCase(answerSeq).launchIn(viewModelScope)
+    suspend fun postLike(questionSeq: Int) = postLikeUseCase(questionSeq).launchIn(viewModelScope)
+    suspend fun delLike(questionSeq: Int) = delLikeUseCase(questionSeq).launchIn(viewModelScope)
 }

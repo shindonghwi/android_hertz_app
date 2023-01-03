@@ -25,7 +25,7 @@ fun AnswerDTO.toDomain(): Answer {
 }
 
 fun AnswerQuestionDTO.toDomain(): AnswerQuestion {
-    return AnswerQuestion(text, isLiked)
+    return AnswerQuestion(questionSeq, text, isLiked)
 }
 
 fun AnswerVoiceDTO.toDomain(): AnswerVoice {
