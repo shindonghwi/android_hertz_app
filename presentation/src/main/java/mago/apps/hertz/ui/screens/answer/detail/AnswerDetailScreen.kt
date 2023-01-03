@@ -178,7 +178,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
             // 날짜 & 좋아요 영역
             DayAndLikeContent(modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, start = 20.dp, end = 10.dp),
+                .padding(top = 10.dp, start = 20.dp, end = 20.dp),
                 timeText = answerState.data?.createdAt,
                 likeDefaultState = answerState.data?.question?.isLiked,
                 iLikeActionCallback = object : ILikeActionCallback {
@@ -196,6 +196,9 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 })
 
             AnswerAudioContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
                 duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
                 voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
                 waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
@@ -230,15 +233,14 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
 
 @Composable
 private fun AnswerAudioContent(
+    modifier: Modifier,
     duration: String,
     voiceUrl: String,
     waveformImageUrl: String,
 ) {
     if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

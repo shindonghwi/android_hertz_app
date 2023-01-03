@@ -8,6 +8,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -54,12 +56,12 @@ fun DayAndLikeContent(
                         iLikeActionCallback?.onState(likeState.value)
                     },
                 imageVector = if (likeState.value) {
-                    Icons.Default.Favorite
+                    Icons.Filled.ThumbUp
                 } else {
-                    Icons.Default.FavoriteBorder
+                    Icons.Outlined.ThumbUp
                 },
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
