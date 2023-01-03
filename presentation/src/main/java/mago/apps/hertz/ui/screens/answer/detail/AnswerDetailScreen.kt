@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
+import android.media.AudioAttributes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.Image
@@ -17,17 +18,22 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -202,6 +208,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
                 voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
                 waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
+                answerDetailViewModel = answerDetailViewModel
             )
 
             AnswerText(text = answerState.data?.voice?.text)
@@ -237,8 +244,10 @@ private fun AnswerAudioContent(
     duration: String,
     voiceUrl: String,
     waveformImageUrl: String,
+    answerDetailViewModel: AnswerDetailViewModel,
 ) {
     if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
+        AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically
@@ -263,25 +272,92 @@ private fun AnswerAudioContent(
                 contentDescription = null,
             )
 
-            Box(
-                modifier = Modifier
-                    .size(34.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .noDuplicationClickable { }
-                    .padding(4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(id = R.drawable.play),
-                    contentDescription = "play",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
+            AudioPlayIcon(answerDetailViewModel)
         }
     }
 }
+
+@Composable
+private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDetailViewModel) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = lifecycleOwner, effect = {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    answerDetailViewModel.mediaPlayer.apply {
+                        setAudioAttributes(
+                            AudioAttributes
+                                .Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build()
+                        )
+                        setDataSource(context, audioUrl.toUri())
+                        prepare()
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    answerDetailViewModel.run {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                        updatePlayingState(false)
+                    }
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            answerDetailViewModel.mediaPlayer.run {
+                stop()
+                release()
+                null
+            }
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    })
+}
+
+@Composable
+private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
+
+    val isPlaying = answerDetailViewModel.isPlaying.collectAsState().value
+
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primary)
+            .noDuplicationClickable {
+                answerDetailViewModel.run {
+                    if (isPlaying) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                        updatePlayingState(false)
+                    } else {
+                        mediaPlayer.start()
+                        updatePlayingState(true)
+                    }
+                }
+
+            }
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            modifier = Modifier.fillMaxSize(),
+            painter = if (isPlaying) {
+                painterResource(id = R.drawable.pause)
+            } else {
+                painterResource(id = R.drawable.play)
+            },
+            contentDescription = "play",
+            tint = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+}
+
 
 @Composable
 private fun ErrorContent(answerDetailViewModel: AnswerDetailViewModel) {

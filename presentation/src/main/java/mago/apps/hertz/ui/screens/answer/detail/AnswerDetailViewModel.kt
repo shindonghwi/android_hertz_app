@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
+import android.media.MediaPlayer
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -99,6 +100,14 @@ class AnswerDetailViewModel @Inject constructor(
 
     suspend fun postLike(questionSeq: Int) = postLikeUseCase(questionSeq).launchIn(viewModelScope)
     suspend fun delLike(questionSeq: Int) = delLikeUseCase(questionSeq).launchIn(viewModelScope)
+
+    val mediaPlayer = MediaPlayer()
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying = _isPlaying
+
+    fun updatePlayingState(flag: Boolean){
+        _isPlaying.value = flag
+    }
 
     private val countUpTimer = CountUpTimer()
     fun getTime(duration: Int?) = countUpTimer.timeToString(duration ?: 0)
