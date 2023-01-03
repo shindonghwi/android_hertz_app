@@ -10,6 +10,12 @@ import javax.inject.Inject
 class AnswerDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
+    var isEditingMode: Boolean = false
+
+    fun updateEditingMode(flag: Boolean) {
+        isEditingMode = flag
+    }
+
     /** 답변 정보 */
     var answerInfo: Answer? = null
         private set

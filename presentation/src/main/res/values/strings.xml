@@ -36,6 +36,10 @@
     <string name="answer_text_title_tag_max_placeholder">태그는 최대 5개까지 입력 가능합니다</string>
 
 
+    <string name="answer_detail_bbibbi_button">상대에게 삐삐</string>
+    <string name="answer_detail_connected_button">감정 주파수 확인</string>
+
+
     <!-- 공통 -->
     <string name="id">아이디</string>
     <string name="pw">비밀번호</string>

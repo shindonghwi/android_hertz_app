@@ -1,6 +1,6 @@
 package mago.apps.domain.model.answer
 
 data class AnswerProperty(
-    val property: Boolean,
+    val isSent: Boolean,
     val isConnected: Boolean
 )

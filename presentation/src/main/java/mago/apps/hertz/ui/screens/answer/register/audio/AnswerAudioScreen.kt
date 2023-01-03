@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.answer.register.audio
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -25,14 +24,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
-import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
 import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -126,7 +126,6 @@ fun ResultAnswerVoicePopup(
     answerAudioViewModel: AnswerAudioViewModel,
     navController: NavController
 ) {
-    val context = LocalContext.current
     val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
 
     if (answerVoiceState.isErrorState.value) {
@@ -144,12 +143,13 @@ fun ResultAnswerVoicePopup(
     }
 
     LaunchedEffect(key1 = answerVoiceState, block = {
-        answerVoiceState.data?.run {
-//            navController.navigate(
-//                RouteScreen.AnswerTextScreen.route +
-//                        "?answer=${Gson().toJson()}"
-//            )
-            Toast.makeText(context, " 등록완료 ", Toast.LENGTH_SHORT).show()
+        answerVoiceState.data?.let {
+            navController.navigate(
+                route = RouteScreen.AnswerDetailScreen.route +
+                        "?answer=${Gson().toJson(it)}"
+            ) {
+                popUpTo(RouteScreen.QuestionScreen.route)
+            }
         }
     })
 }

@@ -115,7 +115,7 @@ private fun AnswerTextContent(
             modifier = Modifier
                 .padding(top = 13.dp, start = 20.dp, end = 20.dp)
                 .fillMaxWidth()
-                .height(160.dp)
+                .height(140.dp)
                 .clip(RoundedCornerShape(9.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
                 .padding(14.dp),
