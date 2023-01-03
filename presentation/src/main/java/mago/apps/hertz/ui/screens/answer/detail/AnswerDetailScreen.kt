@@ -1,6 +1,8 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -9,12 +11,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,11 +43,17 @@ import mago.apps.hertz.ui.utils.compose.showToast
 fun AnswerDetailScreen(
     navController: NavHostController,
     answerDetailViewModel: AnswerDetailViewModel,
+    answerSeq: String?,
     answer: Answer?
 ) {
+
     LaunchedEffect(key1 = Unit, block = {
         answer?.let {
-            answerDetailViewModel.updateAnswerInfo(it)
+            answerDetailViewModel.updateAnswerState(it)
+        } ?: run {
+            answerSeq?.let {
+                answerDetailViewModel.getAnswerInfo(it.toInt())
+            }
         }
     })
 
@@ -69,56 +75,94 @@ private fun AnswerDetailContent(
     navController: NavHostController,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
-    Column(modifier = modifier) {
-        QuestionContent(
-            content = answerDetailViewModel.answerInfo?.question?.text,
-            backgroundColor = light_sub_primary
-        )
+    LoadingContent(answerDetailViewModel)
+    ErrorContent(answerDetailViewModel)
+    DetailContent(modifier, answerDetailViewModel)
+}
 
-        // 날짜 & 좋아요 영역
-        DayAndLikeContent(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, start = 20.dp, end = 10.dp),
-            timeText = answerDetailViewModel.answerInfo?.createdAt,
-            likeDefaultState = answerDetailViewModel.answerInfo?.question?.isLiked,
-            iLikeActionCallback = object : ILikeActionCallback {
-                override fun onState(likeState: Boolean) {
-                    Log.w("asdasd", "onState: $likeState")
+@Composable
+private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel) {
+
+    val context = LocalContext.current
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val visibleState = MutableTransitionState(answerState.isSuccessState.value)
+
+    AnimatedVisibility(visibleState = visibleState) {
+        Column(modifier = modifier) {
+            QuestionContent(
+                content = answerState.data?.question?.text,
+                backgroundColor = light_sub_primary
+            )
+
+            // 날짜 & 좋아요 영역
+            DayAndLikeContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp, start = 20.dp, end = 10.dp),
+                timeText = answerState.data?.createdAt,
+                likeDefaultState = answerState.data?.question?.isLiked,
+                iLikeActionCallback = object : ILikeActionCallback {
+                    override fun onState(likeState: Boolean) {
+                        context.showToast("좋아요 기능. 미구현")
+                    }
                 }
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .height(60.dp)
+                    .background(Color.Red.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("오디오 재생기능")
             }
-        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-                .height(60.dp)
-                .background(Color.Red.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("오디오 재생기능")
+            AnswerText(text = answerState.data?.voice?.text)
+
+            // 감정 주파수 %
+            TodayFrequencyContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 18.dp, start = 20.dp, end = 20.dp),
+                emotionList = answerState.data?.voice?.emotionList
+            )
+
+            TagInfoContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                tagList = answerState.data?.tagList
+            )
+
+            BBiBBiFrequencyButton(answerState.data?.property) // 삐삐전송하기, 우리의 감정주파수
+
         }
+    }
+}
 
-        AnswerText(text = answerDetailViewModel.answerInfo?.voice?.text)
+@Composable
+private fun ErrorContent(answerDetailViewModel: AnswerDetailViewModel) {
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val visibleState = MutableTransitionState(answerState.isErrorState.value)
+    AnimatedVisibility(visibleState = visibleState) {
+        Box(
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            Text(text = stringResource(id = R.string.answer_detail_error))
+        }
+    }
+}
 
-        // 감정 주파수 %
-        TodayFrequencyContent(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 18.dp, start = 20.dp, end = 20.dp),
-            emotionList = answerDetailViewModel.answerInfo?.voice?.emotionList
-        )
-
-        TagInfoContent(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp),
-            tagList = answerDetailViewModel.answerInfo?.tagList
-        )
-
-        BBiBBiFrequencyButton(answerDetailViewModel.answerInfo?.property) // 삐삐전송하기, 우리의 감정주파수
-
+@Composable
+private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val visibleState = MutableTransitionState(answerState.isLoading.value)
+    AnimatedVisibility(visibleState = visibleState) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
     }
 }
 
@@ -182,8 +226,7 @@ private fun AnswerText(text: String?) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-//            text = text ?: "",
-            text = "asjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\nasjdkhhasdkjsah\n",
+            text = text ?: "",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.secondary
         )

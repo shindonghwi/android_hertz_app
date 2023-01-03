@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.episode_list
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -33,7 +34,6 @@ import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
@@ -240,9 +240,10 @@ private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
+                Log.w("asdasdasd", "EpisodeItem: ${answerItem?.answerSeq}", )
                 navController.navigate(
-                    RouteScreen.AnswerDetailScreen.route +
-                            "?answer=${Gson().toJson(answerItem)}"
+                    route = RouteScreen.AnswerDetailScreen.route +
+                            "?answerSeq=${answerItem?.answerSeq}"
                 ) {
                     launchSingleTop = true
                 }

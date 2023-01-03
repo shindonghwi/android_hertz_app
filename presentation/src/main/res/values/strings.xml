@@ -38,6 +38,7 @@
 
     <string name="answer_detail_bbibbi_button">상대에게 삐삐</string>
     <string name="answer_detail_connected_button">감정 주파수 확인</string>
+    <string name="answer_detail_error">정보를 확인 할 수 없어요</string>
 
 
     <!-- 공통 -->

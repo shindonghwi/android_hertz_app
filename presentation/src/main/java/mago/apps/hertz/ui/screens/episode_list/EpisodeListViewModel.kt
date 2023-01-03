@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EpisodeListViewModel @Inject constructor(
-    getAnswerListUseCase: GetAnswerListUseCase
+    getAnswerListUseCase: GetAnswerListUseCase,
 ) : ViewModel() {
 
     val getAnswerMyList: Flow<PagingData<Answer>> =
@@ -20,7 +20,5 @@ class EpisodeListViewModel @Inject constructor(
 
     val getAnswerOurList: Flow<PagingData<Answer>> =
         getAnswerListUseCase(true).cachedIn(viewModelScope)
-
-
 
 }

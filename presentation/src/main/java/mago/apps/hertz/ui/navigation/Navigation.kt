@@ -73,19 +73,26 @@ fun Navigation(navController: NavHostController) {
         }
         composable(
             route = RouteScreen.AnswerDetailScreen.route
-                    + "?answer={answer}",
+                    + "?answer={answer}"
+                    + "&answerSeq={answerSeq}",
             arguments = listOf(
                 navArgument("answer") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument("answerSeq") {
                     type = NavType.StringType
                     nullable = true
                 },
             ),
         ) {
             val answer = it.arguments?.getString("answer")
+            val answerSeq = it.arguments?.getString("answerSeq")
             val answerDetailViewModel = hiltViewModel<AnswerDetailViewModel>()
             AnswerDetailScreen(
                 navController,
                 answerDetailViewModel,
+                answerSeq,
                 Gson().fromJson(answer, Answer::class.java)
             )
         }
