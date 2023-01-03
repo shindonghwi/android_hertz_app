@@ -12,15 +12,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,16 +41,54 @@ import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
+import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.compose.showToast
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeListScreen(
-    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController,
+    episodeListViewModel: EpisodeListViewModel
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        EpisodeListContent(navController, episodeListViewModel)
+    Scaffold(topBar = { EpisodeListAppBar(navController) }) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            EpisodeListContent(navController, episodeListViewModel)
+        }
     }
+}
+
+
+@Composable
+private fun EpisodeListAppBar(navController: NavHostController) {
+
+    AppBarContent(
+        leftContent = {
+            Icon(modifier = Modifier
+                .size(40.dp)
+                .noDuplicationClickable {
+                    navController.popBackStack()
+                }
+                .padding(6.dp),
+                imageVector = Icons.Default.ArrowBack,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        },
+        centerContent = {
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(id = R.string.episode_list_title),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+    )
 }
 
 @Composable
@@ -240,7 +280,7 @@ private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
-                Log.w("asdasdasd", "EpisodeItem: ${answerItem?.answerSeq}", )
+                Log.w("asdasdasd", "EpisodeItem: ${answerItem?.answerSeq}")
                 navController.navigate(
                     route = RouteScreen.AnswerDetailScreen.route +
                             "?answerSeq=${answerItem?.answerSeq}"

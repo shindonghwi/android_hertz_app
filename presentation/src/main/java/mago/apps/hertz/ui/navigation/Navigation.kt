@@ -97,7 +97,7 @@ fun Navigation(navController: NavHostController) {
             )
         }
         composable(route = RouteScreen.NotificationScreen.route) {
-            NotificationScreenScreen()
+            NotificationScreenScreen(navController)
         }
         composable(route = RouteScreen.EpisodeSaveScreen.route) {
             EpisodeSaveScreen()

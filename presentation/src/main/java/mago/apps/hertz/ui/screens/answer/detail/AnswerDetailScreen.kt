@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
@@ -11,6 +10,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +32,7 @@ import mago.apps.domain.model.answer.AnswerEmotionList
 import mago.apps.domain.model.answer.AnswerProperty
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
+import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -57,7 +59,7 @@ fun AnswerDetailScreen(
         }
     })
 
-    Scaffold(topBar = { EmptyTitleText(action = {}) }) {
+    Scaffold(topBar = { AnswerDetailAppBar(navController) }) {
         AnswerDetailContent(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,6 +69,47 @@ fun AnswerDetailScreen(
             answerDetailViewModel = answerDetailViewModel
         )
     }
+}
+
+@Composable
+private fun AnswerDetailAppBar(navController: NavHostController) {
+
+    val context = LocalContext.current
+
+    AppBarContent(
+        leftContent = {
+            Icon(modifier = Modifier
+                .size(40.dp)
+                .noDuplicationClickable {
+                    navController.popBackStack()
+                }
+                .padding(6.dp),
+                imageVector = Icons.Default.ArrowBack,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        },
+        centerContent = {
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(id = R.string.answer_detail_title),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        },
+        rightContent = {
+            Icon(modifier = Modifier
+                .size(36.dp)
+                .noDuplicationClickable {
+                    context.showToast("편집기능 미구현")
+                }
+                .padding(6.dp),
+                imageVector = Icons.Outlined.Edit,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        },
+    )
 }
 
 @Composable
@@ -90,23 +133,20 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
     AnimatedVisibility(visibleState = visibleState) {
         Column(modifier = modifier) {
             QuestionContent(
-                content = answerState.data?.question?.text,
-                backgroundColor = light_sub_primary
+                content = answerState.data?.question?.text, backgroundColor = light_sub_primary
             )
 
             // 날짜 & 좋아요 영역
-            DayAndLikeContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp, start = 20.dp, end = 10.dp),
+            DayAndLikeContent(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, start = 20.dp, end = 10.dp),
                 timeText = answerState.data?.createdAt,
                 likeDefaultState = answerState.data?.question?.isLiked,
                 iLikeActionCallback = object : ILikeActionCallback {
                     override fun onState(likeState: Boolean) {
                         context.showToast("좋아요 기능. 미구현")
                     }
-                }
-            )
+                })
 
             Box(
                 modifier = Modifier
@@ -183,8 +223,7 @@ private fun BBiBBiFrequencyButton(property: AnswerProperty?) {
                 .then(Modifier.noDuplicationClickable {
                     context.showToast("삐삐전송. 미구현")
                 })
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = stringResource(id = R.string.answer_detail_bbibbi_button),
@@ -235,8 +274,7 @@ private fun AnswerText(text: String?) {
 
 @Composable
 private fun TodayFrequencyContent(
-    modifier: Modifier,
-    emotionList: List<AnswerEmotionList>?
+    modifier: Modifier, emotionList: List<AnswerEmotionList>?
 ) {
     emotionList?.let { itemList ->
         Column(
@@ -300,9 +338,7 @@ private fun TagInfoContent(modifier: Modifier, tagList: List<String>?) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 state = rememberLazyListState()
             ) {
-                itemsIndexed(
-                    items = it,
-                    key = { _, item -> item }) { _, item ->
+                itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
                     Row(
                         modifier = Modifier
                             .padding(vertical = 8.dp)

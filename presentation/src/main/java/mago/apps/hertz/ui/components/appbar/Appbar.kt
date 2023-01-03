@@ -24,7 +24,7 @@ fun AppBarContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
                 .background(
                     if (isSystemInDarkTheme()) {
                         Color.Black.copy(alpha = 0.0f)

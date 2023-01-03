@@ -20,6 +20,7 @@
     <string name="episode_save_card_keyword_frequency">감정 주파수</string>
     <string name="episode_save_card_keyword_hezzibbong">헤찌뽕 키워드</string>
 
+    <string name="episode_list_title">에피소드 목록</string>
     <string name="episode_list_menu_1">내 에피소드</string>
     <string name="episode_list_menu_1_empty">내 에피소드 목록이 비었어요</string>
     <string name="episode_list_menu_2">우리의 감정 주파수</string>
@@ -28,7 +29,9 @@
     <string name="episode_list_label_type_wait">응답 대기중...</string>
     <string name="episode_list_label_type_our">우리의 감정 주파수</string>
 
+    <string name="answer_audio_title">음성 답변</string>
 
+    <string name="answer_text_title">텍스트 답변</string>
     <string name="answer_text_placeholder">질문에 대한 답변을 작성해주세요에 (최대 6자)</string>
     <string name="answer_text_title_today_emotion_frequency">오늘의 감정 주파수</string>
     <string name="answer_text_title_tag">태그</string>
@@ -36,9 +39,13 @@
     <string name="answer_text_title_tag_max_placeholder">태그는 최대 5개까지 입력 가능합니다</string>
 
 
+    <string name="answer_detail_title">에피소드</string>
     <string name="answer_detail_bbibbi_button">상대에게 삐삐</string>
     <string name="answer_detail_connected_button">감정 주파수 확인</string>
     <string name="answer_detail_error">정보를 확인 할 수 없어요</string>
+
+
+    <string name="notification_title">알림 목록</string>
 
 
     <!-- 공통 -->

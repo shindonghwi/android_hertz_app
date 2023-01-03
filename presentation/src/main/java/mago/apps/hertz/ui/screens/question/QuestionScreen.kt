@@ -1,19 +1,24 @@
 package mago.apps.hertz.ui.screens.question
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,7 +27,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
+import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_BACK_PRESS
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.findMainActivity
@@ -36,9 +42,7 @@ fun QuestionScreen(
     navController: NavHostController,
     questionViewModel: QuestionViewModel = hiltViewModel()
 ) {
-    Scaffold(topBar = {
-        IconTitleIconsAppbar(navController = navController)
-    }, bottomBar = {
+    Scaffold(topBar = { QuestionAppBar(navController) }, bottomBar = {
         QuestionBottomBar(
             modifier = Modifier
                 .fillMaxHeight(0.4f),
@@ -55,6 +59,55 @@ fun QuestionScreen(
     }
     QuestionLifecycle(questionViewModel)
     BackPressEvent()
+}
+
+@Composable
+private fun QuestionAppBar(navController: NavHostController) {
+    AppBarContent(
+        leftContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.size(44.dp),
+                    painter = painterResource(id = R.drawable.profile_sample),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = stringResource(id = R.string.home_title_2),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        rightContent = {
+            val rightIcons: List<Pair<ImageVector, () -> Unit>> = listOf(
+                Pair(Icons.Default.Menu) {
+                    navController.navigate(RouteScreen.EpisodeListScreen.route) {
+                        launchSingleTop = true
+                    }
+                },
+                Pair(Icons.Default.Notifications) {
+                    navController.navigate(RouteScreen.NotificationScreen.route) {
+                        launchSingleTop = true
+                    }
+                },
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                rightIcons.forEach {
+                    Icon(modifier = Modifier
+                        .size(40.dp)
+                        .noDuplicationClickable {
+                            it.second()
+                        }
+                        .padding(6.dp),
+                        imageVector = it.first,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outlineVariant)
+                }
+            }
+        }
+    )
 }
 
 @Composable

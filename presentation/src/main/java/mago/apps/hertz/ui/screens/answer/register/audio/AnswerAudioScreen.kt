@@ -7,6 +7,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,12 +31,13 @@ import com.google.gson.Gson
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.animation.WavesAnimation
-import mago.apps.hertz.ui.components.appbar.icon_title_icons.IconTitleIconsAppbar
+import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
@@ -50,9 +54,7 @@ fun AnswerAudioScreen(
         AnswerAudioLifecycle(this)
     }
 
-    Scaffold(topBar = {
-        IconTitleIconsAppbar(navController = navController)
-    }) {
+    Scaffold(topBar = { AnswerAudioAppBar(navController) }) {
         AnswerAudioContent(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,7 +63,32 @@ fun AnswerAudioScreen(
             navController = navController
         )
     }
+}
 
+@Composable
+private fun AnswerAudioAppBar(navController: NavHostController) {
+    AppBarContent(
+        leftContent = {
+            Icon(modifier = Modifier
+                .size(40.dp)
+                .noDuplicationClickable {
+                    navController.popBackStack()
+                }
+                .padding(6.dp),
+                imageVector = Icons.Default.ArrowBack,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        },
+        centerContent = {
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(id = R.string.answer_audio_title),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+    )
 }
 
 @Composable

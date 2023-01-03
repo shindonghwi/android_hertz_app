@@ -6,6 +6,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +26,7 @@ import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.R
-import mago.apps.hertz.ui.components.appbar.empty_title_text.EmptyTitleText
+import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
@@ -37,6 +39,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
+import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -48,40 +51,13 @@ fun AnswerTextScreen(
     answerTextViewModel: AnswerTextViewModel,
     question: QuestionRandom,
 ) {
-    val context = LocalContext.current
-
     answerTextViewModel.run {
         updateQuestionInfo(question)
         screenScrollState = rememberScrollState()
     }
 
     Scaffold(
-        topBar = {
-            EmptyTitleText(
-                action = {
-                    answerTextViewModel.run {
-                        coroutineScopeOnDefault {
-                            val response = postAnswerText()
-                            coroutineScopeOnMain {
-                                when (response) {
-                                    // 등록 하지 못하는 질문 유형
-                                    TOAST_CODE_QUESTION_1 -> {
-                                        context.showToast(TOAST_CODE_QUESTION_1)
-                                        navController.popBackStack()
-                                    }
-                                    TOAST_CODE_QUESTION_2 -> {
-                                        context.showToast(TOAST_CODE_QUESTION_2)
-                                    }
-                                    TOAST_CODE_QUESTION_3 -> {
-                                        context.showToast(TOAST_CODE_QUESTION_3)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-            )
-        },
+        topBar = { AnswerTextAppBar(navController, answerTextViewModel) },
     ) {
         AnswerTextContent(
             modifier = Modifier
@@ -92,6 +68,68 @@ fun AnswerTextScreen(
             navController = navController
         )
     }
+}
+
+@Composable
+private fun AnswerTextAppBar(
+    navController: NavHostController,
+    answerTextViewModel: AnswerTextViewModel
+) {
+    val context = LocalContext.current
+
+    AppBarContent(
+        leftContent = {
+            Icon(modifier = Modifier
+                .size(40.dp)
+                .noDuplicationClickable {
+                    navController.popBackStack()
+                }
+                .padding(6.dp),
+                imageVector = Icons.Default.ArrowBack,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        },
+        centerContent = {
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(id = R.string.answer_text_title),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary
+            )
+        },
+        rightContent = {
+            Text(
+                modifier = Modifier
+                    .noDuplicationClickable {
+                        answerTextViewModel.run {
+                            coroutineScopeOnDefault {
+                                val response = postAnswerText()
+                                coroutineScopeOnMain {
+                                    when (response) {
+                                        // 등록 하지 못하는 질문 유형
+                                        TOAST_CODE_QUESTION_1 -> {
+                                            context.showToast(TOAST_CODE_QUESTION_1)
+                                            navController.popBackStack()
+                                        }
+                                        TOAST_CODE_QUESTION_2 -> {
+                                            context.showToast(TOAST_CODE_QUESTION_2)
+                                        }
+                                        TOAST_CODE_QUESTION_3 -> {
+                                            context.showToast(TOAST_CODE_QUESTION_3)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                text = stringResource(id = R.string.save),
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    )
 }
 
 @Composable
