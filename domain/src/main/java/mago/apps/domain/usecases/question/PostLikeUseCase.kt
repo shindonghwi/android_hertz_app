@@ -1,5 +1,6 @@
 package mago.apps.domain.usecases.question
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import mago.apps.domain.model.answer.Answer
@@ -14,6 +15,7 @@ class PostLikeUseCase @Inject constructor(
     private val questionRepository: QuestionRepository
 ) {
     suspend operator fun invoke(questionSeq: Int): Flow<Resource<Answer>> = flow {
+        Log.w("Asdasdasd", "invoke: start", )
         emit(Resource.Loading())
         try {
             val response = questionRepository.postLike(questionSeq)

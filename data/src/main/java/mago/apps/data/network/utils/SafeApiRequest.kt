@@ -9,8 +9,8 @@ abstract class SafeApiRequest {
 
     suspend fun <T : Any> safeApiRequest(call: suspend () -> Response<T>): T {
         val response = call.invoke()
-        Log.d("SafeApiRequest", "safeApiRequest: $response")
         if (response.isSuccessful) {
+            Log.d("SafeApiRequest", "safeApiRequest: ${response.body()}")
             return response.body()!!
         } else {
             val responseError = response.errorBody()?.string()

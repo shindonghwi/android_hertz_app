@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,12 +11,17 @@ import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.usecases.answer.GetAnswerInfoUseCase
-import mago.apps.hertz.ui.utils.scope.onDefault
+import mago.apps.domain.usecases.question.DelLikeUseCase
+import mago.apps.domain.usecases.question.PostLikeUseCase
+import mago.apps.domain.usecases.question.PostSendQuestionFriendUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class AnswerDetailViewModel @Inject constructor(
-    private val getAnswerInfoUseCase: GetAnswerInfoUseCase
+    private val getAnswerInfoUseCase: GetAnswerInfoUseCase,
+    private val postLikeUseCase: PostLikeUseCase,
+    private val delLikeUseCase: DelLikeUseCase,
+    private val postSendQuestionFriendUseCase: PostSendQuestionFriendUseCase
 ) : ViewModel() {
 
     private val _answerState = MutableStateFlow(AnswerDetailState())
@@ -42,13 +46,11 @@ class AnswerDetailViewModel @Inject constructor(
         getAnswerInfoUseCase(answerSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
-                    Log.w("asdasdasd", "Loading", )
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(true),
                     )
                 }
                 is Resource.Error -> {
-                    Log.w("asdasdasd", "Error", )
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(false),
                         isErrorState = mutableStateOf(true),
@@ -56,7 +58,6 @@ class AnswerDetailViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
-                    Log.w("asdasdasd", "Success: ${it.data}", )
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(false),
                         isSuccessState = mutableStateOf(true),
@@ -67,4 +68,34 @@ class AnswerDetailViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private val _bbibbiState = MutableStateFlow(SendBBiBBiState())
+    val bbibbiState: StateFlow<SendBBiBBiState> = _bbibbiState
+
+    suspend fun postSendQuestionFriend(answerSeq: Int){
+        postSendQuestionFriendUseCase(answerSeq).onEach {
+            when (it) {
+                is Resource.Loading -> {
+                    _bbibbiState.value = SendBBiBBiState(
+                        isLoading = mutableStateOf(true),
+                    )
+                }
+                is Resource.Error -> {
+                    _bbibbiState.value = SendBBiBBiState(
+                        isLoading = mutableStateOf(false),
+                        isErrorState = mutableStateOf(true),
+                        error = it.message.toString()
+                    )
+                }
+                is Resource.Success -> {
+                    _bbibbiState.value = SendBBiBBiState(
+                        isLoading = mutableStateOf(false),
+                        isSuccessState = mutableStateOf(true),
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    suspend fun postLike(answerSeq: Int) = postLikeUseCase(answerSeq).launchIn(viewModelScope)
+    suspend fun delLike(answerSeq: Int) = delLikeUseCase(answerSeq).launchIn(viewModelScope)
 }

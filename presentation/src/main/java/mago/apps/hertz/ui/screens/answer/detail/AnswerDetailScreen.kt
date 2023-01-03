@@ -33,12 +33,15 @@ import mago.apps.domain.model.answer.AnswerProperty
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.components.dialog.CustomPopup
+import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +51,6 @@ fun AnswerDetailScreen(
     answerSeq: String?,
     answer: Answer?
 ) {
-
     LaunchedEffect(key1 = Unit, block = {
         answer?.let {
             answerDetailViewModel.updateAnswerState(it)
@@ -69,6 +71,32 @@ fun AnswerDetailScreen(
             answerDetailViewModel = answerDetailViewModel
         )
     }
+
+    BBiBBiPopUp(answerDetailViewModel)
+}
+
+@Composable
+private fun BBiBBiPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    BBiBBiErrorPopUp(answerDetailViewModel)
+    BBiBBiSuccessPopUp(answerDetailViewModel)
+}
+
+@Composable
+private fun BBiBBiErrorPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    val bbibbiState = answerDetailViewModel.bbibbiState.collectAsState().value
+    if (bbibbiState.isErrorState.value) {
+        CustomPopup(
+            isVisible = bbibbiState.isErrorState,
+            type = PopupType.FALLBACK,
+            showingMessage = bbibbiState.error
+        )
+    }
+}
+
+@Composable
+private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    val bbibbiState = answerDetailViewModel.bbibbiState.collectAsState().value
+
 }
 
 @Composable
@@ -126,14 +154,14 @@ private fun AnswerDetailContent(
 @Composable
 private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel) {
 
-    val context = LocalContext.current
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val visibleState = MutableTransitionState(answerState.isSuccessState.value)
 
     AnimatedVisibility(visibleState = visibleState) {
         Column(modifier = modifier) {
             QuestionContent(
-                content = answerState.data?.question?.text, backgroundColor = light_sub_primary
+                content = answerState.data?.question?.text,
+                backgroundColor = light_sub_primary
             )
 
             // 날짜 & 좋아요 영역
@@ -144,7 +172,15 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 likeDefaultState = answerState.data?.question?.isLiked,
                 iLikeActionCallback = object : ILikeActionCallback {
                     override fun onState(likeState: Boolean) {
-                        context.showToast("좋아요 기능. 미구현")
+                        answerState.data?.let {
+                            coroutineScopeOnDefault {
+                                if (likeState) {
+                                    answerDetailViewModel.postLike(it.answerSeq)
+                                } else {
+                                    answerDetailViewModel.delLike(it.answerSeq)
+                                }
+                            }
+                        }
                     }
                 })
 
@@ -176,7 +212,11 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 tagList = answerState.data?.tagList
             )
 
-            BBiBBiFrequencyButton(answerState.data?.property) // 삐삐전송하기, 우리의 감정주파수
+            BBiBBiFrequencyContent(
+                answerState.data?.answerSeq,
+                answerState.data?.property,
+                answerDetailViewModel
+            ) // 삐삐전송하기, 우리의 감정주파수
 
         }
     }
@@ -207,10 +247,11 @@ private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
 }
 
 @Composable
-private fun BBiBBiFrequencyButton(property: AnswerProperty?) {
-
-    val context = LocalContext.current
-
+private fun BBiBBiFrequencyContent(
+    answerSeq: Int?,
+    property: AnswerProperty?,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
     val boxModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 20.dp, vertical = 14.dp)
@@ -218,36 +259,58 @@ private fun BBiBBiFrequencyButton(property: AnswerProperty?) {
         .background(MaterialTheme.colorScheme.primary)
 
     property?.takeIf { !it.isSent }?.apply {
-        Box(
-            modifier = boxModifier
-                .then(Modifier.noDuplicationClickable {
-                    context.showToast("삐삐전송. 미구현")
-                })
-                .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.answer_detail_bbibbi_button),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-        }
+        BBiBBiButton(boxModifier, answerSeq, answerDetailViewModel)
     } ?: run {
         property?.takeIf { it.isSent && !it.isConnected }?.apply {
-            Box(
-                modifier = boxModifier
-                    .then(Modifier.noDuplicationClickable {
-                        context.showToast("감정주파수 확인. 미구현")
-                    })
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.answer_detail_connected_button),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
+            FrequencyButton(boxModifier)
         }
+    }
+}
+
+@Composable
+private fun FrequencyButton(modifier: Modifier) {
+    val context = LocalContext.current
+    Box(
+        modifier = modifier
+            .then(Modifier.noDuplicationClickable {
+                context.showToast("감정주파수 확인. 미구현")
+            })
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.answer_detail_connected_button),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onPrimary,
+        )
+    }
+}
+
+@Composable
+private fun BBiBBiButton(
+    modifier: Modifier,
+    answerSeq: Int?,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val context = LocalContext.current
+    Box(
+        modifier = modifier
+            .then(Modifier.noDuplicationClickable {
+                answerSeq?.let {
+                    coroutineScopeOnDefault {
+                        answerDetailViewModel.postSendQuestionFriend(it)
+                    }
+                } ?: kotlin.run {
+                    context.run { showToast(getString(R.string.toast_fail_bbibbi_send)) }
+                }
+            })
+            .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.answer_detail_bbibbi_button),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onPrimary,
+        )
     }
 }
 

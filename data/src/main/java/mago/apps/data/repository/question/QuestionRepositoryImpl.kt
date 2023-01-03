@@ -47,8 +47,7 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
     }
 
     override suspend fun postSendQuestionFriend(questionSeq: Int): ApiResponse<Unit> {
-        val response =
-            safeApiRequest { questionApi.postSendQuestionFriend(questionSeq) }
+        val response = safeApiRequest { questionApi.postSendQuestionFriend(questionSeq) }
         return ApiResponse(
             status = response.status, message = response.message, data = null
         )
@@ -64,16 +63,14 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
 
 
     override suspend fun postLike(questionSeq: Int): ApiResponse<Unit> {
-        val response =
-            safeApiRequest { questionApi.postLike(questionSeq) }
+        val response = safeApiRequest { questionApi.postLike(questionSeq) }
         return ApiResponse(
             status = response.status, message = response.message, data = null
         )
     }
 
     override suspend fun delLike(questionSeq: Int): ApiResponse<Unit> {
-        val response =
-            safeApiRequest { questionApi.delLike(questionSeq) }
+        val response = safeApiRequest { questionApi.delLike(questionSeq) }
         return ApiResponse(
             status = response.status, message = response.message, data = null
         )
