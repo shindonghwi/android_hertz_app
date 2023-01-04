@@ -394,7 +394,7 @@ private fun BBiBBiFrequencyContent(
     property?.takeIf { !it.isSent }?.apply {
         BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
     } ?: run {
-        property?.takeIf { it.isSent && !it.isConnected }?.apply {
+        property?.takeIf { it.isConnected }?.apply {
             FrequencyButton(boxModifier)
         }
     }
