@@ -1,6 +1,9 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
 import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
@@ -48,6 +51,9 @@ import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -56,6 +62,7 @@ import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
 interface IFrequencyScoreCallback {
     fun onChanged(score: String)
@@ -99,7 +106,24 @@ fun AnswerDetailScreen(
         )
     }
 
-    BBiBBiPopUp(answerDetailViewModel)
+    BBiBBiAndAnswerPatchPopUp(answerDetailViewModel)
+    BackPressEvent(navController, answerDetailViewModel)
+}
+
+@Composable
+private fun BackPressEvent(
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+
+    BackHandler(enabled = true) {
+        if (isEditingMode) {
+            answerDetailViewModel.updateEditingMode(false)
+        } else {
+            navController.popBackStack()
+        }
+    }
 }
 
 @Composable
@@ -122,9 +146,12 @@ private fun AnswerDetailScreenLifecycle(answerDetailViewModel: AnswerDetailViewM
 }
 
 @Composable
-private fun BBiBBiPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+private fun BBiBBiAndAnswerPatchPopUp(answerDetailViewModel: AnswerDetailViewModel) {
     BBiBBiErrorPopUp(answerDetailViewModel)
     BBiBBiSuccessPopUp(answerDetailViewModel)
+    AnswerLoadingView(answerDetailViewModel)
+    AnswerPatchErrorPopUp(answerDetailViewModel)
+    AnswerPatchSuccessPopUp(answerDetailViewModel)
 }
 
 @Composable
@@ -152,11 +179,51 @@ private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
 }
 
 @Composable
+private fun AnswerLoadingView(answerDetailViewModel: AnswerDetailViewModel) {
+    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
+    if (patchState.isLoading.value) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
+    }
+}
+
+@Composable
+private fun AnswerPatchErrorPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
+    if (patchState.isErrorState.value) {
+        CustomPopup(
+            isVisible = patchState.isErrorState,
+            type = PopupType.FALLBACK,
+            showingMessage = patchState.error
+        )
+    }
+}
+
+@Composable
+private fun AnswerPatchSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
+    if (patchState.isSuccessState.value) {
+        LaunchedEffect(key1 = patchState.isSuccessState, block = {
+            answerDetailViewModel.updateEditingMode(false)
+        })
+        CustomPopup(
+            isVisible = patchState.isSuccessState,
+            type = PopupType.REGISTER,
+            showingMessage = stringResource(id = R.string.dialog_answer_patch_success)
+        )
+    }
+}
+
+@Composable
 private fun AnswerDetailAppBar(
     navController: NavHostController, answerDetailViewModel: AnswerDetailViewModel
 ) {
     val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
-
+    val context = LocalContext.current
     AppBarContent(
         leftContent = {
             Icon(modifier = Modifier
@@ -192,7 +259,26 @@ private fun AnswerDetailAppBar(
                 ) {
                     Text(modifier = Modifier
                         .noDuplicationClickable {
-                            answerDetailViewModel.updateEditingMode(false)
+                            answerDetailViewModel.run {
+                                coroutineScopeOnDefault {
+                                    val response = patchAnswerData()
+                                    coroutineScopeOnMain {
+                                        when (response) {
+                                            // 등록 하지 못하는 질문 유형
+                                            TOAST_CODE_QUESTION_1 -> {
+                                                context.showToast(TOAST_CODE_QUESTION_1)
+                                                navController.popBackStack()
+                                            }
+                                            TOAST_CODE_QUESTION_2 -> {
+                                                context.showToast(TOAST_CODE_QUESTION_2)
+                                            }
+                                            TOAST_CODE_QUESTION_3 -> {
+                                                context.showToast(TOAST_CODE_QUESTION_3)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         .padding(horizontal = 8.dp, vertical = 6.dp),
                         text = stringResource(id = R.string.save),
@@ -269,7 +355,8 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
             )
 
             AnswerText(
-                answerDetailViewModel = answerDetailViewModel, text = answerState.data?.voice?.text
+                answerDetailViewModel = answerDetailViewModel,
+                text = answerState.data?.voice?.text
             )
 
             // 감정 주파수 %
@@ -394,11 +481,14 @@ private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
         }
         .padding(4.dp), contentAlignment = Alignment.Center) {
         Icon(
-            modifier = Modifier.fillMaxSize(), painter = if (isPlaying) {
+            modifier = Modifier.fillMaxSize(),
+            painter = if (isPlaying) {
                 painterResource(id = R.drawable.pause)
             } else {
                 painterResource(id = R.drawable.play)
-            }, contentDescription = "play", tint = MaterialTheme.colorScheme.onPrimary
+            },
+            contentDescription = "play",
+            tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -515,6 +605,7 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: Strin
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
             iTextCallback = object : ITextCallback {
                 override fun renderText(content: String) {
+                    answerDetailViewModel.updatePatchAnswerText(content)
                 }
             },
             isSingleLine = false,
@@ -526,7 +617,8 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: Strin
 
 @Composable
 private fun TodayFrequencyContent(
-    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier,
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
     val emotionList = answerDetailViewModel.frequencyInfoList
     val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
@@ -590,7 +682,13 @@ private fun TodayFrequencyContent(
                         answerDetailViewModel,
                         object : IFrequencyScoreCallback {
                             override fun onChanged(score: String) {
-                                answerDetailViewModel.updateFrequencyScore(score)
+                                answerDetailViewModel.run {
+                                    updateFrequencyScore(score)
+                                    updatePatchAnswerEmotion(
+                                        emotionList[idx].iconType,
+                                        score.toInt()
+                                    )
+                                }
                             }
                         },
                     )

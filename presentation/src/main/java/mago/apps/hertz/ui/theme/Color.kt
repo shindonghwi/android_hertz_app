@@ -13,7 +13,7 @@ val light_tertiary = Color(0xFF4655EE) // 3차 색상
 val light_onTertiary = Color(0xFFFFFFFF) // 3차 색상 위에 표시되는 텍스트, 아이콘등 색상
 
 val light_background = Color(0xFFFCFCFF) // 가장 기본이 되는 배경 색상( 스크롤 하위 )
-val light_onBackground = Color(0xFF001E2F) // 배경위에 올라오는 텍스트 색상
+val light_onBackground = Color(0xFF000000) // 배경위에 올라오는 텍스트 색상
 
 val light_error = Color(0xFFE72222)
 
