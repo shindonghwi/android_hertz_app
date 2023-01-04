@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,13 +25,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -48,6 +52,9 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.components.input.CustomTextField
+import mago.apps.hertz.ui.components.input.ITextCallback
+import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -151,7 +158,7 @@ private fun AnswerDetailAppBar(
             )
         },
         rightContent = {
-            Box(contentAlignment = Alignment.CenterEnd){
+            Box(contentAlignment = Alignment.CenterEnd) {
                 AnimatedVisibility(
                     visible = isEditingMode,
                     enter = fadeIn(),
@@ -243,7 +250,10 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 answerDetailViewModel = answerDetailViewModel
             )
 
-            AnswerText(text = answerState.data?.voice?.text)
+            AnswerText(
+                answerDetailViewModel = answerDetailViewModel,
+                text = answerState.data?.voice?.text
+            )
 
             // 감정 주파수 %
             TodayFrequencyContent(
@@ -481,25 +491,31 @@ private fun BBiBBiButton(
 }
 
 @Composable
-private fun AnswerText(text: String?) {
-    text?.let {
-        Box(
-            modifier = Modifier
-                .padding(top = 13.dp, start = 20.dp, end = 20.dp)
-                .fillMaxWidth()
-                .height(140.dp)
-                .clip(RoundedCornerShape(9.dp))
-                .background(light_sub_primary)
-                .verticalScroll(rememberScrollState())
-                .padding(14.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
+private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: String?) {
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+
+    Box(
+        modifier = Modifier
+            .padding(top = 13.dp, start = 20.dp, end = 20.dp)
+            .fillMaxWidth()
+            .height(140.dp)
+            .clip(RoundedCornerShape(9.dp))
+            .background(light_sub_primary)
+            .verticalScroll(rememberScrollState())
+            .padding(14.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CustomTextField(
+            textStyle = MaterialTheme.typography.bodyLarge,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
+            iTextCallback = object : ITextCallback {
+                override fun renderText(content: String) {
+                }
+            },
+            isSingleLine = false,
+            defaultText = text.toString(),
+            enable = isEditingMode
+        )
     }
 }
 
