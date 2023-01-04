@@ -83,6 +83,8 @@ fun AnswerDetailScreen(
         })
     }
 
+    AnswerDetailScreenLifecycle(answerDetailViewModel)
+
     Scaffold(
         topBar = {
             AnswerDetailAppBar(navController, answerDetailViewModel)
@@ -98,6 +100,25 @@ fun AnswerDetailScreen(
     }
 
     BBiBBiPopUp(answerDetailViewModel)
+}
+
+@Composable
+private fun AnswerDetailScreenLifecycle(answerDetailViewModel: AnswerDetailViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner, effect = {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_DESTROY -> {
+                    answerDetailViewModel.audioClear()
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    })
 }
 
 @Composable
@@ -132,8 +153,7 @@ private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
 
 @Composable
 private fun AnswerDetailAppBar(
-    navController: NavHostController,
-    answerDetailViewModel: AnswerDetailViewModel
+    navController: NavHostController, answerDetailViewModel: AnswerDetailViewModel
 ) {
     val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
 
@@ -151,8 +171,7 @@ private fun AnswerDetailAppBar(
                 .padding(6.dp),
                 imageVector = Icons.Default.ArrowBack,
                 tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
+                contentDescription = null)
         },
         centerContent = {
             Text(
@@ -169,25 +188,19 @@ private fun AnswerDetailAppBar(
         rightContent = {
             Box(contentAlignment = Alignment.CenterEnd) {
                 AnimatedVisibility(
-                    visible = isEditingMode,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    visible = isEditingMode, enter = fadeIn(), exit = fadeOut()
                 ) {
-                    Text(
-                        modifier = Modifier
-                            .noDuplicationClickable {
-                                answerDetailViewModel.updateEditingMode(false)
-                            }
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                    Text(modifier = Modifier
+                        .noDuplicationClickable {
+                            answerDetailViewModel.updateEditingMode(false)
+                        }
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
                         text = stringResource(id = R.string.save),
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                        color = MaterialTheme.colorScheme.primary)
                 }
                 AnimatedVisibility(
-                    visible = !isEditingMode,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    visible = !isEditingMode, enter = fadeIn(), exit = fadeOut()
                 ) {
                     Icon(modifier = Modifier
                         .size(36.dp)
@@ -197,8 +210,7 @@ private fun AnswerDetailAppBar(
                         .padding(6.dp),
                         imageVector = Icons.Outlined.Edit,
                         tint = MaterialTheme.colorScheme.secondary,
-                        contentDescription = null
-                    )
+                        contentDescription = null)
                 }
             }
         },
@@ -207,8 +219,7 @@ private fun AnswerDetailAppBar(
 
 @Composable
 private fun AnswerDetailContent(
-    modifier: Modifier,
-    answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
 ) {
     LoadingContent(answerDetailViewModel)
     ErrorContent(answerDetailViewModel)
@@ -224,8 +235,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
     AnimatedVisibility(visibleState = visibleState) {
         Column(modifier = modifier) {
             QuestionContent(
-                content = answerState.data?.question?.text,
-                backgroundColor = light_sub_primary
+                content = answerState.data?.question?.text, backgroundColor = light_sub_primary
             )
 
             // 날짜 & 좋아요 영역
@@ -259,8 +269,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
             )
 
             AnswerText(
-                answerDetailViewModel = answerDetailViewModel,
-                text = answerState.data?.voice?.text
+                answerDetailViewModel = answerDetailViewModel, text = answerState.data?.voice?.text
             )
 
             // 감정 주파수 %
@@ -296,11 +305,12 @@ private fun AnswerAudioContent(
     waveformImageUrl: String,
     answerDetailViewModel: AnswerDetailViewModel,
 ) {
-    if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+
+    if (!isEditingMode && waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
         AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
         Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = modifier, verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = duration,
@@ -313,11 +323,8 @@ private fun AnswerAudioContent(
                     .weight(1f)
                     .padding(horizontal = 12.dp),
                 painter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(waveformImageUrl)
-                        .size(Size.ORIGINAL)
-                        .crossfade(true)
-                        .build()
+                    model = ImageRequest.Builder(LocalContext.current).data(waveformImageUrl)
+                        .size(Size.ORIGINAL).crossfade(true).build()
                 ),
                 contentDescription = null,
             )
@@ -336,18 +343,21 @@ private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDe
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    answerDetailViewModel.mediaPlayer.apply {
-                        setAudioAttributes(
-                            AudioAttributes
-                                .Builder()
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .build()
-                        )
-                        setOnCompletionListener {
-                            answerDetailViewModel.audioReset()
+                    if (answerDetailViewModel.mediaPlayer == null) {
+                        answerDetailViewModel.run {
+                            initPlayer()
+                            mediaPlayer?.apply {
+                                setAudioAttributes(
+                                    AudioAttributes.Builder()
+                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+                                )
+                                setOnCompletionListener {
+                                    answerDetailViewModel.audioReset()
+                                }
+                                setDataSource(context, audioUrl.toUri())
+                                prepare()
+                            }
                         }
-                        setDataSource(context, audioUrl.toUri())
-                        prepare()
                     }
                 }
                 Lifecycle.Event.ON_PAUSE -> {
@@ -358,11 +368,6 @@ private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDe
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            answerDetailViewModel.mediaPlayer.run {
-                stop()
-                release()
-                null
-            }
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     })
@@ -373,33 +378,27 @@ private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
 
     val isPlaying = answerDetailViewModel.isPlaying.collectAsState().value
 
-    Box(
-        modifier = Modifier
-            .size(34.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
-            .noDuplicationClickable {
-                answerDetailViewModel.run {
-                    if (isPlaying) {
-                        audioReset()
-                    } else {
-                        audioStart()
-                    }
+    Box(modifier = Modifier
+        .size(34.dp)
+        .clip(CircleShape)
+        .background(MaterialTheme.colorScheme.primary)
+        .noDuplicationClickable {
+            answerDetailViewModel.run {
+                if (isPlaying) {
+                    audioReset()
+                } else {
+                    audioStart()
                 }
-
             }
-            .padding(4.dp),
-        contentAlignment = Alignment.Center
-    ) {
+
+        }
+        .padding(4.dp), contentAlignment = Alignment.Center) {
         Icon(
-            modifier = Modifier.fillMaxSize(),
-            painter = if (isPlaying) {
+            modifier = Modifier.fillMaxSize(), painter = if (isPlaying) {
                 painterResource(id = R.drawable.pause)
             } else {
                 painterResource(id = R.drawable.play)
-            },
-            contentDescription = "play",
-            tint = MaterialTheme.colorScheme.onPrimary
+            }, contentDescription = "play", tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -431,21 +430,23 @@ private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
 
 @Composable
 private fun BBiBBiFrequencyContent(
-    questionSeq: Int?,
-    property: AnswerProperty?,
-    answerDetailViewModel: AnswerDetailViewModel
+    questionSeq: Int?, property: AnswerProperty?, answerDetailViewModel: AnswerDetailViewModel
 ) {
-    val boxModifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp, vertical = 14.dp)
-        .clip(RoundedCornerShape(12.dp))
-        .background(MaterialTheme.colorScheme.primary)
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
 
-    property?.takeIf { !it.isSent }?.apply {
-        BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
-    } ?: run {
-        property?.takeIf { it.isConnected }?.apply {
-            FrequencyButton(boxModifier)
+    if (!isEditingMode) {
+        val boxModifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.primary)
+
+        property?.takeIf { !it.isSent }?.apply {
+            BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
+        } ?: run {
+            property?.takeIf { it.isConnected }?.apply {
+                FrequencyButton(boxModifier)
+            }
         }
     }
 }
@@ -458,8 +459,7 @@ private fun FrequencyButton(modifier: Modifier) {
             .then(Modifier.noDuplicationClickable {
                 context.showToast("감정주파수 확인. 미구현")
             })
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.answer_detail_connected_button),
@@ -471,9 +471,7 @@ private fun FrequencyButton(modifier: Modifier) {
 
 @Composable
 private fun BBiBBiButton(
-    modifier: Modifier,
-    questionSeq: Int?,
-    answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier, questionSeq: Int?, answerDetailViewModel: AnswerDetailViewModel
 ) {
     val context = LocalContext.current
     Box(
@@ -487,8 +485,7 @@ private fun BBiBBiButton(
                     context.run { showToast(getString(R.string.toast_fail_bbibbi_send)) }
                 }
             })
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.answer_detail_bbibbi_button),
@@ -522,15 +519,14 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: Strin
             },
             isSingleLine = false,
             defaultText = text.toString(),
-            enable = isEditingMode
+            enable = isEditingMode,
         )
     }
 }
 
 @Composable
 private fun TodayFrequencyContent(
-    modifier: Modifier,
-    answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
 ) {
     val emotionList = answerDetailViewModel.frequencyInfoList
     val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
@@ -640,10 +636,8 @@ private fun FrequencySeekbar(
                         modifier = Modifier
                             .size(20.dp)
                             .indication(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(
-                                    bounded = false,
-                                    radius = 20.dp
+                                interactionSource = interactionSource, indication = rememberRipple(
+                                    bounded = false, radius = 20.dp
                                 )
                             )
                             .hoverable(interactionSource = interactionSource)
@@ -658,8 +652,7 @@ private fun FrequencySeekbar(
 
 @Composable
 private fun TagInfoContainer(
-    modifier: Modifier,
-    answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
 ) {
     val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
 

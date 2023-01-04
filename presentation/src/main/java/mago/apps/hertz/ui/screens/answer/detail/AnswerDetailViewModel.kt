@@ -23,7 +23,6 @@ import mago.apps.hertz.ui.utils.recorder.CountUpTimer
 import javax.inject.Inject
 
 
-
 @HiltViewModel
 class AnswerDetailViewModel @Inject constructor(
     private val getAnswerInfoUseCase: GetAnswerInfoUseCase,
@@ -66,7 +65,6 @@ class AnswerDetailViewModel @Inject constructor(
             }
         }
     }
-
 
 
     /** 답변 정보 */
@@ -142,16 +140,20 @@ class AnswerDetailViewModel @Inject constructor(
     suspend fun delLike(questionSeq: Int) = delLikeUseCase(questionSeq).launchIn(viewModelScope)
 
     /** 음성 플레이, 정지 */
-    val mediaPlayer = MediaPlayer()
+    var mediaPlayer: MediaPlayer? = null
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying
 
-    fun updatePlayingState(flag: Boolean) {
+    private fun updatePlayingState(flag: Boolean) {
         _isPlaying.value = flag
     }
 
+    fun initPlayer() {
+        mediaPlayer = MediaPlayer()
+    }
+
     fun audioReset() {
-        mediaPlayer.run {
+        mediaPlayer?.run {
             pause()
             seekTo(0)
             updatePlayingState(false)
@@ -159,8 +161,16 @@ class AnswerDetailViewModel @Inject constructor(
     }
 
     fun audioStart() {
-        mediaPlayer.start()
+        mediaPlayer?.start()
         updatePlayingState(true)
+    }
+
+    fun audioClear() {
+        mediaPlayer?.run {
+            stop()
+            release()
+            null
+        }
     }
 
     private val countUpTimer = CountUpTimer()
