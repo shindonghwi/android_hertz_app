@@ -35,5 +35,30 @@ class AnswerRepositoryImpl @Inject constructor(
             AnswerListPagingSource(answerApi, isConnected)
         }.flow
     }
+
+    override suspend fun patchAnswer(
+        answerSeq: Int,
+        text: String,
+        tags: String,
+        anger: Int,
+        neutral: Int,
+        happiness: Int,
+        sadness: Int
+    ): ApiResponse<Answer> {
+        val response = safeApiRequest {
+            answerApi.patchAnswer(
+                answerSeq,
+                text,
+                tags,
+                anger,
+                neutral,
+                happiness,
+                sadness
+            )
+        }
+        return ApiResponse(
+            status = response.status, message = response.message, data = response.data?.toDomain()
+        )
+    }
 }
 

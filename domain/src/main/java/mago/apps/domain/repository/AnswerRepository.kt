@@ -26,4 +26,19 @@ interface AnswerRepository {
      */
     fun getAnswerList(isConnected: Boolean?): Flow<PagingData<Answer>>
 
+    /** @feature: 답변 수정 기능
+     * @author: 2023/01/04 1:11 PM donghwishin
+     * @description{
+     *  answerSeq: Int // 질문 번호(seq)
+     * }
+     */
+    suspend fun patchAnswer(
+        answerSeq: Int, text: String,
+        tags: String,
+        anger: Int,
+        neutral: Int,
+        happiness: Int,
+        sadness: Int,
+    ): ApiResponse<Answer>
+
 }

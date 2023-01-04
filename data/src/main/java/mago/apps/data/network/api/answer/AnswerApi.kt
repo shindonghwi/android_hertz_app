@@ -2,13 +2,10 @@ package mago.apps.data.network.api.answer
 
 import mago.apps.data.constants.API_VERSION
 import mago.apps.data.network.model.answer.AnswerDTO
-import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
 import mago.apps.domain.model.common.DataListType
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface AnswerApi {
 
@@ -17,7 +14,7 @@ interface AnswerApi {
      * @description{
      *  answerSeq: Int // 질문 번호(seq)
      * }
-    */
+     */
     @GET("$API_VERSION/answer/{answerSeq}")
     suspend fun getAnswerInfo(
         @Path(value = "answerSeq") answerSeq: Int,
@@ -31,7 +28,7 @@ interface AnswerApi {
      *  isConnected false -> 연결 제외
      *  isConnected null -> 전체 목록
      * }
-    */
+     */
     @GET("$API_VERSION/answers")
     suspend fun getAnswerList(
         @Query("isConnected") isConnected: Boolean?,
@@ -39,4 +36,20 @@ interface AnswerApi {
         @Query("size") size: Int,
         @Query("offsetTime") offsetTime: Long?,
     ): ApiResponse<DataListType<AnswerDTO>>
+
+
+    /** @feature: 답변을 수정하는 기능
+     * @author: 2023/01/04 1:10 PM donghwishin
+     */
+    @PATCH("$API_VERSION/answer/{answerSeq}")
+    @FormUrlEncoded
+    suspend fun patchAnswer(
+        @Path(value = "answerSeq") answerSeq: Int,
+        @Field("text") text: String,
+        @Field("tags") tags: String,
+        @Field("anger") anger: Int,
+        @Field("neutral") neutral: Int,
+        @Field("happiness") happiness: Int,
+        @Field("sadness") sadness: Int,
+    ): Response<ApiResponse<AnswerDTO>>
 }
