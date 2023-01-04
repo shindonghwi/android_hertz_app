@@ -1,16 +1,15 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
 import android.media.MediaPlayer
-import android.util.Log
-import androidx.compose.runtime.MutableState
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.answer.AnswerEmotionList
 import mago.apps.domain.model.common.EmotionList
@@ -97,6 +96,7 @@ class AnswerDetailViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
+                    updateTagList(it.data?.tagList)
                     updateEmotionList(it.data?.voice?.emotionList)
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(false),
@@ -165,4 +165,46 @@ class AnswerDetailViewModel @Inject constructor(
 
     private val countUpTimer = CountUpTimer()
     fun getTime(duration: Int?) = countUpTimer.timeToString(duration ?: 0)
+
+    /** 태그 관련 UI */
+    lateinit var screenScrollState: ScrollState
+    lateinit var tagListScrollState: LazyListState
+    var scrollToBottomAction: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    var scrollToEndAction: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    val tagList = mutableStateListOf<String>()
+
+    fun updateTagList(items: List<String>?) {
+        items?.let { tagList.addAll(it) }
+    }
+
+    fun addTag(tag: String) {
+        if (tag.isNotEmpty() && !tagList.contains(tag)) {
+            tagList.add(tag)
+        }
+    }
+
+    fun removeTag(tag: String) {
+        tagList.remove(tag)
+    }
+
+    fun updateScrollBottomAction(flag: Boolean) {
+        scrollToBottomAction.update { flag }
+    }
+
+    fun updateScrollEndAction(flag: Boolean) {
+        scrollToEndAction.update { flag }
+    }
+
+    suspend fun scrollToBottom() {
+        screenScrollState.animateScrollTo(screenScrollState.maxValue)
+        delay(10)
+        updateScrollBottomAction(false)
+    }
+
+    suspend fun scrollToEnd() {
+        tagListScrollState.animateScrollToItem(tagList.lastIndex)
+        delay(10)
+        updateScrollEndAction(false)
+    }
 }

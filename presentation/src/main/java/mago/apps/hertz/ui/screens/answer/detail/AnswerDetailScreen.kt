@@ -51,6 +51,7 @@ import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
+import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
@@ -68,15 +69,19 @@ fun AnswerDetailScreen(
     answerSeq: String?,
     answer: Answer?
 ) {
-    LaunchedEffect(key1 = Unit, block = {
-        answer?.let {
-            answerDetailViewModel.updateAnswerState(it)
-        } ?: run {
-            answerSeq?.let {
-                answerDetailViewModel.getAnswerInfo(it.toInt())
+    answerDetailViewModel.apply {
+        screenScrollState = rememberScrollState()
+    }.run {
+        LaunchedEffect(key1 = Unit, block = {
+            answer?.let {
+                answerDetailViewModel.updateAnswerState(it)
+            } ?: run {
+                answerSeq?.let {
+                    answerDetailViewModel.getAnswerInfo(it.toInt())
+                }
             }
-        }
-    })
+        })
+    }
 
     Scaffold(
         topBar = {
@@ -87,8 +92,7 @@ fun AnswerDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .verticalScroll(rememberScrollState()),
-            navController = navController,
+                .verticalScroll(answerDetailViewModel.screenScrollState),
             answerDetailViewModel = answerDetailViewModel
         )
     }
@@ -204,7 +208,6 @@ private fun AnswerDetailAppBar(
 @Composable
 private fun AnswerDetailContent(
     modifier: Modifier,
-    navController: NavHostController,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
     LoadingContent(answerDetailViewModel)
@@ -268,11 +271,11 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 answerDetailViewModel = answerDetailViewModel
             )
 
-            TagInfoContent(
+            TagInfoContainer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                tagList = answerState.data?.tagList
+                answerDetailViewModel = answerDetailViewModel
             )
 
             BBiBBiFrequencyContent(
@@ -654,43 +657,55 @@ private fun FrequencySeekbar(
 }
 
 @Composable
-private fun TagInfoContent(modifier: Modifier, tagList: List<String>?) {
-    tagList?.let {
-        Column(
-            modifier = modifier,
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 20.dp),
-                text = stringResource(id = R.string.answer_text_title_tag),
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
+private fun TagInfoContainer(
+    modifier: Modifier,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
 
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                state = rememberLazyListState()
+    if (isEditingMode) {
+        TagInfoContent(
+            modifier = Modifier.padding(top = 12.dp, start = 20.dp, end = 20.dp),
+            vm = answerDetailViewModel
+        )
+    } else {
+        answerDetailViewModel.tagList.let {
+            Column(
+                modifier = modifier,
             ) {
-                itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .wrapContentWidth()
-                            .height(30.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
-                            text = "#${item}",
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.labelMedium,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                Text(
+                    modifier = Modifier.padding(start = 20.dp),
+                    text = stringResource(id = R.string.answer_text_title_tag),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    state = rememberLazyListState()
+                ) {
+                    itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .wrapContentWidth()
+                                .height(30.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(horizontal = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
+                                text = "#${item}",
+                                color = MaterialTheme.colorScheme.secondary,
+                                style = MaterialTheme.typography.labelMedium,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }

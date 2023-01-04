@@ -169,7 +169,7 @@ private fun AnswerTextContent(
         // 태그 정보
         TagInfoContent(
             modifier = Modifier.padding(top = 12.dp, start = 20.dp, end = 20.dp),
-            answerTextViewModel = answerTextViewModel
+            vm = answerTextViewModel
         )
     }
     PostAnswerTextPopup(answerTextViewModel, navController)

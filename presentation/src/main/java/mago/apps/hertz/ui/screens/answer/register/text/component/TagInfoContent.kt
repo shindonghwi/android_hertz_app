@@ -31,29 +31,39 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
+import mago.apps.hertz.ui.screens.answer.detail.AnswerDetailViewModel
 import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
-fun TagInfoContent(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
-
-    answerTextViewModel.tagListScrollState = rememberLazyListState()
-
-    ScrollToBottomAction(answerTextViewModel)
-    ScrollToEndAction(answerTextViewModel)
-
-    TagTitle(modifier, answerTextViewModel)
-
-    TagList(answerTextViewModel)
-
-    InputTag(modifier, answerTextViewModel)
-
+fun <T> TagInfoContent(modifier: Modifier, vm: T) {
+    if (vm is AnswerTextViewModel) {
+        vm.tagListScrollState = rememberLazyListState()
+        ScrollToBottomAction(vm)
+        ScrollToEndAction(vm)
+        TagTitle(modifier, vm)
+        TagList(vm)
+        InputTag(modifier, vm)
+    } else if (vm is AnswerDetailViewModel) {
+        vm.tagListScrollState = rememberLazyListState()
+        ScrollToBottomAction(vm)
+        ScrollToEndAction(vm)
+        TagTitle(modifier, vm)
+        TagList(vm)
+        InputTag(modifier, vm)
+    }
 }
 
 @Composable
-private fun TagTitle(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
+private fun <T> TagTitle(modifier: Modifier, vm: T) {
 
-    val tagList = answerTextViewModel.tagList
+    var tagList: List<String> = listOf()
+
+    if (vm is AnswerTextViewModel) {
+        tagList = vm.tagList
+    } else if (vm is AnswerDetailViewModel) {
+        tagList = vm.tagList
+    }
 
     Row(
         modifier = modifier,
@@ -75,10 +85,18 @@ private fun TagTitle(modifier: Modifier, answerTextViewModel: AnswerTextViewMode
 }
 
 @Composable
-private fun TagList(answerTextViewModel: AnswerTextViewModel) {
+private fun <T> TagList(vm: T) {
 
-    val tagList = answerTextViewModel.tagList
-    val tagScrollState = answerTextViewModel.tagListScrollState
+    var tagList: List<String> = listOf()
+    var tagScrollState = rememberLazyListState()
+
+    if (vm is AnswerTextViewModel) {
+        tagList = vm.tagList
+        tagScrollState = vm.tagListScrollState
+    } else if (vm is AnswerDetailViewModel) {
+        tagList = vm.tagList
+        tagScrollState = vm.tagListScrollState
+    }
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -104,7 +122,11 @@ private fun TagList(answerTextViewModel: AnswerTextViewModel) {
                     modifier = Modifier
                         .fillMaxHeight()
                         .noDuplicationClickable {
-                            answerTextViewModel.removeTag(item)
+                            if (vm is AnswerTextViewModel) {
+                                vm.removeTag(item)
+                            } else if (vm is AnswerDetailViewModel) {
+                                vm.removeTag(item)
+                            }
                         }
                         .padding(6.dp),
                     imageVector = Icons.Filled.Close,
@@ -125,9 +147,16 @@ private fun TagList(answerTextViewModel: AnswerTextViewModel) {
 }
 
 @Composable
-private fun InputTag(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
+private fun <T> InputTag(modifier: Modifier, vm: T) {
     var currentInputText = remember { "" }
-    val tagList = answerTextViewModel.tagList
+
+    var tagList: List<String> = listOf()
+
+    if (vm is AnswerTextViewModel) {
+        tagList = vm.tagList
+    } else if (vm is AnswerDetailViewModel) {
+        tagList = vm.tagList
+    }
 
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -164,10 +193,18 @@ private fun InputTag(modifier: Modifier, answerTextViewModel: AnswerTextViewMode
                 ),
                 keyBoardActionUnit = KeyBoardActionUnit(
                     onDone = {
-                        answerTextViewModel.run {
-                            addTag(currentInputText)
-                            updateScrollBottomAction(true)
-                            updateScrollEndAction(true)
+                        if (vm is AnswerTextViewModel) {
+                            vm.run {
+                                addTag(currentInputText)
+                                updateScrollBottomAction(true)
+                                updateScrollEndAction(true)
+                            }
+                        } else if (vm is AnswerDetailViewModel) {
+                            vm.run {
+                                addTag(currentInputText)
+                                updateScrollBottomAction(true)
+                                updateScrollEndAction(true)
+                            }
                         }
                         currentInputText = ""
                     },
@@ -191,26 +228,42 @@ private fun InputTag(modifier: Modifier, answerTextViewModel: AnswerTextViewMode
 }
 
 @Composable
-private fun ScrollToBottomAction(answerTextViewModel: AnswerTextViewModel) {
-    val scrollToBottomActionIsActive =
-        answerTextViewModel.scrollToBottomAction.collectAsState().value
-
-    if (scrollToBottomActionIsActive) {
-        LaunchedEffect(key1 = true) {
-            answerTextViewModel.scrollToBottom()
+private fun <T> ScrollToBottomAction(vm: T) {
+    if (vm is AnswerTextViewModel) {
+        val scrollToBottomActionIsActive = vm.scrollToBottomAction.collectAsState().value
+        if (scrollToBottomActionIsActive) {
+            LaunchedEffect(key1 = true) {
+                vm.scrollToBottom()
+            }
+        }
+    } else if (vm is AnswerDetailViewModel) {
+        val scrollToBottomActionIsActive = vm.scrollToBottomAction.collectAsState().value
+        if (scrollToBottomActionIsActive) {
+            LaunchedEffect(key1 = true) {
+                vm.scrollToBottom()
+            }
         }
     }
 }
 
 
 @Composable
-private fun ScrollToEndAction(answerTextViewModel: AnswerTextViewModel) {
-    val scrollToEndActionIsActive =
-        answerTextViewModel.scrollToEndAction.collectAsState().value
-
-    if (scrollToEndActionIsActive) {
-        LaunchedEffect(key1 = true) {
-            answerTextViewModel.scrollToEnd()
+private fun <T> ScrollToEndAction(vm: T) {
+    if (vm is AnswerTextViewModel) {
+        val scrollToEndActionIsActive =
+            vm.scrollToEndAction.collectAsState().value
+        if (scrollToEndActionIsActive) {
+            LaunchedEffect(key1 = true) {
+                vm.scrollToEnd()
+            }
+        }
+    } else if (vm is AnswerDetailViewModel) {
+        val scrollToEndActionIsActive =
+            vm.scrollToEndAction.collectAsState().value
+        if (scrollToEndActionIsActive) {
+            LaunchedEffect(key1 = true) {
+                vm.scrollToEnd()
+            }
         }
     }
 }
