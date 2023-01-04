@@ -5,28 +5,25 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -43,9 +40,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import mago.apps.domain.model.answer.Answer
-import mago.apps.domain.model.answer.AnswerEmotionList
 import mago.apps.domain.model.answer.AnswerProperty
-import mago.apps.domain.model.common.EmotionList
+import mago.apps.domain.model.common.EmotionType
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
@@ -59,6 +55,10 @@ import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
+
+interface IFrequencyScoreCallback {
+    fun onChanged(score: String)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,7 +140,7 @@ private fun AnswerDetailAppBar(
                 .noDuplicationClickable {
                     if (isEditingMode) {
                         answerDetailViewModel.updateEditingMode(false)
-                    }else{
+                    } else {
                         navController.popBackStack()
                     }
                 }
@@ -265,7 +265,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 18.dp, start = 20.dp, end = 20.dp),
-                emotionList = answerState.data?.voice?.emotionList
+                answerDetailViewModel = answerDetailViewModel
             )
 
             TagInfoContent(
@@ -526,9 +526,14 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: Strin
 
 @Composable
 private fun TodayFrequencyContent(
-    modifier: Modifier, emotionList: List<AnswerEmotionList>?
+    modifier: Modifier,
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
-    emotionList?.let { itemList ->
+    val emotionList = answerDetailViewModel.frequencyInfoList
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+    val selectedValue = remember { mutableStateOf(EmotionType.HAPPINESS.name) }
+
+    if (emotionList.isNotEmpty()) {
         Column(
             modifier = modifier,
         ) {
@@ -543,30 +548,107 @@ private fun TodayFrequencyContent(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                repeat(itemList.size) { idx ->
+                repeat(emotionList.size) { idx ->
 
-                    val type = itemList[idx].type
-
-                    val icon = EmotionList.find { type == it.second.name }?.first.toString()
-                    val iconType = EmotionList.find { type == it.second.name }?.second.toString()
-                    val rate = "${itemList.find { it.type == iconType }?.rate}%"
+                    val icon = answerDetailViewModel.frequencyInfoList[idx].icon
+                    val rate = answerDetailViewModel.frequencyInfoList[idx].rate
+                    val type = answerDetailViewModel.frequencyInfoList[idx].iconType
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        if (isEditingMode) {
+                            RadioButton(
+                                modifier = Modifier
+                                    .padding(end = 4.dp)
+                                    .size(20.dp),
+                                selected = selectedValue.value == type,
+                                onClick = {
+                                    selectedValue.value = type
+                                    answerDetailViewModel.updateSelectedFrequencyIndex(idx)
+                                },
+                            )
+                        }
                         Text(
                             text = icon,
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
                             modifier = Modifier.padding(start = 4.dp),
-                            text = rate,
+                            text = "${rate.value}%",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 }
             }
+        }
+        if (isEditingMode) {
+            Box {
+                repeat(emotionList.size) { idx ->
+                    FrequencySeekbar(
+                        idx,
+                        answerDetailViewModel,
+                        object : IFrequencyScoreCallback {
+                            override fun onChanged(score: String) {
+                                answerDetailViewModel.updateFrequencyScore(score)
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FrequencySeekbar(
+    idx: Int,
+    answerDetailViewModel: AnswerDetailViewModel,
+    iFrequencyScoreCallback: IFrequencyScoreCallback
+) {
+    val currentIndex = answerDetailViewModel.selectedFrequencyIndex.collectAsState().value
+
+    var sliderPosition by remember {
+        mutableStateOf(answerDetailViewModel.frequencyInfoList[idx].rate.value.toFloat())
+    }
+    val interactionSource = MutableInteractionSource()
+
+    if (currentIndex == idx) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        ) {
+            Slider(
+                modifier = Modifier,
+                value = sliderPosition,
+                onValueChange = {
+                    sliderPosition = it
+                    iFrequencyScoreCallback.onChanged(sliderPosition.toInt().toString())
+                },
+                valueRange = 0f..100f,
+                steps = 100,
+                interactionSource = interactionSource,
+                thumb = {
+                    val shape = CircleShape
+                    Spacer(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .indication(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(
+                                    bounded = false,
+                                    radius = 20.dp
+                                )
+                            )
+                            .hoverable(interactionSource = interactionSource)
+                            .shadow(0.dp, shape, clip = false)
+                            .background(MaterialTheme.colorScheme.primary, shape)
+                    )
+                },
+            )
         }
     }
 }
