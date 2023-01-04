@@ -25,12 +25,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +52,6 @@ import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
-import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -141,7 +138,11 @@ private fun AnswerDetailAppBar(
             Icon(modifier = Modifier
                 .size(40.dp)
                 .noDuplicationClickable {
-                    navController.popBackStack()
+                    if (isEditingMode) {
+                        answerDetailViewModel.updateEditingMode(false)
+                    }else{
+                        navController.popBackStack()
+                    }
                 }
                 .padding(6.dp),
                 imageVector = Icons.Default.ArrowBack,
@@ -152,7 +153,11 @@ private fun AnswerDetailAppBar(
         centerContent = {
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(id = R.string.answer_detail_title),
+                text = if (isEditingMode) {
+                    stringResource(id = R.string.answer_detail_title_edit)
+                } else {
+                    stringResource(id = R.string.answer_detail_title)
+                },
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.secondary
             )
