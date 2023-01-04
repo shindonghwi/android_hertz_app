@@ -33,7 +33,8 @@ interface AnswerRepository {
      * }
      */
     suspend fun patchAnswer(
-        answerSeq: Int, text: String,
+        answerSeq: Int,
+        text: String,
         tags: String,
         anger: Int,
         neutral: Int,

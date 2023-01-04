@@ -29,10 +29,11 @@ class AnswerDetailViewModel @Inject constructor(
     private val _answerState = MutableStateFlow(AnswerDetailState())
     val answerState: StateFlow<AnswerDetailState> = _answerState
 
-    var isEditingMode: Boolean = false
+    private var _isEditingMode = MutableStateFlow(false)
+    var isEditingMode = _isEditingMode
 
     fun updateEditingMode(flag: Boolean) {
-        isEditingMode = flag
+        _isEditingMode.value = flag
     }
 
     /** 답변 정보 */

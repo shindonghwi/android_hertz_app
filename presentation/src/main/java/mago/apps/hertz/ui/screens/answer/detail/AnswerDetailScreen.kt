@@ -3,6 +3,8 @@ package mago.apps.hertz.ui.screens.answer.detail
 import android.media.AudioAttributes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -72,7 +74,11 @@ fun AnswerDetailScreen(
         }
     })
 
-    Scaffold(topBar = { AnswerDetailAppBar(navController) }) {
+    Scaffold(
+        topBar = {
+            AnswerDetailAppBar(navController, answerDetailViewModel)
+        },
+    ) {
         AnswerDetailContent(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,9 +123,11 @@ private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
 }
 
 @Composable
-private fun AnswerDetailAppBar(navController: NavHostController) {
-
-    val context = LocalContext.current
+private fun AnswerDetailAppBar(
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
 
     AppBarContent(
         leftContent = {
@@ -143,16 +151,40 @@ private fun AnswerDetailAppBar(navController: NavHostController) {
             )
         },
         rightContent = {
-            Icon(modifier = Modifier
-                .size(36.dp)
-                .noDuplicationClickable {
-                    context.showToast("편집기능 미구현")
+            Box(contentAlignment = Alignment.CenterEnd){
+                AnimatedVisibility(
+                    visible = isEditingMode,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .noDuplicationClickable {
+                                answerDetailViewModel.updateEditingMode(false)
+                            }
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        text = stringResource(id = R.string.save),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
-                .padding(6.dp),
-                imageVector = Icons.Outlined.Edit,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
+                AnimatedVisibility(
+                    visible = !isEditingMode,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Icon(modifier = Modifier
+                        .size(36.dp)
+                        .noDuplicationClickable {
+                            answerDetailViewModel.updateEditingMode(true)
+                        }
+                        .padding(6.dp),
+                        imageVector = Icons.Outlined.Edit,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = null
+                    )
+                }
+            }
         },
     )
 }
