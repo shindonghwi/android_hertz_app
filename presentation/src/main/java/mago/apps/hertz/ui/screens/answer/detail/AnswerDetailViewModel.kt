@@ -109,6 +109,19 @@ class AnswerDetailViewModel @Inject constructor(
         _isPlaying.value = flag
     }
 
+    fun audioReset(){
+        mediaPlayer.run {
+            pause()
+            seekTo(0)
+            updatePlayingState(false)
+        }
+    }
+
+    fun audioStart(){
+        mediaPlayer.start()
+        updatePlayingState(true)
+    }
+
     private val countUpTimer = CountUpTimer()
     fun getTime(duration: Int?) = countUpTimer.timeToString(duration ?: 0)
 }

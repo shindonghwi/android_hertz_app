@@ -293,16 +293,15 @@ private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDe
                                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                 .build()
                         )
+                        setOnCompletionListener {
+                            answerDetailViewModel.audioReset()
+                        }
                         setDataSource(context, audioUrl.toUri())
                         prepare()
                     }
                 }
                 Lifecycle.Event.ON_PAUSE -> {
-                    answerDetailViewModel.run {
-                        mediaPlayer.pause()
-                        mediaPlayer.seekTo(0)
-                        updatePlayingState(false)
-                    }
+                    answerDetailViewModel.audioReset()
                 }
                 else -> {}
             }
@@ -332,12 +331,9 @@ private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
             .noDuplicationClickable {
                 answerDetailViewModel.run {
                     if (isPlaying) {
-                        mediaPlayer.pause()
-                        mediaPlayer.seekTo(0)
-                        updatePlayingState(false)
+                        audioReset()
                     } else {
-                        mediaPlayer.start()
-                        updatePlayingState(true)
+                        audioStart()
                     }
                 }
 
