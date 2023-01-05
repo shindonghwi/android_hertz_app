@@ -34,10 +34,12 @@ class AnswerEditViewModel @Inject constructor(
     var answerData: Answer? = null
 
     fun initAnswerData(answer: Answer?) {
-        answerData = answer
-        updateTagList(answerData?.tagList)
-        updateEmotionList(answerData?.voice?.emotionList)
-        initPathAnswerData(answerData)
+        if (answerData == null){
+            answerData = answer
+            updateTagList(answerData?.tagList)
+            updateEmotionList(answerData?.voice?.emotionList)
+            initPathAnswerData(answerData)
+        }
     }
 
     /** 답변 수정 데이터 관리 */
@@ -63,7 +65,9 @@ class AnswerEditViewModel @Inject constructor(
     }
 
     private fun updatePatchAnswerTag(tags: List<String>) {
+        Log.w("ASdasdads", "updatePatchAnswerTag1: ${answerPatchData?.tags}", )
         answerPatchData?.tags = TextUtils.join(",", tags)
+        Log.w("ASdasdads", "updatePatchAnswerTag2: ${answerPatchData?.tags}", )
     }
 
     fun updatePatchAnswerEmotion(type: String, rate: Int) {

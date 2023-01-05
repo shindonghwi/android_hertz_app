@@ -48,7 +48,7 @@ fun AnswerPatchData.toAnswerData(
         shareType = defaultAnswerData.shareType,
         emotion = defaultAnswerData.emotion,
         timeAgo = defaultAnswerData.timeAgo,
-        createdAt = defaultAnswerData.timeAgo ?: "",
+        createdAt = defaultAnswerData.createdAt,
         firstDayInList = defaultAnswerData.firstDayInList
     )
 }
