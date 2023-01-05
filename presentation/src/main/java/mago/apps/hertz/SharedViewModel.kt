@@ -4,10 +4,6 @@ import androidx.lifecycle.ViewModel
 import mago.apps.data.constants.HEADER_AUTH_VALUE
 import javax.annotation.Nonnull
 
-data class Token(
-    val value: String?
-)
-
 class SharedViewModel : ViewModel() {
 
     fun updateToken(@Nonnull token: String) {
