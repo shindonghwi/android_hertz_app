@@ -172,7 +172,7 @@ private fun EpisodeMyItemList(
     navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val myItemList = episodeListViewModel.getAnswerMyList.collectAsLazyPagingItems()
-    MyItemListEmptyView(myItemList, navController)
+    MyItemListEmptyView(myItemList)
     MyItemListExistView(myItemList, navController)
 }
 
@@ -240,7 +240,7 @@ private fun OurItemListExistView(
 
 @Composable
 private fun MyItemListEmptyView(
-    myItemList: LazyPagingItems<Answer>, navController: NavHostController
+    myItemList: LazyPagingItems<Answer>
 ) {
     AnimatedVisibility(
         visible = myItemList.loadState.refresh == LoadState.Loading,
@@ -255,7 +255,7 @@ private fun MyItemListEmptyView(
 
 @Composable
 private fun OurItemListEmptyView(
-    ourItemList: LazyPagingItems<Answer>, navController: NavHostController
+    ourItemList: LazyPagingItems<Answer>
 ) {
     AnimatedVisibility(
         visible = ourItemList.loadState.refresh == LoadState.Loading,
@@ -407,6 +407,6 @@ private fun EpisodeOurItemList(
     navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     val ourItemList = episodeListViewModel.getAnswerOurList.collectAsLazyPagingItems()
-    OurItemListEmptyView(ourItemList, navController)
+    OurItemListEmptyView(ourItemList)
     OurItemListExistView(ourItemList, navController)
 }
