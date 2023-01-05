@@ -16,7 +16,7 @@ class PatchAnswerUseCase @Inject constructor(private val answerRepository: Answe
         answerSeq: Int,
         text: String,
         tags: String,
-        anger: Int,
+        angry: Int,
         neutral: Int,
         happiness: Int,
         sadness: Int,
@@ -28,7 +28,7 @@ class PatchAnswerUseCase @Inject constructor(private val answerRepository: Answe
                     answerSeq,
                     text,
                     tags,
-                    anger,
+                    angry,
                     neutral,
                     happiness,
                     sadness

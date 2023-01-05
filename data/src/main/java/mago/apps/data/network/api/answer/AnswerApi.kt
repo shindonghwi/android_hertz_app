@@ -47,7 +47,7 @@ interface AnswerApi {
         @Path(value = "answerSeq") answerSeq: Int,
         @Field("text") text: String,
         @Field("tags") tags: String,
-        @Field("anger") anger: Int,
+        @Field("angry") angry: Int,
         @Field("neutral") neutral: Int,
         @Field("happiness") happiness: Int,
         @Field("sadness") sadness: Int,

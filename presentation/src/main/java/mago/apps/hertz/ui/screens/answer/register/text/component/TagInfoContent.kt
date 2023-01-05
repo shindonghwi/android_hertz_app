@@ -32,6 +32,7 @@ import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.screens.answer.detail.AnswerDetailViewModel
+import mago.apps.hertz.ui.screens.answer.edit.AnswerEditViewModel
 import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
@@ -44,7 +45,7 @@ fun <T> TagInfoContent(modifier: Modifier, vm: T) {
         TagTitle(modifier, vm)
         TagList(vm)
         InputTag(modifier, vm)
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         vm.tagListScrollState = rememberLazyListState()
         ScrollToBottomAction(vm)
         ScrollToEndAction(vm)
@@ -61,7 +62,7 @@ private fun <T> TagTitle(modifier: Modifier, vm: T) {
 
     if (vm is AnswerTextViewModel) {
         tagList = vm.tagList
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         tagList = vm.tagList
     }
 
@@ -93,7 +94,7 @@ private fun <T> TagList(vm: T) {
     if (vm is AnswerTextViewModel) {
         tagList = vm.tagList
         tagScrollState = vm.tagListScrollState
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         tagList = vm.tagList
         tagScrollState = vm.tagListScrollState
     }
@@ -124,7 +125,7 @@ private fun <T> TagList(vm: T) {
                         .noDuplicationClickable {
                             if (vm is AnswerTextViewModel) {
                                 vm.removeTag(item)
-                            } else if (vm is AnswerDetailViewModel) {
+                            } else if (vm is AnswerEditViewModel) {
                                 vm.removeTag(item)
                             }
                         }
@@ -154,7 +155,7 @@ private fun <T> InputTag(modifier: Modifier, vm: T) {
 
     if (vm is AnswerTextViewModel) {
         tagList = vm.tagList
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         tagList = vm.tagList
     }
 
@@ -199,7 +200,7 @@ private fun <T> InputTag(modifier: Modifier, vm: T) {
                                 updateScrollBottomAction(true)
                                 updateScrollEndAction(true)
                             }
-                        } else if (vm is AnswerDetailViewModel) {
+                        } else if (vm is AnswerEditViewModel) {
                             vm.run {
                                 addTag(currentInputText)
                                 updateScrollBottomAction(true)
@@ -236,7 +237,7 @@ private fun <T> ScrollToBottomAction(vm: T) {
                 vm.scrollToBottom()
             }
         }
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         val scrollToBottomActionIsActive = vm.scrollToBottomAction.collectAsState().value
         if (scrollToBottomActionIsActive) {
             LaunchedEffect(key1 = true) {
@@ -257,7 +258,7 @@ private fun <T> ScrollToEndAction(vm: T) {
                 vm.scrollToEnd()
             }
         }
-    } else if (vm is AnswerDetailViewModel) {
+    } else if (vm is AnswerEditViewModel) {
         val scrollToEndActionIsActive =
             vm.scrollToEndAction.collectAsState().value
         if (scrollToEndActionIsActive) {

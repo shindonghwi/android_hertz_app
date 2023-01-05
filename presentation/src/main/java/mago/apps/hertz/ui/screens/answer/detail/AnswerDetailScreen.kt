@@ -1,32 +1,31 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
 import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -42,31 +41,24 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.google.gson.Gson
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.answer.AnswerProperty
-import mago.apps.domain.model.common.EmotionType
+import mago.apps.domain.model.common.EmotionList
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
-import mago.apps.hertz.ui.components.input.ITextCallback
-import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
-import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
-import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
+import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.model.toast.TOAST_CODE_WAITING
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
-import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
-import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
-
-interface IFrequencyScoreCallback {
-    fun onChanged(score: String)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,21 +68,7 @@ fun AnswerDetailScreen(
     answerSeq: String?,
     answer: Answer?
 ) {
-    answerDetailViewModel.apply {
-        screenScrollState = rememberScrollState()
-    }.run {
-        LaunchedEffect(key1 = Unit, block = {
-            answer?.let {
-                answerDetailViewModel.updateAnswerState(it)
-            } ?: run {
-                answerSeq?.let {
-                    answerDetailViewModel.getAnswerInfo(it.toInt())
-                }
-            }
-        })
-    }
-
-    AnswerDetailScreenLifecycle(answerDetailViewModel)
+    SetAnswerData(answerDetailViewModel, answer, answerSeq)
 
     Scaffold(
         topBar = {
@@ -101,28 +79,35 @@ fun AnswerDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .verticalScroll(answerDetailViewModel.screenScrollState),
+                .verticalScroll(rememberScrollState()),
             answerDetailViewModel = answerDetailViewModel
         )
     }
 
-    BBiBBiAndAnswerPatchPopUp(answerDetailViewModel)
-    BackPressEvent(navController, answerDetailViewModel)
+    AnswerDetailScreenLifecycle(answerDetailViewModel)
+    BBiBBiPopUp(answerDetailViewModel)
 }
 
 @Composable
-private fun BackPressEvent(
-    navController: NavHostController,
-    answerDetailViewModel: AnswerDetailViewModel
+fun SetAnswerData(
+    answerDetailViewModel: AnswerDetailViewModel,
+    answer: Answer?,
+    answerSeq: String?
 ) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
 
-    BackHandler(enabled = true) {
-        if (isEditingMode) {
-            answerDetailViewModel.updateEditingMode(false)
-        } else {
-            navController.popBackStack()
-        }
+    answerDetailViewModel.run {
+        LaunchedEffect(key1 = Unit, block = {
+            answer?.let {
+                answerDetailViewModel.updateAnswerState(it)
+            } ?: run {
+                if (!answerState.isSuccessState.value){
+                    answerSeq?.let {
+                        answerDetailViewModel.getAnswerInfo(it.toInt())
+                    }
+                }
+            }
+        })
     }
 }
 
@@ -146,12 +131,9 @@ private fun AnswerDetailScreenLifecycle(answerDetailViewModel: AnswerDetailViewM
 }
 
 @Composable
-private fun BBiBBiAndAnswerPatchPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+private fun BBiBBiPopUp(answerDetailViewModel: AnswerDetailViewModel) {
     BBiBBiErrorPopUp(answerDetailViewModel)
     BBiBBiSuccessPopUp(answerDetailViewModel)
-    AnswerLoadingView(answerDetailViewModel)
-    AnswerPatchErrorPopUp(answerDetailViewModel)
-    AnswerPatchSuccessPopUp(answerDetailViewModel)
 }
 
 @Composable
@@ -179,61 +161,19 @@ private fun BBiBBiSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
 }
 
 @Composable
-private fun AnswerLoadingView(answerDetailViewModel: AnswerDetailViewModel) {
-    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
-    if (patchState.isLoading.value) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-        }
-    }
-}
-
-@Composable
-private fun AnswerPatchErrorPopUp(answerDetailViewModel: AnswerDetailViewModel) {
-    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
-    if (patchState.isErrorState.value) {
-        CustomPopup(
-            isVisible = patchState.isErrorState,
-            type = PopupType.FALLBACK,
-            showingMessage = patchState.error
-        )
-    }
-}
-
-@Composable
-private fun AnswerPatchSuccessPopUp(answerDetailViewModel: AnswerDetailViewModel) {
-    val patchState = answerDetailViewModel.answerPatchState.collectAsState().value
-    if (patchState.isSuccessState.value) {
-        LaunchedEffect(key1 = patchState.isSuccessState, block = {
-            answerDetailViewModel.updateEditingMode(false)
-        })
-        CustomPopup(
-            isVisible = patchState.isSuccessState,
-            type = PopupType.REGISTER,
-            showingMessage = stringResource(id = R.string.dialog_answer_patch_success)
-        )
-    }
-}
-
-@Composable
 private fun AnswerDetailAppBar(
-    navController: NavHostController, answerDetailViewModel: AnswerDetailViewModel
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
     val context = LocalContext.current
+
     AppBarContent(
         leftContent = {
             Icon(modifier = Modifier
                 .size(40.dp)
                 .noDuplicationClickable {
-                    if (isEditingMode) {
-                        answerDetailViewModel.updateEditingMode(false)
-                    } else {
-                        navController.popBackStack()
-                    }
+                    navController.popBackStack()
                 }
                 .padding(6.dp),
                 imageVector = Icons.Default.ArrowBack,
@@ -243,62 +183,31 @@ private fun AnswerDetailAppBar(
         centerContent = {
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = if (isEditingMode) {
-                    stringResource(id = R.string.answer_detail_title_edit)
-                } else {
-                    stringResource(id = R.string.answer_detail_title)
-                },
+                text = stringResource(id = R.string.answer_detail_title),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.secondary
             )
         },
         rightContent = {
-            Box(contentAlignment = Alignment.CenterEnd) {
-                AnimatedVisibility(
-                    visible = isEditingMode, enter = fadeIn(), exit = fadeOut()
-                ) {
-                    Text(modifier = Modifier
-                        .noDuplicationClickable {
-                            answerDetailViewModel.run {
-                                coroutineScopeOnDefault {
-                                    val response = patchAnswerData()
-                                    coroutineScopeOnMain {
-                                        when (response) {
-                                            // 등록 하지 못하는 질문 유형
-                                            TOAST_CODE_QUESTION_1 -> {
-                                                context.showToast(TOAST_CODE_QUESTION_1)
-                                                navController.popBackStack()
-                                            }
-                                            TOAST_CODE_QUESTION_2 -> {
-                                                context.showToast(TOAST_CODE_QUESTION_2)
-                                            }
-                                            TOAST_CODE_QUESTION_3 -> {
-                                                context.showToast(TOAST_CODE_QUESTION_3)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+            Icon(modifier = Modifier
+                .size(36.dp)
+                .noDuplicationClickable {
+                    if (answerState.isSuccessState.value) {
+                        navController.navigate(
+                            route = RouteScreen.AnswerEditScreen.route +
+                                    "?answer=${Gson().toJson(answerState.data)}"
+                        ) {
+                            launchSingleTop = true
                         }
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                        text = stringResource(id = R.string.save),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary)
+                    } else {
+                        context.showToast(TOAST_CODE_WAITING)
+                    }
+
                 }
-                AnimatedVisibility(
-                    visible = !isEditingMode, enter = fadeIn(), exit = fadeOut()
-                ) {
-                    Icon(modifier = Modifier
-                        .size(36.dp)
-                        .noDuplicationClickable {
-                            answerDetailViewModel.updateEditingMode(true)
-                        }
-                        .padding(6.dp),
-                        imageVector = Icons.Outlined.Edit,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        contentDescription = null)
-                }
-            }
+                .padding(6.dp),
+                imageVector = Icons.Outlined.Edit,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null)
         },
     )
 }
@@ -354,10 +263,7 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 answerDetailViewModel = answerDetailViewModel
             )
 
-            AnswerText(
-                answerDetailViewModel = answerDetailViewModel,
-                text = answerState.data?.voice?.text
-            )
+            AnswerText(answerDetailViewModel = answerDetailViewModel)
 
             // 감정 주파수 %
             TodayFrequencyContent(
@@ -392,9 +298,7 @@ private fun AnswerAudioContent(
     waveformImageUrl: String,
     answerDetailViewModel: AnswerDetailViewModel,
 ) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
-
-    if (!isEditingMode && waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
+    if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
         AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
         Row(
             modifier = modifier, verticalAlignment = Alignment.CenterVertically
@@ -481,14 +385,11 @@ private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
         }
         .padding(4.dp), contentAlignment = Alignment.Center) {
         Icon(
-            modifier = Modifier.fillMaxSize(),
-            painter = if (isPlaying) {
+            modifier = Modifier.fillMaxSize(), painter = if (isPlaying) {
                 painterResource(id = R.drawable.pause)
             } else {
                 painterResource(id = R.drawable.play)
-            },
-            contentDescription = "play",
-            tint = MaterialTheme.colorScheme.onPrimary
+            }, contentDescription = "play", tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -520,23 +421,21 @@ private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
 
 @Composable
 private fun BBiBBiFrequencyContent(
-    questionSeq: Int?, property: AnswerProperty?, answerDetailViewModel: AnswerDetailViewModel
+    questionSeq: Int?,
+    property: AnswerProperty?,
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+    val boxModifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp, vertical = 14.dp)
+        .clip(RoundedCornerShape(12.dp))
+        .background(MaterialTheme.colorScheme.primary)
 
-    if (!isEditingMode) {
-        val boxModifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 14.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.primary)
-
-        property?.takeIf { !it.isSent }?.apply {
-            BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
-        } ?: run {
-            property?.takeIf { it.isConnected }?.apply {
-                FrequencyButton(boxModifier)
-            }
+    property?.takeIf { !it.isSent }?.apply {
+        BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
+    } ?: run {
+        property?.takeIf { it.isConnected }?.apply {
+            FrequencyButton(boxModifier)
         }
     }
 }
@@ -586,8 +485,8 @@ private fun BBiBBiButton(
 }
 
 @Composable
-private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: String?) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel) {
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -603,14 +502,9 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel, text: Strin
         CustomTextField(
             textStyle = MaterialTheme.typography.bodyLarge,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
-            iTextCallback = object : ITextCallback {
-                override fun renderText(content: String) {
-                    answerDetailViewModel.updatePatchAnswerText(content)
-                }
-            },
             isSingleLine = false,
-            defaultText = text.toString(),
-            enable = isEditingMode,
+            defaultText = answerState.data?.voice?.text ?: "",
+            enable = false,
         )
     }
 }
@@ -620,11 +514,10 @@ private fun TodayFrequencyContent(
     modifier: Modifier,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
-    val emotionList = answerDetailViewModel.frequencyInfoList
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
-    val selectedValue = remember { mutableStateOf(EmotionType.HAPPINESS.name) }
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val emotionList = answerState.data?.voice?.emotionList
 
-    if (emotionList.isNotEmpty()) {
+    if (!emotionList.isNullOrEmpty()) {
         Column(
             modifier = modifier,
         ) {
@@ -641,109 +534,27 @@ private fun TodayFrequencyContent(
             ) {
                 repeat(emotionList.size) { idx ->
 
-                    val icon = answerDetailViewModel.frequencyInfoList[idx].icon
-                    val rate = answerDetailViewModel.frequencyInfoList[idx].rate
-                    val type = answerDetailViewModel.frequencyInfoList[idx].iconType
+                    val type = emotionList[idx].type
+                    val icon = EmotionList.find { type == it.second.name }?.first.toString()
+                    val iconType = EmotionList.find { type == it.second.name }?.second.toString()
+                    val rate = "${emotionList.find { it.type == iconType }?.rate}%"
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        if (isEditingMode) {
-                            RadioButton(
-                                modifier = Modifier
-                                    .padding(end = 4.dp)
-                                    .size(20.dp),
-                                selected = selectedValue.value == type,
-                                onClick = {
-                                    selectedValue.value = type
-                                    answerDetailViewModel.updateSelectedFrequencyIndex(idx)
-                                },
-                            )
-                        }
                         Text(
                             text = icon,
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
                             modifier = Modifier.padding(start = 4.dp),
-                            text = "${rate.value}%",
+                            text = rate,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 }
             }
-        }
-        if (isEditingMode) {
-            Box {
-                repeat(emotionList.size) { idx ->
-                    FrequencySeekbar(
-                        idx,
-                        answerDetailViewModel,
-                        object : IFrequencyScoreCallback {
-                            override fun onChanged(score: String) {
-                                answerDetailViewModel.run {
-                                    updateFrequencyScore(score)
-                                    updatePatchAnswerEmotion(
-                                        emotionList[idx].iconType,
-                                        score.toInt()
-                                    )
-                                }
-                            }
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FrequencySeekbar(
-    idx: Int,
-    answerDetailViewModel: AnswerDetailViewModel,
-    iFrequencyScoreCallback: IFrequencyScoreCallback
-) {
-    val currentIndex = answerDetailViewModel.selectedFrequencyIndex.collectAsState().value
-
-    var sliderPosition by remember {
-        mutableStateOf(answerDetailViewModel.frequencyInfoList[idx].rate.value.toFloat())
-    }
-    val interactionSource = MutableInteractionSource()
-
-    if (currentIndex == idx) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
-            Slider(
-                modifier = Modifier,
-                value = sliderPosition,
-                onValueChange = {
-                    sliderPosition = it
-                    iFrequencyScoreCallback.onChanged(sliderPosition.toInt().toString())
-                },
-                valueRange = 0f..100f,
-                steps = 100,
-                interactionSource = interactionSource,
-                thumb = {
-                    val shape = CircleShape
-                    Spacer(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .indication(
-                                interactionSource = interactionSource, indication = rememberRipple(
-                                    bounded = false, radius = 20.dp
-                                )
-                            )
-                            .hoverable(interactionSource = interactionSource)
-                            .shadow(0.dp, shape, clip = false)
-                            .background(MaterialTheme.colorScheme.primary, shape)
-                    )
-                },
-            )
         }
     }
 }
@@ -752,51 +563,45 @@ private fun FrequencySeekbar(
 private fun TagInfoContainer(
     modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
 ) {
-    val isEditingMode = answerDetailViewModel.isEditingMode.collectAsState().value
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val tagList = answerState.data?.tagList
 
-    if (isEditingMode) {
-        TagInfoContent(
-            modifier = Modifier.padding(top = 12.dp, start = 20.dp, end = 20.dp),
-            vm = answerDetailViewModel
-        )
-    } else {
-        answerDetailViewModel.tagList.let {
-            Column(
-                modifier = modifier,
+    tagList?.let {
+        Column(
+            modifier = modifier,
+        ) {
+            Text(
+                modifier = Modifier.padding(start = 20.dp),
+                text = stringResource(id = R.string.answer_text_title_tag),
+                color = MaterialTheme.colorScheme.tertiary,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = rememberLazyListState()
             ) {
-                Text(
-                    modifier = Modifier.padding(start = 20.dp),
-                    text = stringResource(id = R.string.answer_text_title_tag),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = rememberLazyListState()
-                ) {
-                    itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
-                        Row(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .wrapContentWidth()
-                                .height(30.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(horizontal = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
-                                text = "#${item}",
-                                color = MaterialTheme.colorScheme.secondary,
-                                style = MaterialTheme.typography.labelMedium,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
+                    Row(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .wrapContentWidth()
+                            .height(30.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
+                            text = "#${item}",
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.labelMedium,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
             }

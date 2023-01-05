@@ -36,7 +36,7 @@ interface AnswerRepository {
         answerSeq: Int,
         text: String,
         tags: String,
-        anger: Int,
+        angry: Int,
         neutral: Int,
         happiness: Int,
         sadness: Int,

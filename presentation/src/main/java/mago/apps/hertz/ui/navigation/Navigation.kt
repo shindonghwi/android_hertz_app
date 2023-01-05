@@ -13,6 +13,8 @@ import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.screens.answer.detail.AnswerDetailScreen
 import mago.apps.hertz.ui.screens.answer.detail.AnswerDetailViewModel
+import mago.apps.hertz.ui.screens.answer.edit.AnswerEditScreen
+import mago.apps.hertz.ui.screens.answer.edit.AnswerEditViewModel
 import mago.apps.hertz.ui.screens.answer.register.audio.AnswerAudioScreen
 import mago.apps.hertz.ui.screens.answer.register.audio.AnswerAudioViewModel
 import mago.apps.hertz.ui.screens.answer.register.text.AnswerTextScreen
@@ -96,6 +98,25 @@ fun Navigation(navController: NavHostController) {
                 Gson().fromJson(answer, Answer::class.java)
             )
         }
+        composable(
+            route = RouteScreen.AnswerEditScreen.route
+                    + "?answer={answer}",
+            arguments = listOf(
+                navArgument("answer") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            ),
+        ) {
+            val answer = it.arguments?.getString("answer")
+            val answerEditViewModel = hiltViewModel<AnswerEditViewModel>()
+            AnswerEditScreen(
+                navController,
+                answerEditViewModel,
+                Gson().fromJson(answer, Answer::class.java)
+            )
+        }
+
         composable(route = RouteScreen.NotificationScreen.route) {
             NotificationScreenScreen(navController)
         }

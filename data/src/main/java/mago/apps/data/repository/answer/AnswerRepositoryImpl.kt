@@ -40,7 +40,7 @@ class AnswerRepositoryImpl @Inject constructor(
         answerSeq: Int,
         text: String,
         tags: String,
-        anger: Int,
+        angry: Int,
         neutral: Int,
         happiness: Int,
         sadness: Int
@@ -50,7 +50,7 @@ class AnswerRepositoryImpl @Inject constructor(
                 answerSeq,
                 text,
                 tags,
-                anger,
+                angry,
                 neutral,
                 happiness,
                 sadness
