@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.answer.edit.model
 
-import android.util.Log
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.answer.AnswerEmotion
 import mago.apps.domain.model.answer.AnswerVoice
@@ -8,6 +7,7 @@ import mago.apps.domain.model.common.EmotionType
 
 data class AnswerPatchData(
     var answerSeq: Int,
+    var emotion: String?,
     var text: String,
     var tags: String,
     var angry: Int = 0,
@@ -39,6 +39,7 @@ fun AnswerPatchData.toAnswerData(
         question = defaultAnswerData.question,
         voice = AnswerVoice(
             text = text,
+            emotion = emotion,
             emotionList = emotionList,
             duration = defaultAnswerData.voice?.duration ?: 0f,
             voiceUrl = defaultAnswerData.voice?.voiceUrl ?: "",

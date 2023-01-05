@@ -101,7 +101,10 @@ fun SetAnswerData(
     answerDetailViewModel.run {
         LaunchedEffect(key1 = Unit, block = {
             answer?.let {
-                answerDetailViewModel.updateAnswerState(it)
+                answerDetailViewModel.run {
+                    updateAnswerState(it)
+                    updateAnswerMode(!it.voice?.voiceUrl.isNullOrEmpty())
+                }
             } ?: run {
                 if (!answerState.isSuccessState.value) {
                     answerSeq?.let {
@@ -268,8 +271,8 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 14.dp),
             duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
-            voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
-            waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
+            voiceUrl = answerState.data?.voice?.voiceUrl,
+            waveformImageUrl = answerState.data?.voice?.waveformUrl,
             visibleState = visibleState,
             answerDetailViewModel = answerDetailViewModel
         )
@@ -309,12 +312,12 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
 private fun AnswerAudioContent(
     modifier: Modifier,
     duration: String,
-    voiceUrl: String,
-    waveformImageUrl: String,
+    voiceUrl: String?,
+    waveformImageUrl: String?,
     visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     answerDetailViewModel: AnswerDetailViewModel,
 ) {
-    if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
+    if (!waveformImageUrl.isNullOrEmpty() && !voiceUrl.isNullOrEmpty()) {
         Box(modifier = modifier) {
             AnimatedVisibility(visibleState = visibleState) {
                 AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
@@ -356,6 +359,7 @@ private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDe
                 Lifecycle.Event.ON_CREATE -> {
                     if (answerDetailViewModel.mediaPlayer == null) {
                         answerDetailViewModel.run {
+                            audioUrl
                             initPlayer()
                             mediaPlayer?.apply {
                                 setAudioAttributes(
@@ -423,7 +427,8 @@ private fun ErrorContent(answerDetailViewModel: AnswerDetailViewModel) {
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(visibleState = visibleState, enter = fadeIn(), exit = fadeOut()) {
-            Text(text = stringResource(id = R.string.answer_detail_error))
+//            Text(text = stringResource(id = R.string.answer_detail_error))
+            Text(text = answerState.error)
         }
     }
 }
@@ -534,55 +539,85 @@ private fun TodayFrequencyContent(
     visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     answerDetailViewModel: AnswerDetailViewModel
 ) {
+    if (answerDetailViewModel.isAudioAnswerMode) {
+        TodayFrequencyAudio(modifier, answerDetailViewModel)
+    } else {
+        TodayFrequencyText(modifier, answerDetailViewModel)
+    }
+    LoadingBox(visibleState = visibleState, height = 40.dp)
+}
+
+@Composable
+private fun TodayFrequencyAudio(
+    modifier: Modifier,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val emotionList = answerState.data?.voice?.emotionList
 
     if (!emotionList.isNullOrEmpty()) {
         Box(modifier = modifier) {
-            AnimatedVisibility(visibleState = visibleState) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        repeat(emotionList.size) { idx ->
+            Column {
+                Text(
+                    text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    repeat(emotionList.size) { idx ->
 
-                            val type = emotionList[idx].type
-                            val icon =
-                                EmotionList.find { type == it.second.name }?.first.toString()
-                            val iconType =
-                                EmotionList.find { type == it.second.name }?.second.toString()
-                            val rate = "${emotionList.find { it.type == iconType }?.rate}%"
+                        val type = emotionList[idx].type
+                        val icon =
+                            EmotionList.find { type == it.second.name }?.first.toString()
+                        val iconType =
+                            EmotionList.find { type == it.second.name }?.second.toString()
+                        val rate = "${emotionList.find { it.type == iconType }?.rate}%"
 
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = icon,
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                Text(
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    text = rate,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.tertiary
-                                )
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = icon,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                modifier = Modifier.padding(start = 4.dp),
+                                text = rate,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
                         }
                     }
                 }
             }
         }
     }
+}
 
-    LoadingBox(visibleState = visibleState, height = 40.dp)
+@Composable
+private fun TodayFrequencyText(
+    modifier: Modifier,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val emotion = answerState.data?.voice?.emotion
+
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
+            color = MaterialTheme.colorScheme.tertiary,
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+        )
+        Text(
+            text = " ${EmotionList.find { it.second.name == emotion }?.first ?: ""}",
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
 }
 
 @Composable

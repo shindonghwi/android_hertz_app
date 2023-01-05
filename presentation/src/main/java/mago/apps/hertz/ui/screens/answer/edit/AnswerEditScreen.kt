@@ -40,6 +40,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
+import mago.apps.hertz.ui.screens.answer.common.TodayFrequencySelector
 import mago.apps.hertz.ui.screens.answer.edit.model.toAnswerData
 import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
 import mago.apps.hertz.ui.theme.light_sub_primary
@@ -136,6 +137,7 @@ private fun AnswerEditContent(
 ) {
     val questionText = answer.question.text
     val createdAt = answer.createdAt
+    val emotion = answer.voice?.emotion
     val emotionList = answer.voice?.emotionList
     val defaultText = answer.voice?.text
 
@@ -159,6 +161,7 @@ private fun AnswerEditContent(
             likeDefaultState = null,
         )
 
+        // 질문 답변
         AnswerText(defaultText = defaultText, answerEditViewModel = answerEditViewModel)
 
         // 감정 주파수 %
@@ -166,10 +169,12 @@ private fun AnswerEditContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 18.dp, start = 20.dp, end = 20.dp),
+            emotion = emotion,
             emotionList = emotionList,
             answerEditViewModel = answerEditViewModel
         )
 
+        // 태그 정보
         TagInfoContent(
             modifier = Modifier.padding(top = 12.dp, start = 20.dp, end = 20.dp),
             vm = answerEditViewModel
@@ -269,6 +274,20 @@ private fun AnswerText(defaultText: String?, answerEditViewModel: AnswerEditView
 @Composable
 private fun TodayFrequencyContent(
     modifier: Modifier,
+    emotion: String?,
+    emotionList: List<AnswerEmotion>?,
+    answerEditViewModel: AnswerEditViewModel,
+) {
+    if (answerEditViewModel.isAudioAnswerMode) {
+        TodayFrequencyAudio(modifier, emotionList, answerEditViewModel)
+    } else {
+        TodayFrequencyText(modifier, answerEditViewModel)
+    }
+}
+
+@Composable
+private fun TodayFrequencyAudio(
+    modifier: Modifier,
     emotionList: List<AnswerEmotion>?,
     answerEditViewModel: AnswerEditViewModel,
 ) {
@@ -343,6 +362,14 @@ private fun TodayFrequencyContent(
             }
         }
     }
+}
+
+@Composable
+private fun TodayFrequencyText(
+    modifier: Modifier,
+    answerDetailViewModel: AnswerEditViewModel
+) {
+    TodayFrequencySelector(modifier, answerDetailViewModel)
 }
 
 

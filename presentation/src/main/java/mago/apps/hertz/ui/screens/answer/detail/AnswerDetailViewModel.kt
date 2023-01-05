@@ -27,6 +27,11 @@ class AnswerDetailViewModel @Inject constructor(
     private val postSendQuestionFriendUseCase: PostSendQuestionFriendUseCase,
 ) : ViewModel() {
 
+    var isAudioAnswerMode: Boolean = false
+    fun updateAnswerMode(isAudioMode: Boolean){
+        isAudioAnswerMode = isAudioMode
+    }
+
     /** 답변 정보 */
     private val _answerState = MutableStateFlow(AnswerDetailState())
     val answerState: StateFlow<AnswerDetailState> = _answerState
@@ -54,6 +59,7 @@ class AnswerDetailViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
+                    updateAnswerMode(!it.data?.voice?.voiceUrl.isNullOrEmpty())
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(false),
                         isSuccessState = mutableStateOf(true),

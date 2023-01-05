@@ -29,7 +29,7 @@ fun AnswerQuestionDTO.toDomain(): AnswerQuestion {
 }
 
 fun AnswerVoiceDTO.toDomain(): AnswerVoice {
-    return AnswerVoice(text, emotionList, duration, voiceUrl, waveformUrl)
+    return AnswerVoice(text, emotion, emotionList, duration, voiceUrl, waveformUrl)
 }
 
 fun String.toDomainCreatedAt(): String {

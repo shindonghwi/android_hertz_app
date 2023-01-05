@@ -4,6 +4,7 @@ import mago.apps.domain.model.answer.AnswerEmotion
 
 data class AnswerVoiceDTO(
     val text: String,
+    val emotion: String?,
     val emotionList: List<AnswerEmotion>,
     val duration: Float,
     val voiceUrl: String?,

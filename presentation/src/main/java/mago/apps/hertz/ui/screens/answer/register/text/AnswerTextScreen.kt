@@ -38,6 +38,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
+import mago.apps.hertz.ui.screens.answer.common.TodayFrequencySelector
 import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -172,7 +173,7 @@ private fun AnswerTextContent(
         // 감정 주파수 선택
         TodayFrequencySelector(
             modifier = Modifier.padding(top = 30.dp, start = 20.dp, end = 20.dp),
-            answerTextViewModel = answerTextViewModel
+            vm = answerTextViewModel
         )
 
         // 태그 정보
@@ -212,50 +213,6 @@ private fun InputAnswer(modifier: Modifier, answerTextViewModel: AnswerTextViewM
 }
 
 
-@Composable
-private fun TodayFrequencySelector(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
-    Column(
-        modifier = modifier,
-    ) {
-        Text(
-            text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
-            color = MaterialTheme.colorScheme.tertiary,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-        )
-
-        EmotionPercentSelectView(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            answerTextViewModel = answerTextViewModel
-        )
-    }
-}
-
-@Composable
-private fun EmotionPercentSelectView(modifier: Modifier, answerTextViewModel: AnswerTextViewModel) {
-    val selectedValue = remember { mutableStateOf(EmotionType.HAPPINESS) }
-
-    Row(
-        modifier = modifier, horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        repeat(EmotionList.size) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = EmotionList[it].first,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                RadioButton(
-                    selected = selectedValue.value == EmotionList[it].second,
-                    onClick = {
-                        answerTextViewModel.updateEmotion(EmotionList[it].second)
-                        selectedValue.value = EmotionList[it].second
-                    },
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun PostAnswerTextPopup(

@@ -1,7 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.edit
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateListOf
@@ -30,6 +29,11 @@ class AnswerEditViewModel @Inject constructor(
     private val patchAnswerUseCase: PatchAnswerUseCase
 ) : ViewModel() {
 
+    var isAudioAnswerMode: Boolean = false
+    fun updateAnswerMode(isAudioMode: Boolean){
+        isAudioAnswerMode = isAudioMode
+    }
+
     /** 답변 정보 초기화 */
     var answerData: Answer? = null
 
@@ -38,6 +42,7 @@ class AnswerEditViewModel @Inject constructor(
             answerData = answer
             updateTagList(answerData?.tagList)
             updateEmotionList(answerData?.voice?.emotionList)
+            updateAnswerMode(!answerData?.voice?.voiceUrl.isNullOrEmpty())
             initPathAnswerData(answerData)
         }
     }
@@ -49,6 +54,7 @@ class AnswerEditViewModel @Inject constructor(
             answerSeq = data?.answerSeq ?: 0,
             text = data?.voice?.text.toString(),
             tags = data?.tagList?.let { TextUtils.join(",", it) } ?: "",
+            emotion = data?.voice?.emotion,
             angry = data?.voice?.emotionList?.filter { it.type == EmotionType.ANGRY.name }
                 ?.elementAtOrNull(0)?.rate ?: 0,
             neutral = data?.voice?.emotionList?.filter { it.type == EmotionType.NEUTRAL.name }
@@ -65,11 +71,10 @@ class AnswerEditViewModel @Inject constructor(
     }
 
     private fun updatePatchAnswerTag(tags: List<String>) {
-        Log.w("ASdasdads", "updatePatchAnswerTag1: ${answerPatchData?.tags}", )
         answerPatchData?.tags = TextUtils.join(",", tags)
-        Log.w("ASdasdads", "updatePatchAnswerTag2: ${answerPatchData?.tags}", )
     }
 
+    // 음성으로 답한경우의 감정 업데이트
     fun updatePatchAnswerEmotion(type: String, rate: Int) {
         when (type) {
             EmotionType.HAPPINESS.name -> answerPatchData?.happiness = rate
@@ -77,6 +82,11 @@ class AnswerEditViewModel @Inject constructor(
             EmotionType.ANGRY.name -> answerPatchData?.angry = rate
             EmotionType.NEUTRAL.name -> answerPatchData?.neutral = rate
         }
+    }
+
+    // 텍스트로 답한경우의 감정 업데이트
+    fun updateEmotion(type: EmotionType) {
+        answerPatchData?.emotion = type.name
     }
 
     /** 답변 수정하기 API */
