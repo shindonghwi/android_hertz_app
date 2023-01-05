@@ -57,7 +57,9 @@ object Versions {
 
     object Firebase{
         const val bom = "31.1.0"
+        const val messagingService = "23.1.1"
     }
+
     object Google{
         const val servicesVersion = "4.3.13"
     }
@@ -124,6 +126,7 @@ object Libraries {
     object Firebase{
         const val bom = "com.google.firebase:firebase-bom:${Versions.Firebase.bom}"
         const val analytics = "com.google.firebase:firebase-analytics"
+        const val messaging = "com.google.firebase:firebase-messaging:${Versions.Firebase.messagingService}"
     }
 }
 

@@ -97,6 +97,7 @@ dependencies {
         Libraries.Firebase.apply {
             implementation(platform(bom))
             implementation(analytics)
+            implementation(messaging)
         }
     }
 
