@@ -14,14 +14,14 @@ class GetAnswerInfoUseCase @Inject constructor(private val answerRepository: Ans
 
     suspend operator fun invoke(answerSeq: Int): Flow<Resource<Answer>> = flow {
         emit(Resource.Loading())
-        try {
+//        try {
             val response = answerRepository.getAnswerInfo(answerSeq)
             when (response.status) {
                 200 -> emit(Resource.Success(response.message, response.data))
                 else -> emit(Resource.Error(response.message))
             }
-        } catch (e: Exception) {
-            emit(Resource.Error(message = e.toString()))
-        }
+//        } catch (e: Exception) {
+//            emit(Resource.Error(message = e.toString()))
+//        }
     }
 }
