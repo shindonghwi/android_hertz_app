@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import mago.apps.domain.repository.AnswerRepository
 import mago.apps.domain.usecases.answer.GetAnswerInfoUseCase
 import mago.apps.domain.usecases.answer.GetAnswerListUseCase
+import mago.apps.domain.usecases.answer.PatchAnswerUseCase
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -20,6 +21,11 @@ object AnswerModule {
     @Provides
     fun provideGetAnswerListUseCase(answerRepository: AnswerRepository): GetAnswerListUseCase {
         return GetAnswerListUseCase(answerRepository)
+    }
+
+    @Provides
+    fun providePatchAnswerUseCase(answerRepository: AnswerRepository): PatchAnswerUseCase {
+        return PatchAnswerUseCase(answerRepository)
     }
 
 }

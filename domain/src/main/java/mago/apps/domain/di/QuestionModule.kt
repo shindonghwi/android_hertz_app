@@ -5,16 +5,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import mago.apps.domain.repository.QuestionRepository
-import mago.apps.domain.usecases.question.GetQuestionRandomUseCase
-import mago.apps.domain.usecases.question.PostAnswerTextUseCase
-import mago.apps.domain.usecases.question.PostAnswerVoiceUseCase
+import mago.apps.domain.usecases.question.*
 
 @InstallIn(SingletonComponent::class)
 @Module
 object QuestionModule {
 
     @Provides
-    fun provideGetRandomUseCase(questionRepository: QuestionRepository): GetQuestionRandomUseCase {
+    fun provideGetQuestionRandomUseCase(questionRepository: QuestionRepository): GetQuestionRandomUseCase {
         return GetQuestionRandomUseCase(questionRepository)
     }
 
@@ -26,6 +24,26 @@ object QuestionModule {
     @Provides
     fun providePostAnswerTextUseCase(questionRepository: QuestionRepository): PostAnswerTextUseCase {
         return PostAnswerTextUseCase(questionRepository)
+    }
+
+    @Provides
+    fun provideDelLikeUseCase(questionRepository: QuestionRepository): DelLikeUseCase {
+        return DelLikeUseCase(questionRepository)
+    }
+
+    @Provides
+    fun providePostLikeUseCase(questionRepository: QuestionRepository): PostLikeUseCase {
+        return PostLikeUseCase(questionRepository)
+    }
+
+    @Provides
+    fun provideGetLikeListUseCase(questionRepository: QuestionRepository): GetLikeListUseCase {
+        return GetLikeListUseCase(questionRepository)
+    }
+
+    @Provides
+    fun providePostSendQuestionFriendUseCase(questionRepository: QuestionRepository): PostSendQuestionFriendUseCase {
+        return PostSendQuestionFriendUseCase(questionRepository)
     }
 
 }
