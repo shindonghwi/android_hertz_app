@@ -3,18 +3,17 @@ package mago.apps.hertz.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.usecases.auth.PostLoginUseCase
-import mago.apps.domain.usecases.my.PostDeviceUseCase
-import mago.apps.hertz.firebase.FCMUtil
-import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val postLoginUseCase: PostLoginUseCase,
-    private val postDeviceUseCase: PostDeviceUseCase
 ) : ViewModel() {
 
     private val _login = MutableStateFlow(HomeState())
@@ -31,7 +30,6 @@ class HomeViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _login.value = HomeState(data = it.data)
-                    postDevice()
                 }
             }
         }.launchIn(viewModelScope)
@@ -57,12 +55,4 @@ class HomeViewModel @Inject constructor(
     }
 
     fun isExistIdPw(): Boolean = id.isNotEmpty() && pw.isNotEmpty()
-
-    private fun postDevice() {
-        FCMUtil.getToken { token ->
-            coroutineScopeOnDefault {
-                postDeviceUseCase(token).collect()
-            }
-        }
-    }
 }
