@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.question.bottom
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,12 +29,15 @@ fun QuestionBottomBar(
 ) {
     val isPermissionPopUpVisible = remember { mutableStateOf(false) }
 
-    val permissionState = rememberMultiplePermissionsState(
-        listOf(
-            android.Manifest.permission.RECORD_AUDIO,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        )
-    )
+    val permissionList: ArrayList<String> = arrayListOf<String>().apply {
+        add(android.Manifest.permission.RECORD_AUDIO)
+        add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    val permissionState = rememberMultiplePermissionsState(permissionList.toList())
 
     Column(
         modifier = modifier,
