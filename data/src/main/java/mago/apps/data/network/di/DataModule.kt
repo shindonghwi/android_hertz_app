@@ -7,12 +7,15 @@ import dagger.hilt.components.SingletonComponent
 import mago.apps.data.constants.*
 import mago.apps.data.network.api.answer.AnswerApi
 import mago.apps.data.network.api.auth.AuthApi
+import mago.apps.data.network.api.my.MyApi
 import mago.apps.data.network.api.question.QuestionApi
 import mago.apps.data.repository.answer.AnswerRepositoryImpl
 import mago.apps.data.repository.auth.AuthRepositoryImpl
+import mago.apps.data.repository.my.MyRepositoryImpl
 import mago.apps.data.repository.question.QuestionRepositoryImpl
 import mago.apps.domain.repository.AnswerRepository
 import mago.apps.domain.repository.AuthRepository
+import mago.apps.domain.repository.MyRepository
 import mago.apps.domain.repository.QuestionRepository
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -84,4 +87,16 @@ object DataModule {
     fun provideAnswerRepository(answerApi: AnswerApi): AnswerRepository{
         return AnswerRepositoryImpl(answerApi)
     }
+
+    /** @feature: 내 정보 관련 api, repository
+     * @author: 2023/01/05 7:05 PM donghwishin
+    */
+    @Provides
+    fun provideMyApi(retrofit: Retrofit): MyApi = retrofit.create(MyApi::class.java)
+
+    @Provides
+    fun provideMyRepository(myApi: MyApi): MyRepository{
+        return MyRepositoryImpl(myApi)
+    }
+
 }
