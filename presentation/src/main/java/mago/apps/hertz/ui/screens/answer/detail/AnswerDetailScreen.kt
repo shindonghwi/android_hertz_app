@@ -1,9 +1,10 @@
 package mago.apps.hertz.ui.screens.answer.detail
 
 import android.media.AudioAttributes
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
@@ -101,7 +103,7 @@ fun SetAnswerData(
             answer?.let {
                 answerDetailViewModel.updateAnswerState(it)
             } ?: run {
-                if (!answerState.isSuccessState.value){
+                if (!answerState.isSuccessState.value) {
                     answerSeq?.let {
                         answerDetailViewModel.getAnswerInfo(it.toInt())
                     }
@@ -216,7 +218,6 @@ private fun AnswerDetailAppBar(
 private fun AnswerDetailContent(
     modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
 ) {
-    LoadingContent(answerDetailViewModel)
     ErrorContent(answerDetailViewModel)
     DetailContent(modifier, answerDetailViewModel)
 }
@@ -227,66 +228,80 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val visibleState = MutableTransitionState(answerState.isSuccessState.value)
 
-    AnimatedVisibility(visibleState = visibleState) {
-        Column(modifier = modifier) {
-            QuestionContent(
-                content = answerState.data?.question?.text, backgroundColor = light_sub_primary
-            )
-
-            // 날짜 & 좋아요 영역
-            DayAndLikeContent(modifier = Modifier
+    Column(modifier = modifier) {
+        // 질문
+        QuestionContent(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 20.dp, end = 20.dp),
-                timeText = answerState.data?.createdAt,
-                likeDefaultState = answerState.data?.question?.isLiked,
-                iLikeActionCallback = object : ILikeActionCallback {
-                    override fun onState(likeState: Boolean) {
-                        answerState.data?.let {
-                            coroutineScopeOnDefault {
-                                if (likeState) {
-                                    answerDetailViewModel.postLike(it.question.questionSeq)
-                                } else {
-                                    answerDetailViewModel.delLike(it.question.questionSeq)
-                                }
+                .height(200.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(light_sub_primary)
+                .padding(14.dp),
+            content = answerState.data?.question?.text,
+            visibleState = visibleState
+        )
+
+        // 날짜 & 좋아요 영역
+        DayAndLikeContent(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, start = 20.dp, end = 20.dp),
+            timeText = answerState.data?.createdAt,
+            visibleState = visibleState,
+            likeDefaultState = answerState.data?.question?.isLiked,
+            iLikeActionCallback = object : ILikeActionCallback {
+                override fun onState(likeState: Boolean) {
+                    answerState.data?.let {
+                        coroutineScopeOnDefault {
+                            if (likeState) {
+                                answerDetailViewModel.postLike(it.question.questionSeq)
+                            } else {
+                                answerDetailViewModel.delLike(it.question.questionSeq)
                             }
                         }
                     }
-                })
+                }
+            })
 
-            AnswerAudioContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
-                voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
-                waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
-                answerDetailViewModel = answerDetailViewModel
-            )
+        // 녹음한 내용 정보
+        AnswerAudioContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 14.dp),
+            duration = answerDetailViewModel.getTime(answerState.data?.voice?.duration?.toInt()),
+            voiceUrl = answerState.data?.voice?.voiceUrl.toString(),
+            waveformImageUrl = answerState.data?.voice?.waveformUrl.toString(),
+            visibleState = visibleState,
+            answerDetailViewModel = answerDetailViewModel
+        )
 
-            AnswerText(answerDetailViewModel = answerDetailViewModel)
+        // 답변한 내용
+        AnswerText(visibleState = visibleState, answerDetailViewModel = answerDetailViewModel)
 
-            // 감정 주파수 %
-            TodayFrequencyContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 18.dp, start = 20.dp, end = 20.dp),
-                answerDetailViewModel = answerDetailViewModel
-            )
+        // 감정 주파수 %
+        TodayFrequencyContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 18.dp, start = 20.dp, end = 20.dp),
+            visibleState = visibleState,
+            answerDetailViewModel = answerDetailViewModel
+        )
 
-            TagInfoContainer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                answerDetailViewModel = answerDetailViewModel
-            )
+        // 태그 정보
+        TagInfoContainer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            visibleState = visibleState,
+            answerDetailViewModel = answerDetailViewModel
+        )
 
-            BBiBBiFrequencyContent(
-                answerState.data?.question?.questionSeq,
-                answerState.data?.property,
-                answerDetailViewModel
-            ) // 삐삐전송하기, 우리의 감정주파수
-
-        }
+        // 삐삐전송하기, 우리의 감정주파수
+        BBiBBiFrequencyContent(
+            questionSeq = answerState.data?.question?.questionSeq,
+            property = answerState.data?.property,
+            visibleState = visibleState,
+            answerDetailViewModel = answerDetailViewModel
+        )
     }
 }
 
@@ -296,33 +311,38 @@ private fun AnswerAudioContent(
     duration: String,
     voiceUrl: String,
     waveformImageUrl: String,
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     answerDetailViewModel: AnswerDetailViewModel,
 ) {
     if (waveformImageUrl.isNotEmpty() && voiceUrl.isNotEmpty()) {
-        AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
-        Row(
-            modifier = modifier, verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = duration,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
+        Box(modifier = modifier) {
+            AnimatedVisibility(visibleState = visibleState) {
+                AudioPlayLifecycle(voiceUrl, answerDetailViewModel)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = duration,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
 
-            Image(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp),
-                painter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current).data(waveformImageUrl)
-                        .size(Size.ORIGINAL).crossfade(true).build()
-                ),
-                contentDescription = null,
-            )
-
-            AudioPlayIcon(answerDetailViewModel)
+                    Image(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 12.dp),
+                        painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(waveformImageUrl)
+                                .size(Size.ORIGINAL).crossfade(true).build()
+                        ),
+                        contentDescription = null,
+                    )
+                    AudioPlayIcon(answerDetailViewModel)
+                }
+            }
         }
     }
+
+    LoadingBox(visibleState = visibleState, height = 50.dp)
 }
 
 @Composable
@@ -399,22 +419,11 @@ private fun AudioPlayIcon(answerDetailViewModel: AnswerDetailViewModel) {
 private fun ErrorContent(answerDetailViewModel: AnswerDetailViewModel) {
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val visibleState = MutableTransitionState(answerState.isErrorState.value)
-    AnimatedVisibility(visibleState = visibleState) {
-        Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-        ) {
+    Box(
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
+        AnimatedVisibility(visibleState = visibleState, enter = fadeIn(), exit = fadeOut()) {
             Text(text = stringResource(id = R.string.answer_detail_error))
-        }
-    }
-}
-
-@Composable
-private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
-    val answerState = answerDetailViewModel.answerState.collectAsState().value
-    val visibleState = MutableTransitionState(answerState.isLoading.value)
-    AnimatedVisibility(visibleState = visibleState) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(modifier = Modifier.size(36.dp))
         }
     }
 }
@@ -423,6 +432,7 @@ private fun LoadingContent(answerDetailViewModel: AnswerDetailViewModel) {
 private fun BBiBBiFrequencyContent(
     questionSeq: Int?,
     property: AnswerProperty?,
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     answerDetailViewModel: AnswerDetailViewModel
 ) {
     val boxModifier = Modifier
@@ -432,10 +442,14 @@ private fun BBiBBiFrequencyContent(
         .background(MaterialTheme.colorScheme.primary)
 
     property?.takeIf { !it.isSent }?.apply {
-        BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
+        AnimatedVisibility(visibleState = visibleState) {
+            BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
+        }
     } ?: run {
         property?.takeIf { it.isConnected }?.apply {
-            FrequencyButton(boxModifier)
+            AnimatedVisibility(visibleState = visibleState) {
+                FrequencyButton(boxModifier)
+            }
         }
     }
 }
@@ -485,7 +499,10 @@ private fun BBiBBiButton(
 }
 
 @Composable
-private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel) {
+private fun AnswerText(
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
+    answerDetailViewModel: AnswerDetailViewModel
+) {
     val answerState = answerDetailViewModel.answerState.collectAsState().value
 
     Box(
@@ -499,112 +516,140 @@ private fun AnswerText(answerDetailViewModel: AnswerDetailViewModel) {
             .padding(14.dp),
         contentAlignment = Alignment.Center
     ) {
-        CustomTextField(
-            textStyle = MaterialTheme.typography.bodyLarge,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
-            isSingleLine = false,
-            defaultText = answerState.data?.voice?.text ?: "",
-            enable = false,
-        )
+        AnimatedVisibility(visibleState = visibleState) {
+            CustomTextField(
+                textStyle = MaterialTheme.typography.bodyLarge,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.None),
+                isSingleLine = false,
+                defaultText = answerState.data?.voice?.text ?: "",
+                enable = false,
+            )
+        }
     }
 }
 
 @Composable
 private fun TodayFrequencyContent(
     modifier: Modifier,
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     answerDetailViewModel: AnswerDetailViewModel
 ) {
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val emotionList = answerState.data?.voice?.emotionList
 
     if (!emotionList.isNullOrEmpty()) {
-        Column(
-            modifier = modifier,
-        ) {
-            Text(
-                text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                repeat(emotionList.size) { idx ->
-
-                    val type = emotionList[idx].type
-                    val icon = EmotionList.find { type == it.second.name }?.first.toString()
-                    val iconType = EmotionList.find { type == it.second.name }?.second.toString()
-                    val rate = "${emotionList.find { it.type == iconType }?.rate}%"
-
+        Box(modifier = modifier) {
+            AnimatedVisibility(visibleState = visibleState) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.answer_text_title_today_emotion_frequency),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Text(
-                            text = icon,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = rate,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
+                        repeat(emotionList.size) { idx ->
+
+                            val type = emotionList[idx].type
+                            val icon =
+                                EmotionList.find { type == it.second.name }?.first.toString()
+                            val iconType =
+                                EmotionList.find { type == it.second.name }?.second.toString()
+                            val rate = "${emotionList.find { it.type == iconType }?.rate}%"
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = icon,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 4.dp),
+                                    text = rate,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
+    LoadingBox(visibleState = visibleState, height = 40.dp)
 }
 
 @Composable
 private fun TagInfoContainer(
-    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier,
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val tagList = answerState.data?.tagList
 
-    tagList?.let {
-        Column(
-            modifier = modifier,
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 20.dp),
-                text = stringResource(id = R.string.answer_text_title_tag),
-                color = MaterialTheme.colorScheme.tertiary,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
+    if (!tagList.isNullOrEmpty()) {
+        Box(modifier = modifier) {
+            AnimatedVisibility(visibleState = visibleState) {
+                Column {
+                    Text(
+                        modifier = Modifier.padding(start = 20.dp),
+                        text = stringResource(id = R.string.answer_text_title_tag),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
 
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                state = rememberLazyListState()
-            ) {
-                itemsIndexed(items = it, key = { _, item -> item }) { _, item ->
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .wrapContentWidth()
-                            .height(30.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = rememberLazyListState()
                     ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
-                            text = "#${item}",
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.labelMedium,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        itemsIndexed(items = tagList, key = { _, item -> item }) { _, item ->
+                            Row(
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .wrapContentWidth()
+                                    .height(30.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(horizontal = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
+                                    text = "#${item}",
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    LoadingBox(visibleState = visibleState, height = 40.dp)
+}
+
+@Composable
+private fun LoadingBox(visibleState: MutableTransitionState<Boolean>, height: Dp) {
+    if (!visibleState.targetState) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+                .height(height)
+                .background(light_sub_primary)
+        )
     }
 }

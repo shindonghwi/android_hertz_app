@@ -1,13 +1,12 @@
 package mago.apps.hertz.ui.screens.answer.common
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.MaterialTheme
@@ -29,40 +28,45 @@ interface ILikeActionCallback {
 fun DayAndLikeContent(
     modifier: Modifier,
     timeText: String? = null,
+    visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
     likeDefaultState: Boolean? = null,
     iLikeActionCallback: ILikeActionCallback? = null
 ) {
-    val likeState = remember { mutableStateOf(likeDefaultState ?: false)  }
+    val likeState = remember { mutableStateOf(likeDefaultState ?: false) }
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = timeText ?: SimpleDateFormat(
-                "yyyy년 MM월 dd일 EE요일", Locale.getDefault()
-            ).format(Calendar.getInstance().time),
-            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
-            style = MaterialTheme.typography.titleMedium
-        )
+    Box(modifier = modifier) {
+        AnimatedVisibility(visibleState = visibleState) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = timeText ?: SimpleDateFormat(
+                        "yyyy년 MM월 dd일 EE요일", Locale.getDefault()
+                    ).format(Calendar.getInstance().time),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-        likeDefaultState?.let {
-            Icon(
-                modifier = Modifier
-                    .size(32.dp)
-                    .noDuplicationClickable {
-                        likeState.value= !likeState.value
-                        iLikeActionCallback?.onState(likeState.value)
-                    },
-                imageVector = if (likeState.value) {
-                    Icons.Filled.ThumbUp
-                } else {
-                    Icons.Outlined.ThumbUp
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+                likeDefaultState?.let {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .noDuplicationClickable {
+                                likeState.value = !likeState.value
+                                iLikeActionCallback?.onState(likeState.value)
+                            },
+                        imageVector = if (likeState.value) {
+                            Icons.Filled.ThumbUp
+                        } else {
+                            Icons.Outlined.ThumbUp
+                        },
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }

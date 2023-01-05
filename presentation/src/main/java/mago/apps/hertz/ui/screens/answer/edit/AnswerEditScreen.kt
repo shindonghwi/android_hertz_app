@@ -140,7 +140,15 @@ private fun AnswerEditContent(
     val defaultText = answer.voice?.text
 
     Column(modifier = modifier) {
-        QuestionContent(content = questionText, backgroundColor = light_sub_primary)
+        QuestionContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(light_sub_primary)
+                .padding(14.dp),
+            content = questionText,
+        )
 
         // 날짜 & 좋아요 영역
         DayAndLikeContent(

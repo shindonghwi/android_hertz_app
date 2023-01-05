@@ -39,6 +39,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.register.text.component.TagInfoContent
+import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
@@ -139,7 +140,15 @@ private fun AnswerTextContent(
     navController: NavHostController
 ) {
     Column(modifier = modifier) {
-        QuestionContent(answerTextViewModel.questionInfo?.text)
+        QuestionContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(light_sub_primary)
+                .padding(14.dp),
+            content = answerTextViewModel.questionInfo?.text,
+        )
 
         // 날짜 & 좋아요 영역
         DayAndLikeContent(
