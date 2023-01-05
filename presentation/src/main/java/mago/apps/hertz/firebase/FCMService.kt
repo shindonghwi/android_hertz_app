@@ -2,12 +2,10 @@ package mago.apps.hertz.firebase
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 
-class FCMService @Inject constructor(
-
-) : FirebaseMessagingService() {
-
+@AndroidEntryPoint
+class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
     }
