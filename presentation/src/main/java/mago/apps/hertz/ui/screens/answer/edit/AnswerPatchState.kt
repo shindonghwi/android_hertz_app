@@ -1,4 +1,4 @@
-package mago.apps.hertz.ui.screens.answer.detail
+package mago.apps.hertz.ui.screens.answer.edit
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

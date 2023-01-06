@@ -137,8 +137,22 @@ private fun AnswerDetailScreenLifecycle(answerDetailViewModel: AnswerDetailViewM
 
 @Composable
 private fun BBiBBiPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    BBiBBiLoadingPopUp(answerDetailViewModel)
     BBiBBiErrorPopUp(answerDetailViewModel)
     BBiBBiSuccessPopUp(answerDetailViewModel)
+}
+
+@Composable
+private fun BBiBBiLoadingPopUp(answerDetailViewModel: AnswerDetailViewModel) {
+    val bbibbiState = answerDetailViewModel.bbibbiState.collectAsState().value
+    if (bbibbiState.isLoading.value) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
+    }
 }
 
 @Composable

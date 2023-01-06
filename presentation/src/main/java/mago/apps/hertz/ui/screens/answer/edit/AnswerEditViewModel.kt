@@ -19,7 +19,6 @@ import mago.apps.domain.usecases.answer.PatchAnswerUseCase
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
-import mago.apps.hertz.ui.screens.answer.detail.AnswerPatchState
 import mago.apps.hertz.ui.screens.answer.edit.model.AnswerPatchData
 import mago.apps.hertz.ui.screens.answer.edit.model.FrequencyData
 import javax.inject.Inject

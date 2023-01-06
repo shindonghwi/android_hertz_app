@@ -200,6 +200,7 @@ private fun QuestionContent(modifier: Modifier, answerAudioViewModel: AnswerAudi
         verticalArrangement = Arrangement.Center
     ) {
         Text(
+            modifier = Modifier.padding(horizontal = 20.dp),
             text = answerAudioViewModel.questionInfo?.text.toString(),
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight(800)),
             color = MaterialTheme.colorScheme.secondary,

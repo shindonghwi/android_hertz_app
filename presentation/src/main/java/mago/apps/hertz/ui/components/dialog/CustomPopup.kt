@@ -72,7 +72,7 @@ fun CustomPopup(
                 contentAlignment = Alignment.Center
             ) {
                 val configuration = LocalConfiguration.current
-                val size = configuration.screenWidthDp.dp * 0.75f
+                val size = configuration.screenWidthDp.dp * 0.85f
 
                 val popupModifier = Modifier
                     .size(size)

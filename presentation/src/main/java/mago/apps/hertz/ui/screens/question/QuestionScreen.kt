@@ -195,7 +195,9 @@ fun QuestionText(isVisible: Boolean, questionViewModel: QuestionViewModel) {
         },
     ) { _ ->
         Text(
-            modifier = Modifier.verticalScroll(state = rememberScrollState()),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .verticalScroll(state = rememberScrollState()),
             text = question,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight(

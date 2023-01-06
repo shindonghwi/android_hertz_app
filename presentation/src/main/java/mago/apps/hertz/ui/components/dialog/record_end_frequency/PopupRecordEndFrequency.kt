@@ -36,7 +36,7 @@ fun PopupRecordEndFrequency(modifier: Modifier) {
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -46,7 +46,6 @@ fun PopupRecordEndFrequency(modifier: Modifier) {
                 textAlign = TextAlign.Center
             )
             Text(
-                modifier = Modifier.padding(top = 20.dp),
                 text = stringResource(id = R.string.dialog_record_end_frequency_subtitle),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight(700)),
                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
