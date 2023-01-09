@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.answer.connected
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
@@ -17,9 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
+import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
-import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +33,10 @@ fun AnswerConnectedScreen(
     answerConnectedViewModel: AnswerConnectedViewModel,
     answerSeq: String?,
 ) {
+    LaunchedEffect(key1 = Unit, block = {
+        answerSeq?.toIntOrNull()?.let { answerConnectedViewModel.getAnswerConnectedInfo(it) }
+    })
+
     Scaffold(
         topBar = { AnswerConnectedAppBar(navController) },
     ) {
@@ -46,15 +55,40 @@ private fun AnswerConnectedContent(
     modifier: Modifier,
     answerConnectedViewModel: AnswerConnectedViewModel
 ) {
-//    QuestionContent(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(200.dp)
-//            .clip(RoundedCornerShape(9.dp))
-//            .background(light_sub_primary)
-//            .padding(14.dp),
-//        content = answerTextViewModel.questionInfo?.text,
-//    )
+    val answerConnectedState = answerConnectedViewModel.answerConnectedState.collectAsState().value
+    val visibleState = MutableTransitionState(answerConnectedState.isSuccessState.value)
+
+    QuestionContent(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(9.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
+            .padding(14.dp),
+        content = answerConnectedState.data?.question?.text ?: ""
+    )
+
+    // 날짜 & 좋아요 영역
+    DayAndLikeContent(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 10.dp, start = 20.dp, end = 20.dp),
+        timeText = answerConnectedState.data?.createdAt,
+        visibleState = visibleState,
+        likeDefaultState = answerConnectedState.data?.question?.isLiked,
+        iLikeActionCallback = object : ILikeActionCallback {
+            override fun onState(likeState: Boolean) {
+                answerConnectedState.data?.let {
+//                    coroutineScopeOnDefault {
+//                        if (likeState) {
+//                            answerDetailViewModel.postLike(it.question.questionSeq)
+//                        } else {
+//                            answerDetailViewModel.delLike(it.question.questionSeq)
+//                        }
+//                    }
+                }
+            }
+        })
+
 }
 
 

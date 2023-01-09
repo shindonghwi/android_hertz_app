@@ -459,14 +459,14 @@ private fun BBiBBiFrequencyContent(
         .clip(RoundedCornerShape(12.dp))
         .background(MaterialTheme.colorScheme.primary)
 
-    property?.takeIf { !it.isSent }?.apply {
+    property?.takeIf { it.isConnected }?.apply {
         AnimatedVisibility(visibleState = visibleState) {
-            BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
+            FrequencyButton(boxModifier)
         }
     } ?: run {
-        property?.takeIf { it.isConnected }?.apply {
+        property?.takeIf { !it.isSent }?.apply {
             AnimatedVisibility(visibleState = visibleState) {
-                FrequencyButton(boxModifier)
+                BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
             }
         }
     }

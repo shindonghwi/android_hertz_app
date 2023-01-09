@@ -147,7 +147,7 @@ private fun AnswerTextContent(
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(9.dp))
-                .background(light_sub_primary)
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
                 .padding(14.dp),
             content = answerTextViewModel.questionInfo?.text,
         )
