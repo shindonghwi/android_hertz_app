@@ -33,6 +33,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_BACK_PRESS
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.screens.question.bottom.QuestionBottomBar
 import mago.apps.hertz.ui.utils.compose.findMainActivity
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -87,14 +88,10 @@ private fun QuestionAppBar(navController: NavHostController) {
         rightContent = {
             val rightIcons: List<Pair<ImageVector, () -> Unit>> = listOf(
                 Pair(Icons.Default.Menu) {
-                    navController.navigate(RouteScreen.EpisodeListScreen.route) {
-                        launchSingleTop = true
-                    }
+                    navController.navigateTo(RouteScreen.EpisodeListScreen.route)
                 },
                 Pair(Icons.Default.Notifications) {
-                    navController.navigate(RouteScreen.NotificationScreen.route) {
-                        launchSingleTop = true
-                    }
+                    navController.navigateTo(RouteScreen.NotificationScreen.route)
                 },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {

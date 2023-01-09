@@ -36,6 +36,7 @@ import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.findMainActivity
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
@@ -52,7 +53,7 @@ fun HomeScreen(navController: NavHostController, homeViewModel: HomeViewModel = 
 
 @Composable
 private fun HomeContent(
-    modifier: Modifier = Modifier, navController: NavController, homeViewModel: HomeViewModel
+    modifier: Modifier = Modifier, navController: NavHostController, homeViewModel: HomeViewModel
 ) {
     val homeState = homeViewModel.login.collectAsState().value
     val sharedViewModel = LocalContext.current.findMainActivity().sharedViewModel
@@ -63,7 +64,7 @@ private fun HomeContent(
     LaunchedEffect(key1 = homeState, block = {
         homeState.data?.token?.let {
             sharedViewModel.updateToken(token = it)
-            navController.navigate(RouteScreen.QuestionScreen.route)
+            navController.navigateTo(RouteScreen.QuestionScreen.route)
             return@LaunchedEffect
         }
         if (homeState.error.isNotEmpty()) {

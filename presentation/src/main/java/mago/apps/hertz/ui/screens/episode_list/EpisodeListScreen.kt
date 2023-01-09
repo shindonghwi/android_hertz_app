@@ -40,6 +40,7 @@ import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -277,12 +278,10 @@ private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
-                navController.navigate(
+                navController.navigateTo(
                     route = RouteScreen.AnswerDetailScreen.route +
                             "?answerSeq=${answerItem?.answerSeq}"
-                ) {
-                    launchSingleTop = true
-                }
+                )
             }
             .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 30.dp),
     ) {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
 import mago.apps.domain.model.question.QuestionRandom
@@ -36,9 +34,10 @@ import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.IBackPressEvent
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.navigation.navigateWithPopUp
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
-import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
 
@@ -123,7 +122,7 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
 private fun AnswerAudioContent(
     modifier: Modifier,
     answerAudioViewModel: AnswerAudioViewModel,
-    navController: NavController
+    navController: NavHostController
 ) {
 
     Column(modifier = modifier) {
@@ -151,7 +150,7 @@ private fun AnswerAudioContent(
 @Composable
 fun ResultAnswerVoicePopup(
     answerAudioViewModel: AnswerAudioViewModel,
-    navController: NavController
+    navController: NavHostController
 ) {
     val answerVoiceState = answerAudioViewModel.postAnswerVoiceState.collectAsState().value
 
@@ -171,12 +170,16 @@ fun ResultAnswerVoicePopup(
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         answerVoiceState.data?.let {
-            navController.navigate(
-                route = RouteScreen.AnswerDetailScreen.route +
-                        "?answer=${Gson().toJson(it)}"
-            ) {
-                popUpTo(RouteScreen.QuestionScreen.route)
+            answerAudioViewModel.run {
+                coroutineScopeOnDefault {
+                    updateVoiceRegisterState(VoiceRegisterState())
+                }
             }
+            navController.navigateWithPopUp(
+                route = RouteScreen.AnswerDetailScreen.route
+                        + "?answer=${Gson().toJson(it)}",
+                popUpRoute = RouteScreen.QuestionScreen
+            )
         }
     })
 }

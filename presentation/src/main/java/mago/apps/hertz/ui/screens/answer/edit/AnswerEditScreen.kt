@@ -38,6 +38,7 @@ import mago.apps.hertz.ui.model.toast.TOAST_CODE_FAIL_SCREEN_RELOAD
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
+import mago.apps.hertz.ui.navigation.navigateWithPopUp
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.common.TodayFrequencySelector
@@ -432,12 +433,11 @@ fun goToBackAndDataUpdate(
     answerEditViewModel.run {
         answerData?.let { answer ->
             val newAnswerData = answerPatchData?.toAnswerData(answer)
-            navController.navigate(
+            navController.navigateWithPopUp(
                 route = RouteScreen.AnswerDetailScreen.route +
                         "?answer=${Gson().toJson(newAnswerData)}",
-            ) {
-                popUpTo(RouteScreen.EpisodeListScreen.route)
-            }
+                popUpRoute = RouteScreen.EpisodeListScreen
+            )
         } ?: run {
             context.showToast(TOAST_CODE_FAIL_SCREEN_RELOAD)
         }

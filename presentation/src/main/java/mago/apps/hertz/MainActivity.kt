@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.navigation.Navigation
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.theme.MagoHzTheme
 
 @AndroidEntryPoint
@@ -42,12 +43,12 @@ class MainActivity : ComponentActivity() {
     private fun processIntent(intent: Intent?) {
         if (intent != null) {
             val linkUrl = intent.getStringExtra("linkUrl")
-            Log.w("ASdasdasd", "processIntent: $linkUrl", )
+            Log.w("ASdasdasd", "processIntent: $linkUrl")
             if (!linkUrl.isNullOrEmpty()) {
 
                 if (linkUrl.contains("/question/")) {
                     val questionSeq = linkUrl.replace("/question/", "")
-                    navController.navigate(
+                    navController.navigateTo(
                         RouteScreen.QuestionScreen.route +
                                 "?questionSeq=${questionSeq}"
                     )

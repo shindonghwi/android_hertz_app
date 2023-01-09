@@ -36,6 +36,7 @@ import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_1
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_2
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_QUESTION_3
+import mago.apps.hertz.ui.navigation.navigateWithPopUp
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
 import mago.apps.hertz.ui.screens.answer.common.TodayFrequencySelector
@@ -230,9 +231,10 @@ private fun PostAnswerTextPopup(
 
     LaunchedEffect(key1 = answerVoiceState, block = {
         if (answerVoiceState.isSuccessState.value) {
-            navController.navigate(route = RouteScreen.EpisodeListScreen.route) {
-                popUpTo(RouteScreen.QuestionScreen.route)
-            }
+            navController.navigateWithPopUp(
+                route = RouteScreen.EpisodeListScreen.route,
+                popUpRoute = RouteScreen.QuestionScreen
+            )
         }
     })
 }

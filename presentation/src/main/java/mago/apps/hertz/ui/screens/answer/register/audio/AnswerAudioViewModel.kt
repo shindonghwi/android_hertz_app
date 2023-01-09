@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.answer.register.audio
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +32,10 @@ class AnswerAudioViewModel @Inject constructor(
 
     private val _postAnswerVoiceState = MutableStateFlow(VoiceRegisterState())
     val postAnswerVoiceState: StateFlow<VoiceRegisterState> = _postAnswerVoiceState
+
+    suspend fun updateVoiceRegisterState(voiceRegisterState: VoiceRegisterState) {
+        _postAnswerVoiceState.emit(voiceRegisterState)
+    }
 
     suspend fun postAnswerVoice(questionSeq: Int, file: MultipartBody.Part) {
         postAnswerVoiceUseCase(questionSeq, file).onEach {

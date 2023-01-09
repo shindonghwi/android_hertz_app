@@ -54,6 +54,7 @@ import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_WAITING
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -212,12 +213,10 @@ private fun AnswerDetailAppBar(
                 .size(36.dp)
                 .noDuplicationClickable {
                     if (answerState.isSuccessState.value) {
-                        navController.navigate(
-                            route = RouteScreen.AnswerEditScreen.route +
+                        navController.navigateTo(
+                            RouteScreen.AnswerEditScreen.route +
                                     "?answer=${Gson().toJson(answerState.data)}"
-                        ) {
-                            launchSingleTop = true
-                        }
+                        )
                     } else {
                         context.showToast(TOAST_CODE_WAITING)
                     }

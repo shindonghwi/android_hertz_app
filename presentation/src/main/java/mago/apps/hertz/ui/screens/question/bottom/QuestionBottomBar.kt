@@ -17,6 +17,7 @@ import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
 import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.screens.question.QuestionViewModel
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
@@ -48,7 +49,7 @@ fun QuestionBottomBar(
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.background)
                 .noDuplicationClickable {
-                    navController.navigate(
+                    navController.navigateTo(
                         RouteScreen.AnswerTextScreen.route +
                                 "?question=${Gson().toJson(questionViewModel.questionInfo)}"
                     )
@@ -61,7 +62,7 @@ fun QuestionBottomBar(
                 .background(MaterialTheme.colorScheme.primary)
                 .noDuplicationClickable {
                     if (permissionState.allPermissionsGranted) {
-                        navController.navigate(
+                        navController.navigateTo(
                             RouteScreen.AnswerAudioScreen.route +
                                     "?question=${Gson().toJson(questionViewModel.questionInfo)}"
                         )
