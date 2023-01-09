@@ -17,6 +17,11 @@ object QuestionModule {
     }
 
     @Provides
+    fun provideGetQuestionInfoUseCase(questionRepository: QuestionRepository): GetQuestionInfoUseCase {
+        return GetQuestionInfoUseCase(questionRepository)
+    }
+
+    @Provides
     fun providePostAnswerVoiceUseCase(questionRepository: QuestionRepository): PostAnswerVoiceUseCase {
         return PostAnswerVoiceUseCase(questionRepository)
     }
