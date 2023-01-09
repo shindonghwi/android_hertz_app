@@ -1,14 +1,13 @@
 package mago.apps.data.network.model.answer
 
-import mago.apps.domain.model.answer.AnswerCommon
-
 data class AnswerDTO(
     val answerSeq: Int,
     val property: AnswerPropertyDTO?,
     val question: AnswerQuestionDTO,
-    val common: AnswerCommonDTO,
+    val common: AnswerCommonDTO?,
+    val voiceList: List<AnswerVoiceDTO>?,
     val voice: AnswerVoiceDTO?,
-    val tagList: List<String>,
+    val tagList: List<String>?,
     val shareType: String?,
     val emotion: String?,
     val timeAgo: String?,

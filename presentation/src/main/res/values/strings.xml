@@ -37,6 +37,16 @@
     <string name="answer_detail_error">정보를 확인 할 수 없어요</string>
 
     <string name="answer_connected_title">우리의 감정주파수</string>
+    <string name="answer_connected_common_menu_frequency">감정 주파수</string>
+    <string name="answer_connected_common_menu_keyword">헤찌뽕 키워드</string>
+    <string name="answer_connected_me_data_title_answer">나의 답변</string>
+    <string name="answer_connected_me_data_title_frequency">나의 감정 주파수</string>
+    <string name="answer_connected_me_data_title_tag">나의 태그</string>
+    <string name="answer_connected_opponent_data_title_answer">상대방의 답변</string>
+    <string name="answer_connected_opponent_data_title_frequency">상대방의 감정 주파수</string>
+    <string name="answer_connected_opponent_data_title_tag">상대방의 태그</string>
+    <string name="answer_connected_me_data_title_voice">나의 이야기</string>
+    <string name="answer_connected_opponent_data_title_voice">상대방의 이야기</string>
 
 
     <string name="notification_title">알림 목록</string>

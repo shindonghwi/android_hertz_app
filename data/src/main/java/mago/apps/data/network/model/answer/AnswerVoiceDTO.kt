@@ -6,5 +6,6 @@ data class AnswerVoiceDTO(
     val emotionList: List<AnswerEmotionListDTO>,
     val duration: Float,
     val voiceUrl: String?,
-    val waveformUrl: String?
+    val waveformUrl: String?,
+    val tagList: List<String>?
 )

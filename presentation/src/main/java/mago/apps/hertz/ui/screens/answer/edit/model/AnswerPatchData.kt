@@ -37,6 +37,7 @@ fun AnswerPatchData.toAnswerData(
         answerSeq = answerSeq,
         property = defaultAnswerData.property,
         question = defaultAnswerData.question,
+        common = defaultAnswerData.common,
         voice = AnswerVoice(
             text = text,
             emotion = emotion,
@@ -44,7 +45,9 @@ fun AnswerPatchData.toAnswerData(
             duration = defaultAnswerData.voice?.duration ?: 0f,
             voiceUrl = defaultAnswerData.voice?.voiceUrl ?: "",
             waveformUrl = defaultAnswerData.voice?.waveformUrl ?: "",
+            tagList = defaultAnswerData.tagList
         ),
+        voiceList = defaultAnswerData.voiceList,
         tagList = tags.split(","),
         shareType = defaultAnswerData.shareType,
         emotion = defaultAnswerData.emotion,

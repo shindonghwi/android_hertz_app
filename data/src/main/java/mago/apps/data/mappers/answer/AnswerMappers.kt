@@ -10,7 +10,8 @@ fun AnswerDTO.toDomain(): Answer {
         answerSeq = answerSeq,
         property = property?.toDomain(),
         question = question.toDomain(),
-        common = common.toDomain(),
+        common = common?.toDomain(),
+        voiceList = voiceList?.map { it.toDomain() },
         voice = voice?.toDomain(),
         tagList = tagList,
         shareType = shareType,
@@ -22,7 +23,7 @@ fun AnswerDTO.toDomain(): Answer {
 }
 
 fun AnswerCommonDTO.toDomain(): AnswerCommon {
-    return AnswerCommon(emotion.toDomain(), keywordList)
+    return AnswerCommon(emotion?.toDomain(), keywordList)
 }
 
 fun AnswerEmotionDTO.toDomain(): AnswerEmotion {
@@ -44,7 +45,8 @@ fun AnswerVoiceDTO.toDomain(): AnswerVoice {
         emotionList.map { it.toDomain() },
         duration,
         voiceUrl,
-        waveformUrl
+        waveformUrl,
+        tagList
     )
 }
 
