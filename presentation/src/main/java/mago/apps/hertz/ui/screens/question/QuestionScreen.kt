@@ -197,8 +197,6 @@ private fun QuestionContent(
 @Composable
 fun QuestionText(isVisible: Boolean, questionViewModel: QuestionViewModel) {
 
-    val question = questionViewModel.currentQuestion.collectAsState().value
-
     AnimatedContent(
         targetState = isVisible,
         transitionSpec = {
@@ -210,41 +208,55 @@ fun QuestionText(isVisible: Boolean, questionViewModel: QuestionViewModel) {
         },
     ) {
         Column {
-
-            question?.property?.let {
-                Box(
-                    modifier = Modifier
-                        .padding(bottom = 4.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        text = String.format(
-                            stringResource(id = R.string.qusetion_opponent_name),
-                            it.name
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        textAlign = TextAlign.Center
-                    )
-                }
+            questionViewModel.run {
+                QuestionNamePropertyView(this)
+                QuestionContentView(this)
             }
+        }
+    }
+}
 
+@Composable
+private fun QuestionNamePropertyView(questionViewModel: QuestionViewModel) {
+    val question = questionViewModel.currentProperty.collectAsState().value
+    question?.let {
+        Box(
+            modifier = Modifier
+                .padding(bottom = 4.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(state = rememberScrollState()),
-                text = question?.text ?: "",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight(
-                        800
-                    )
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                text = String.format(
+                    stringResource(id = R.string.qusetion_opponent_name),
+                    it.name
                 ),
-                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
                 textAlign = TextAlign.Center
             )
         }
     }
+
+}
+
+@Composable
+private fun QuestionContentView(questionViewModel: QuestionViewModel) {
+    val questionText = questionViewModel.currentQuestion.collectAsState().value
+
+    Text(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .verticalScroll(state = rememberScrollState()),
+        text = questionText,
+        style = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight(
+                800
+            )
+        ),
+        color = MaterialTheme.colorScheme.secondary,
+        textAlign = TextAlign.Center
+    )
 }

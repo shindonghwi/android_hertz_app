@@ -6,7 +6,7 @@ import mago.apps.domain.model.question.QuestionProperty
 import mago.apps.domain.model.question.QuestionRandom
 
 fun QuestionRandomDTO.toDomain(): QuestionRandom {
-    return QuestionRandom(questionSeq, property.toDomain(), text, example)
+    return QuestionRandom(questionSeq, property?.toDomain(), text, example)
 }
 
 fun QuestionPropertyDTO.toDomain(): QuestionProperty {

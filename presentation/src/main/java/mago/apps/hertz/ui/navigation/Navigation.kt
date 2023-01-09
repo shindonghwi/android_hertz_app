@@ -24,6 +24,7 @@ import mago.apps.hertz.ui.screens.episode_list.EpisodeListViewModel
 import mago.apps.hertz.ui.screens.episode_save.EpisodeSaveScreen
 import mago.apps.hertz.ui.screens.home.HomeScreen
 import mago.apps.hertz.ui.screens.notification.NotificationScreenScreen
+import mago.apps.hertz.ui.screens.notification.NotificationsViewModel
 import mago.apps.hertz.ui.screens.question.QuestionScreen
 import mago.apps.hertz.ui.screens.question.QuestionViewModel
 
@@ -134,7 +135,8 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(route = RouteScreen.NotificationScreen.route) {
-            NotificationScreenScreen(navController)
+            val notificationsViewModel = hiltViewModel<NotificationsViewModel>()
+            NotificationScreenScreen(navController, notificationsViewModel)
         }
         composable(route = RouteScreen.EpisodeSaveScreen.route) {
             EpisodeSaveScreen()

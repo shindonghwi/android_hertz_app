@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.common.Resource
+import mago.apps.domain.model.question.QuestionProperty
 import mago.apps.domain.model.question.QuestionRandom
 import mago.apps.domain.usecases.question.GetQuestionInfoUseCase
 import mago.apps.domain.usecases.question.GetQuestionRandomUseCase
@@ -22,8 +23,11 @@ class QuestionViewModel @Inject constructor(
     private val _questionVisible = MutableStateFlow(true)
     val questionVisible: StateFlow<Boolean> = _questionVisible
 
-    private val _currentQuestion = MutableStateFlow<QuestionRandom?>(null)
-    val currentQuestion: StateFlow<QuestionRandom?> = _currentQuestion
+    private val _currentQuestion = MutableStateFlow("")
+    val currentQuestion: StateFlow<String> = _currentQuestion
+
+    private val _currentProperty = MutableStateFlow<QuestionProperty?>(null)
+    val currentProperty: StateFlow<QuestionProperty?> = _currentProperty
 
     var questionInfo: QuestionRandom? = null
 
@@ -37,7 +41,8 @@ class QuestionViewModel @Inject constructor(
                     }
                     is Resource.Success -> {
                         _questionVisible.value = true
-                        _currentQuestion.emit(it.data)
+                        _currentQuestion.emit(it.data?.text.toString())
+                        _currentProperty.emit(it.data?.property)
                         questionInfo = it.data
                     }
                 }
@@ -54,7 +59,8 @@ class QuestionViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _questionVisible.value = true
-                    _currentQuestion.emit(it.data)
+                    _currentQuestion.emit(it.data?.text.toString())
+                    _currentProperty.emit(it.data?.property)
                     questionInfo = it.data
                 }
             }
