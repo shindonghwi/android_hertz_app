@@ -144,17 +144,25 @@ private fun NotificationItem(
                 )
                 .noDuplicationClickable {
                     // 삐삐 메세지
-                    if (linkUrl?.contains("/question/") == true) {
+                    if (linkUrl?.contains(RouteScreen.QuestionScreen.route) == true) {
                         navController.navigateTo(
-                            RouteScreen.QuestionScreen.route +
-                                    "?questionSeq=${linkUrl.replace("/question/", "")}"
+                            RouteScreen.QuestionScreen.route + "?questionSeq=${
+                                linkUrl.replace(
+                                    RouteScreen.QuestionScreen.route,
+                                    ""
+                                )
+                            }"
                         )
                     }
                     // 우리의 감정주파수 메세지
-                    else if (linkUrl?.contains("/answer/connect/") == true) {
+                    else if (linkUrl?.contains(RouteScreen.AnswerConnectedScreen.route) == true) {
                         navController.navigateTo(
-                            RouteScreen.AnswerConnectedScreen.route +
-                                    "?answerSeq=${linkUrl.replace("/answer/connect/", "")}"
+                            RouteScreen.AnswerConnectedScreen.route + "?answerSeq=${
+                                linkUrl.replace(
+                                    RouteScreen.AnswerConnectedScreen.route,
+                                    ""
+                                )
+                            }"
                         )
                     }
 

@@ -31,7 +31,7 @@ fun NavGraphBuilder.homeRouting(navController: NavHostController) {
     /** @feature: 알림 목록화면
      * @author: 2023/01/09 3:45 PM donghwishin
      */
-    composable(route = RouteScreen.NotificationScreen.route) {
+    composable(route = RouteScreen.NotificationsScreen.route) {
         val notificationsViewModel = hiltViewModel<NotificationsViewModel>()
         NotificationScreenScreen(navController, notificationsViewModel)
     }

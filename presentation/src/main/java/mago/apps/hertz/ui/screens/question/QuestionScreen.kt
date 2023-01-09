@@ -91,7 +91,7 @@ private fun QuestionAppBar(navController: NavHostController) {
                     navController.navigateTo(RouteScreen.EpisodeListScreen.route)
                 },
                 Pair(Icons.Default.Notifications) {
-                    navController.navigateTo(RouteScreen.NotificationScreen.route)
+                    navController.navigateTo(RouteScreen.NotificationsScreen.route)
                 },
             )
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -46,11 +46,17 @@ class MainActivity : ComponentActivity() {
             Log.w("ASdasdasd", "processIntent: $linkUrl")
             if (!linkUrl.isNullOrEmpty()) {
 
-                if (linkUrl.contains("/question/")) {
-                    val questionSeq = linkUrl.replace("/question/", "")
+                if (linkUrl.contains(RouteScreen.QuestionScreen.route)) {
+                    val questionSeq = linkUrl.replace(RouteScreen.QuestionScreen.route, "")
                     navController.navigateTo(
                         RouteScreen.QuestionScreen.route +
                                 "?questionSeq=${questionSeq}"
+                    )
+                } else if (linkUrl.contains(RouteScreen.AnswerConnectedScreen.route)) {
+                    val answerSeq = linkUrl.replace(RouteScreen.AnswerConnectedScreen.route, "")
+                    navController.navigateTo(
+                        RouteScreen.AnswerConnectedScreen.route +
+                                "?answerSeq=${answerSeq}"
                     )
                 }
             }
