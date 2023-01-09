@@ -11,15 +11,6 @@
 
     <string name="qusetion_opponent_name">%s 찌가 답변한 질문</string>
 
-    <string name="episode_save_title">소중한 에피소드가\n저장되었습니다</string>
-    <string name="episode_save_button_keep_alone">혼자 간직하기</string>
-    <string name="episode_save_button_noti_opponent">상대에게 삐삐</string>
-    <string name="episode_save_button_result_list">결과 리스트</string>
-    <string name="episode_save_button_detail_view">자세히 보기</string>
-    <string name="episode_save_card_title">이 질문은 감정 주파수를\n확인 할 수 있습니다</string>
-    <string name="episode_save_card_keyword_frequency">감정 주파수</string>
-    <string name="episode_save_card_keyword_hezzibbong">헤찌뽕 키워드</string>
-
     <string name="episode_list_title">에피소드 목록</string>
     <string name="episode_list_menu_1">내 에피소드</string>
     <string name="episode_list_menu_1_empty">내 에피소드 목록이 비었어요</string>
@@ -44,6 +35,8 @@
     <string name="answer_detail_bbibbi_button">상대에게 삐삐</string>
     <string name="answer_detail_connected_button">감정 주파수 확인</string>
     <string name="answer_detail_error">정보를 확인 할 수 없어요</string>
+
+    <string name="answer_connected_title">우리의 감정주파수</string>
 
 
     <string name="notification_title">알림 목록</string>

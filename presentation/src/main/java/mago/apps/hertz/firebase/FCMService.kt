@@ -33,7 +33,7 @@ class FCMService : FirebaseMessagingService() {
      */
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.w("ASdasdasd", "onMessageReceived: entries ${message.data.entries}")
+        Log.w("ASdasd123asd", "onMessageReceived: entries ${message.data.entries}")
 
         val id = message.data["id"]
         val title = message.data["title"]
