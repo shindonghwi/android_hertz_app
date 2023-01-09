@@ -42,4 +42,8 @@ interface AnswerRepository {
         sadness: Int,
     ): ApiResponse<Answer>
 
+    /** @feature: 답변 연결 정보
+     * @author: 2023/01/09 4:09 PM donghwishin
+    */
+    suspend fun getAnswerConnectedInfo(answerSeq: Int): ApiResponse<Answer>
 }

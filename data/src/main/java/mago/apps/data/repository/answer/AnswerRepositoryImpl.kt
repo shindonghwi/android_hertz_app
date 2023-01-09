@@ -60,5 +60,12 @@ class AnswerRepositoryImpl @Inject constructor(
             status = response.status, message = response.message, data = response.data?.toDomain()
         )
     }
+
+    override suspend fun getAnswerConnectedInfo(answerSeq: Int): ApiResponse<Answer> {
+        val response = safeApiRequest { answerApi.getAnswerConnectedInfo(answerSeq) }
+        return ApiResponse(
+            status = response.status, message = response.message, data = response.data?.toDomain()
+        )
+    }
 }
 

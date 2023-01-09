@@ -52,4 +52,14 @@ interface AnswerApi {
         @Field("happiness") happiness: Int,
         @Field("sadness") sadness: Int,
     ): Response<ApiResponse<AnswerDTO>>
+
+    /** @feature: 답변 연결 정보
+     * @author: 2023/01/09 4:08 PM donghwishin
+    */
+    @GET("$API_VERSION/answer/connect/{answerSeq}")
+    suspend fun getAnswerConnectedInfo(
+        @Path(value = "answerSeq") answerSeq: Int,
+    ): Response<ApiResponse<AnswerDTO>>
+
+
 }
