@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
     private fun processIntent(intent: Intent?) {
         if (intent != null) {
             val linkUrl = intent.getStringExtra("linkUrl")
+            Log.w("ASdasdasd", "processIntent: $linkUrl", )
             if (!linkUrl.isNullOrEmpty()) {
 
                 if (linkUrl.contains("/question/")) {

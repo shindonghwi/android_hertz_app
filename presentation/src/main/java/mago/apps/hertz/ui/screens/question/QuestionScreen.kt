@@ -46,9 +46,6 @@ fun QuestionScreen(
     questionViewModel: QuestionViewModel,
     questionSeq: Int?,
 ) {
-
-    Log.w("ASdasd", "QuestionScreen: $questionSeq")
-
     Scaffold(topBar = { QuestionAppBar(navController) }, bottomBar = {
         QuestionBottomBar(
             modifier = Modifier

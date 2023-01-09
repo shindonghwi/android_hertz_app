@@ -27,7 +27,7 @@ class NotificationHelper(private val context: Context) {
         linkUrl: String
     ) {
         val newNotification = createNotification(title, body, linkUrl).build()
-        val groupNotification = createSummaryNotification(title, body).build()
+        val groupNotification = createSummaryNotification(title, body, linkUrl).build()
 
         val notificationManager =
             (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
@@ -62,7 +62,9 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createNotification(
-        title: String, body: String, linkUrl: String
+        title: String,
+        body: String,
+        linkUrl: String
     ): NotificationCompat.Builder {
         val pendingIntent = PendingIntent.getActivity(
             context, NOTI_CODE.hashCode(), Intent(context, MainActivity::class.java).apply {
@@ -82,12 +84,13 @@ class NotificationHelper(private val context: Context) {
     private fun createSummaryNotification(
         title: String,
         body: String,
+        linkUrl: String
     ): NotificationCompat.Builder {
 
         val pendingIntent = PendingIntent.getActivity(
             context, NOTI_GROUP_CODE.hashCode(), Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                putExtra("linkUrl", "alarm")
+                putExtra("linkUrl", linkUrl)
                 action = Intent.ACTION_MAIN
                 addCategory(Intent.CATEGORY_LAUNCHER)
             }, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
