@@ -30,6 +30,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 
 @Composable
@@ -46,6 +48,7 @@ fun NotificationScreenScreen(
                 .fillMaxSize()
                 .padding(it)
                 .padding(horizontal = 20.dp),
+            navController = navController,
             notificationsViewModel = notificationsViewModel
         )
     }
@@ -78,7 +81,11 @@ private fun NotificationScreenAppbar(navController: NavHostController) {
 }
 
 @Composable
-private fun NotificationContent(modifier: Modifier, notificationsViewModel: NotificationsViewModel) {
+private fun NotificationContent(
+    modifier: Modifier,
+    navController: NavHostController,
+    notificationsViewModel: NotificationsViewModel
+) {
     val notifications = notificationsViewModel.notifications.collectAsLazyPagingItems()
 
     AnimatedVisibility(
@@ -100,7 +107,12 @@ private fun NotificationContent(modifier: Modifier, notificationsViewModel: Noti
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(notifications, key = { item -> item.notificationSeq }) { item ->
-                    NotificationItem(timeAgo = item?.timeAgo, content = item?.message)
+                    NotificationItem(
+                        navController = navController,
+                        timeAgo = item?.timeAgo,
+                        content = item?.message,
+                        linkUrl = item?.link
+                    )
                 }
             }
         }
@@ -108,11 +120,16 @@ private fun NotificationContent(modifier: Modifier, notificationsViewModel: Noti
 }
 
 @Composable
-private fun NotificationItem(timeAgo: String?, content: String?) {
+private fun NotificationItem(
+    navController: NavHostController,
+    timeAgo: String?,
+    content: String?,
+    linkUrl: String?
+) {
 
     val cardShape = RoundedCornerShape(10.dp)
 
-    if (!content.isNullOrEmpty()){
+    if (!content.isNullOrEmpty()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,6 +142,23 @@ private fun NotificationItem(timeAgo: String?, content: String?) {
                     color = MaterialTheme.colorScheme.background,
                     shape = cardShape,
                 )
+                .noDuplicationClickable {
+                    // 삐삐 메세지
+                    if (linkUrl?.contains("/question/") == true) {
+                        navController.navigateTo(
+                            RouteScreen.QuestionScreen.route +
+                                    "?questionSeq=${linkUrl.replace("/question/", "")}"
+                        )
+                    }
+                    // 우리의 감정주파수 메세지
+                    else if (linkUrl?.contains("/answer/connect/") == true) {
+                        navController.navigateTo(
+                            RouteScreen.AnswerConnectedScreen.route +
+                                    "?answerSeq=${linkUrl.replace("/answer/connect/", "")}"
+                        )
+                    }
+
+                }
                 .padding(vertical = 8.dp, horizontal = 15.dp)
         ) {
             Text(

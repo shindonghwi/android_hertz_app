@@ -10,6 +10,7 @@ fun AnswerDTO.toDomain(): Answer {
         answerSeq = answerSeq,
         property = property?.toDomain(),
         question = question.toDomain(),
+        common = common.toDomain(),
         voice = voice?.toDomain(),
         tagList = tagList,
         shareType = shareType,
@@ -18,6 +19,14 @@ fun AnswerDTO.toDomain(): Answer {
         createdAt = createdAt.toDomainCreatedAt(),
         firstDayInList = null,
     )
+}
+
+fun AnswerCommonDTO.toDomain(): AnswerCommon {
+    return AnswerCommon(emotion.toDomain(), keywordList)
+}
+
+fun AnswerEmotionDTO.toDomain(): AnswerEmotion {
+    return AnswerEmotion(type, rate)
 }
 
 fun AnswerPropertyDTO.toDomain(): AnswerProperty {

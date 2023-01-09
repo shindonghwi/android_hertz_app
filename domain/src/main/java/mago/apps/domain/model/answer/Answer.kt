@@ -4,6 +4,7 @@ data class Answer(
     val answerSeq: Int,
     val property: AnswerProperty?,
     val question: AnswerQuestion,
+    val common: AnswerCommon,
     val voice: AnswerVoice?,
     val tagList: List<String>,
     val shareType: String?,
