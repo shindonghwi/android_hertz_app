@@ -1,18 +1,14 @@
 package mago.apps.data.mappers.answer
 
-import mago.apps.data.network.model.answer.AnswerDTO
-import mago.apps.data.network.model.answer.AnswerQuestionDTO
-import mago.apps.data.network.model.answer.AnswerVoiceDTO
-import mago.apps.domain.model.answer.Answer
-import mago.apps.domain.model.answer.AnswerQuestion
-import mago.apps.domain.model.answer.AnswerVoice
+import mago.apps.data.network.model.answer.*
+import mago.apps.domain.model.answer.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 fun AnswerDTO.toDomain(): Answer {
     return Answer(
         answerSeq = answerSeq,
-        property = property,
+        property = property?.toDomain(),
         question = question.toDomain(),
         voice = voice?.toDomain(),
         tagList = tagList,
@@ -24,12 +20,27 @@ fun AnswerDTO.toDomain(): Answer {
     )
 }
 
+fun AnswerPropertyDTO.toDomain(): AnswerProperty {
+    return AnswerProperty(isSent, isConnected)
+}
+
 fun AnswerQuestionDTO.toDomain(): AnswerQuestion {
     return AnswerQuestion(questionSeq, text, isLiked)
 }
 
 fun AnswerVoiceDTO.toDomain(): AnswerVoice {
-    return AnswerVoice(text, emotion, emotionList, duration, voiceUrl, waveformUrl)
+    return AnswerVoice(
+        text,
+        emotion,
+        emotionList.map { it.toDomain() },
+        duration,
+        voiceUrl,
+        waveformUrl
+    )
+}
+
+fun AnswerEmotionListDTO.toDomain(): AnswerEmotion {
+    return AnswerEmotion(type, rate)
 }
 
 fun String.toDomainCreatedAt(): String {

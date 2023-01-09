@@ -1,5 +1,6 @@
 package mago.apps.hertz.firebase
 
+import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.collect

@@ -1,10 +1,13 @@
 package mago.apps.hertz.ui.screens.question
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -13,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
@@ -40,8 +43,12 @@ import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 @Composable
 fun QuestionScreen(
     navController: NavHostController,
-    questionViewModel: QuestionViewModel = hiltViewModel()
+    questionViewModel: QuestionViewModel,
+    questionSeq: Int?,
 ) {
+
+    Log.w("ASdasd", "QuestionScreen: $questionSeq")
+
     Scaffold(topBar = { QuestionAppBar(navController) }, bottomBar = {
         QuestionBottomBar(
             modifier = Modifier
@@ -54,10 +61,10 @@ fun QuestionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            questionViewModel = questionViewModel
+            questionViewModel = questionViewModel,
         )
     }
-    QuestionLifecycle(questionViewModel)
+    QuestionLifecycle(questionViewModel, questionSeq)
     BackPressEvent()
 }
 
@@ -125,13 +132,21 @@ private fun BackPressEvent() {
 }
 
 @Composable
-private fun QuestionLifecycle(questionViewModel: QuestionViewModel) {
+private fun QuestionLifecycle(questionViewModel: QuestionViewModel, questionSeq: Int?) {
     val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
     DisposableEffect(key1 = Unit) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    coroutineScopeOnDefault { questionViewModel.fetchQuestion() }
+                    coroutineScopeOnDefault {
+                        questionViewModel.run {
+                            questionSeq?.let { seq ->
+                                getQuestionInfo(seq)
+                            } ?: run {
+                                fetchQuestion()
+                            }
+                        }
+                    }
                 }
                 else -> {}
             }
@@ -143,7 +158,10 @@ private fun QuestionLifecycle(questionViewModel: QuestionViewModel) {
 }
 
 @Composable
-private fun QuestionContent(modifier: Modifier, questionViewModel: QuestionViewModel) {
+private fun QuestionContent(
+    modifier: Modifier,
+    questionViewModel: QuestionViewModel,
+) {
     val isVisible = questionViewModel.questionVisible.collectAsState().value
 
     Box(modifier = modifier) {
@@ -193,19 +211,43 @@ fun QuestionText(isVisible: Boolean, questionViewModel: QuestionViewModel) {
                 animationSpec = tween(300)
             )
         },
-    ) { _ ->
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .verticalScroll(state = rememberScrollState()),
-            text = question,
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight(
-                    800
-                )
-            ),
-            color = MaterialTheme.colorScheme.secondary,
-            textAlign = TextAlign.Center
-        )
+    ) {
+        Column {
+
+            question?.property?.let {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        text = String.format(
+                            stringResource(id = R.string.qusetion_opponent_name),
+                            it.name
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(state = rememberScrollState()),
+                text = question?.text ?: "",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight(
+                        800
+                    )
+                ),
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }

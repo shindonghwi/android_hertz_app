@@ -17,6 +17,14 @@ interface QuestionApi {
     @GET("$API_VERSION/questions/random")
     suspend fun getQuestionRandom(): Response<ApiResponse<QuestionRandomDTO>>
 
+    /** @feature: 질문 정보 조회
+     * @author: 2023/01/09 1:25 PM donghwishin
+     */
+    @GET("$API_VERSION/question/{questionSeq}")
+    suspend fun getQuestionInfo(
+        @Path(value = "questionSeq") questionSeq: Int,
+    ): Response<ApiResponse<QuestionRandomDTO>>
+
     /** @feature: 음성 답변 등록
      * @author: 2023/01/03 2:50 PM donghwishin
      */

@@ -27,6 +27,13 @@ class QuestionRepositoryImpl @Inject constructor(private val questionApi: Questi
         )
     }
 
+    override suspend fun getQuestionInfo(questionSeq: Int): ApiResponse<QuestionRandom> {
+        val response = safeApiRequest { questionApi.getQuestionInfo(questionSeq) }
+        return ApiResponse(
+            status = response.status, message = response.message, data = response.data?.toDomain()
+        )
+    }
+
     override suspend fun postAnswerVoice(
         questionSeq: Int, file: MultipartBody.Part
     ): ApiResponse<Answer> {

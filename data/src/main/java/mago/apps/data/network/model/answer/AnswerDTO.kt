@@ -1,10 +1,8 @@
 package mago.apps.data.network.model.answer
 
-import mago.apps.domain.model.answer.AnswerProperty
-
 data class AnswerDTO(
     val answerSeq: Int,
-    val property: AnswerProperty?,
+    val property: AnswerPropertyDTO?,
     val question: AnswerQuestionDTO,
     val voice: AnswerVoiceDTO?,
     val tagList: List<String>,
@@ -13,5 +11,4 @@ data class AnswerDTO(
     val timeAgo: String?,
     val createdAt: String,
     var firstDayInList: String?, // 페이징 목록중에 첫번째 날짜
-
 )

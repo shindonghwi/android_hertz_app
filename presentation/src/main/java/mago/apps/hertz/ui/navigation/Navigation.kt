@@ -25,6 +25,7 @@ import mago.apps.hertz.ui.screens.episode_save.EpisodeSaveScreen
 import mago.apps.hertz.ui.screens.home.HomeScreen
 import mago.apps.hertz.ui.screens.notification.NotificationScreenScreen
 import mago.apps.hertz.ui.screens.question.QuestionScreen
+import mago.apps.hertz.ui.screens.question.QuestionViewModel
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -32,8 +33,23 @@ fun Navigation(navController: NavHostController) {
         composable(route = RouteScreen.HomeScreen.route) {
             HomeScreen(navController)
         }
-        composable(route = RouteScreen.QuestionScreen.route) {
-            QuestionScreen(navController)
+        composable(
+            route = RouteScreen.QuestionScreen.route
+                    + "?questionSeq={questionSeq}",
+            arguments = listOf(
+                navArgument("questionSeq") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+            ),
+        ) {
+            val questionViewModel = hiltViewModel<QuestionViewModel>()
+            val questionSeq = it.arguments?.getString("questionSeq")
+            QuestionScreen(
+                navController,
+                questionViewModel,
+                questionSeq?.toIntOrNull()
+            )
         }
         composable(route = RouteScreen.EpisodeListScreen.route) {
             val episodeListViewModel = hiltViewModel<EpisodeListViewModel>()

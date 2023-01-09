@@ -4,7 +4,6 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.ApiResponse
-import mago.apps.domain.model.common.DataListType
 import mago.apps.domain.model.common.EmotionType
 import mago.apps.domain.model.question.QuestionRandom
 import okhttp3.MultipartBody
@@ -15,6 +14,11 @@ interface QuestionRepository {
      * @author: 2023/01/03 2:50 PM donghwishin
      */
     suspend fun getQuestionRandom(): ApiResponse<QuestionRandom>
+
+    /** @feature: 질문 정보 조회
+     * @author: 2023/01/09 1:25 PM donghwishin
+    */
+    suspend fun getQuestionInfo(questionSeq: Int): ApiResponse<QuestionRandom>
 
     /** @feature: 음성 답변 등록
      * @author: 2023/01/03 2:50 PM donghwishin

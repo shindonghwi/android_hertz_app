@@ -6,11 +6,15 @@ import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
 
     @Inject
     lateinit var fcmUtilInstance: FCMUtil
+
+    @Inject
+    lateinit var notificationHelperInstance: NotificationHelper
 
     /** @feature: 메세지가 수신되면 호출됨
      * @author: 2023/01/06 11:47 AM donghwishin
@@ -19,17 +23,32 @@ class FCMService : FirebaseMessagingService() {
      *  백그라운드 데이터 수신 방법
      *  1. // key 값이 "data" 로 오게되면 메세지에 대한 제어권이 주어진다.
      *     data : {
-            title : ""
-            body : ""
-           }
-        2. P version 이상에서 isBackgroundRestricted() 체크
-           앱 시스템이 백그라운드 모드로 설정되어 있는경우에는 알림 수신이 불가능 하다.
+    title : ""
+    body : ""
+    }
+    2. P version 이상에서 isBackgroundRestricted() 체크
+    앱 시스템이 백그라운드 모드로 설정되어 있는경우에는 알림 수신이 불가능 하다.
 
      * }
      */
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.w("ASdasdasd", "onMessageReceived: $message")
+        Log.w("ASdasdasd", "onMessageReceived: entries ${message.data.entries}")
+
+        val id = message.data["id"]
+        val title = message.data["title"]
+        val body = message.data["body"]
+        val imageUrl = message.data["imageUrl"]
+        val linkUrl = message.data["linkUrl"]
+
+        notificationHelperInstance
+            .pushNotificationGroup(
+                id = id.toString(),
+                title = title.toString(),
+                body = body.toString(),
+                imageUrl = imageUrl.toString(),
+                linkUrl = linkUrl.toString()
+            )
     }
 
     /** @feature: 등록된 토큰 수신
@@ -46,4 +65,5 @@ class FCMService : FirebaseMessagingService() {
         Log.w("ASdasdasd", "onNewToken: $token")
         fcmUtilInstance.registerToken()
     }
+
 }
