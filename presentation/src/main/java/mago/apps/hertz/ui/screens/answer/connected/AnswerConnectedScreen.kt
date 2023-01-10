@@ -38,6 +38,7 @@ import mago.apps.domain.model.answer.AnswerVoice
 import mago.apps.domain.model.common.EmotionList
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.components.dialog.alert.ErrorMessageDialog
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
@@ -67,6 +68,25 @@ fun AnswerConnectedScreen(
             answerConnectedViewModel = answerConnectedViewModel
         )
     }
+
+    ErrorDialog(navController, answerConnectedViewModel)
+}
+
+@Composable
+private fun ErrorDialog(
+    navController: NavHostController,
+    answerConnectedViewModel: AnswerConnectedViewModel
+) {
+    ErrorMessageDialog(
+        errorDialog = answerConnectedViewModel.errorDialog,
+        confirmText = stringResource(id = R.string.close),
+        dismissRequestEvent = {
+            navController.popBackStack()
+        },
+        confirmEvent = {
+            navController.popBackStack()
+        },
+    )
 }
 
 @Composable
@@ -320,6 +340,9 @@ private fun AudioPlayLifecycle(
                 }
                 Lifecycle.Event.ON_PAUSE -> {
                     answerConnectedViewModel.audioReset(isMe)
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    answerConnectedViewModel.audioClear()
                 }
                 else -> {}
             }

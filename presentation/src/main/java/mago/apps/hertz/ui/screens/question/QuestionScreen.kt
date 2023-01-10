@@ -30,6 +30,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.components.dialog.alert.ErrorMessageDialog
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_BACK_PRESS
 import mago.apps.hertz.ui.navigation.navigateTo
@@ -62,44 +63,32 @@ fun QuestionScreen(
         )
     }
     QuestionLifecycle(questionViewModel, questionSeq)
-    ErrorMessageDialog(navController, questionViewModel)
+    ErrorDialog(navController, questionViewModel)
     BackPressEvent()
 }
 
 @Composable
-private fun ErrorMessageDialog(
+private fun ErrorDialog(
     navController: NavHostController,
     questionViewModel: QuestionViewModel
 ) {
-    val errorDialogMessage = questionViewModel.errorDialog.collectAsState().value
-
-    if (errorDialogMessage.isNotEmpty()) {
-        AlertDialog(
-            onDismissRequest = {
+    ErrorMessageDialog(
+        errorDialog = questionViewModel.errorDialog,
+        confirmText = stringResource(id = R.string.question_error_dialog_back),
+        dismissText = stringResource(id = R.string.question_error_dialog_fetch_question),
+        dismissRequestEvent = {
+            coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
+        },
+        confirmEvent = {
+            navController.popBackStack()
+            coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
+        },
+        dismissEvent = {
+            coroutineScopeOnDefault {
                 coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
-            },
-            text = { Text(text = errorDialogMessage) },
-            confirmButton = {
-                TextButton(onClick = {
-                    navController.popBackStack()
-                    coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
-                }) {
-                    Text(stringResource(id = R.string.question_error_dialog_back))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    coroutineScopeOnDefault {
-                        coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
-                    }
-                }) {
-                    Text(stringResource(id = R.string.question_error_dialog_fetch_question))
-                }
-            },
-            shape = RoundedCornerShape(14.dp)
-        )
-    }
-
+            }
+        }
+    )
 }
 
 @Composable

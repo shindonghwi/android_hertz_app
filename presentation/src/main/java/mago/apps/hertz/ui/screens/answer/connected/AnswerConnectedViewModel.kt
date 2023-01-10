@@ -30,15 +30,20 @@ class AnswerConnectedViewModel @Inject constructor(
     private val _answerConnectedState = MutableStateFlow(AnswerConnectedState())
     val answerConnectedState: StateFlow<AnswerConnectedState> = _answerConnectedState
 
+    private val _errorDialog = MutableStateFlow<String>("")
+    val errorDialog: StateFlow<String> = _errorDialog
+
     suspend fun getAnswerConnectedInfo(answerSeq: Int) {
         getAnswerConnectedInfoUseCase(answerSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
+                    _errorDialog.emit("")
                     _answerConnectedState.value = AnswerConnectedState(
                         isLoading = mutableStateOf(true),
                     )
                 }
                 is Resource.Error -> {
+                    _errorDialog.emit(it.message.toString())
                     _answerConnectedState.value = AnswerConnectedState(
                         isLoading = mutableStateOf(false),
                         isErrorState = mutableStateOf(true),
@@ -140,19 +145,16 @@ class AnswerConnectedViewModel @Inject constructor(
         }
     }
 
-    fun audioClear(isMe: Boolean) {
-        if (isMe) {
-            myMediaPlayer?.run {
-                stop()
-                release()
-                null
-            }
-        } else {
-            opponentMediaPlayer?.run {
-                stop()
-                release()
-                null
-            }
+    fun audioClear() {
+        myMediaPlayer?.run {
+            stop()
+            release()
+            null
+        }
+        opponentMediaPlayer?.run {
+            stop()
+            release()
+            null
         }
     }
 
