@@ -7,23 +7,31 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import mago.apps.domain.model.answer.AnswerCommon
 import mago.apps.domain.model.answer.AnswerVoice
@@ -121,7 +129,8 @@ private fun AnswerConnectedContent(
                     .background(light_sub_primary)
                     .padding(vertical = 20.dp, horizontal = 14.dp),
                 answerVoice = it,
-                isMe = true
+                isMe = true,
+                answerConnectedViewModel = answerConnectedViewModel
             )
         }
 
@@ -135,7 +144,8 @@ private fun AnswerConnectedContent(
                     .background(Color(0xFFFFFACE))
                     .padding(vertical = 12.dp, horizontal = 8.dp),
                 answerVoice = it,
-                isMe = false
+                isMe = false,
+                answerConnectedViewModel = answerConnectedViewModel
             )
         }
     }
@@ -143,7 +153,12 @@ private fun AnswerConnectedContent(
 }
 
 @Composable
-private fun AnswerDataCard(modifier: Modifier, answerVoice: AnswerVoice?, isMe: Boolean) {
+private fun AnswerDataCard(
+    modifier: Modifier,
+    answerVoice: AnswerVoice?,
+    isMe: Boolean,
+    answerConnectedViewModel: AnswerConnectedViewModel
+) {
     Column(modifier = modifier) {
 
         answerVoice?.text?.let {
@@ -260,19 +275,93 @@ private fun AnswerDataCard(modifier: Modifier, answerVoice: AnswerVoice?, isMe: 
         }
 
         answerVoice?.voiceUrl?.let {
-            Text(
+            AudioPlayLifecycle(it, answerConnectedViewModel, isMe)
+
+            Row(
                 modifier = Modifier.padding(top = 12.dp),
-                text = if (isMe) {
-                    stringResource(id = R.string.answer_connected_me_data_title_voice)
-                } else {
-                    stringResource(id = R.string.answer_connected_opponent_data_title_voice)
-                },
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.secondary,
-                textAlign = TextAlign.Center
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = if (isMe) {
+                        stringResource(id = R.string.answer_connected_me_data_title_voice)
+                    } else {
+                        stringResource(id = R.string.answer_connected_opponent_data_title_voice)
+                    },
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.secondary,
+                    textAlign = TextAlign.Center
+                )
+
+                AudioPlayIcon(answerConnectedViewModel, isMe)
+            }
         }
 
+    }
+}
+
+
+@Composable
+private fun AudioPlayLifecycle(
+    audioUrl: String,
+    answerConnectedViewModel: AnswerConnectedViewModel,
+    isMe: Boolean
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = lifecycleOwner, effect = {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    answerConnectedViewModel.run {
+                        initPlayer(context, audioUrl.toUri(), isMe)
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    answerConnectedViewModel.audioReset(isMe)
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    })
+}
+
+
+@Composable
+private fun AudioPlayIcon(answerConnectedViewModel: AnswerConnectedViewModel, isMe: Boolean) {
+
+    val isPlaying = if (isMe) {
+        answerConnectedViewModel.isMyPlaying.collectAsState().value
+    } else {
+        answerConnectedViewModel.isOpponentPlaying.collectAsState().value
+    }
+
+    Box(modifier = Modifier
+        .size(34.dp)
+        .clip(CircleShape)
+        .background(MaterialTheme.colorScheme.primary)
+        .noDuplicationClickable {
+            answerConnectedViewModel.run {
+                if (isPlaying) {
+                    audioReset(isMe)
+                } else {
+                    audioStart(isMe)
+                }
+            }
+        }
+        .padding(4.dp), contentAlignment = Alignment.Center) {
+        Icon(
+            modifier = Modifier.fillMaxSize(), painter = if (isPlaying) {
+                painterResource(id = R.drawable.pause)
+            } else {
+                painterResource(id = R.drawable.play)
+            }, contentDescription = "play", tint = MaterialTheme.colorScheme.onPrimary
+        )
     }
 }
 

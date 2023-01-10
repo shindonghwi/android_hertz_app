@@ -380,7 +380,6 @@ private fun AudioPlayLifecycle(audioUrl: String, answerDetailViewModel: AnswerDe
                 Lifecycle.Event.ON_CREATE -> {
                     if (answerDetailViewModel.mediaPlayer == null) {
                         answerDetailViewModel.run {
-                            audioUrl
                             initPlayer()
                             mediaPlayer?.apply {
                                 setAudioAttributes(
@@ -448,7 +447,6 @@ private fun ErrorContent(answerDetailViewModel: AnswerDetailViewModel) {
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(visibleState = visibleState, enter = fadeIn(), exit = fadeOut()) {
-//            Text(text = stringResource(id = R.string.answer_detail_error))
             Text(text = answerState.error)
         }
     }

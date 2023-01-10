@@ -1,6 +1,9 @@
 package mago.apps.hertz.ui.screens.answer.connected
 
-import android.util.Log
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +16,7 @@ import mago.apps.domain.model.common.Resource
 import mago.apps.domain.usecases.answer.GetAnswerConnectedInfoUseCase
 import mago.apps.domain.usecases.question.DelLikeUseCase
 import mago.apps.domain.usecases.question.PostLikeUseCase
+import mago.apps.hertz.ui.utils.recorder.CountUpTimer
 import javax.inject.Inject
 
 
@@ -30,13 +34,11 @@ class AnswerConnectedViewModel @Inject constructor(
         getAnswerConnectedInfoUseCase(answerSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
-                    Log.w("ASdassd", "getAnswerConnectedInfo: loading")
                     _answerConnectedState.value = AnswerConnectedState(
                         isLoading = mutableStateOf(true),
                     )
                 }
                 is Resource.Error -> {
-                    Log.w("ASdassd", "getAnswerConnectedInfo: error: ${it.message}")
                     _answerConnectedState.value = AnswerConnectedState(
                         isLoading = mutableStateOf(false),
                         isErrorState = mutableStateOf(true),
@@ -44,7 +46,6 @@ class AnswerConnectedViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
-                    Log.w("ASdassd", "getAnswerConnectedInfo: success: ${it.data}")
                     _answerConnectedState.value = AnswerConnectedState(
                         isLoading = mutableStateOf(false),
                         isSuccessState = mutableStateOf(true),
@@ -58,5 +59,104 @@ class AnswerConnectedViewModel @Inject constructor(
     /** 좋아요, 좋아요 취소*/
     suspend fun postLike(questionSeq: Int) = postLikeUseCase(questionSeq).launchIn(viewModelScope)
     suspend fun delLike(questionSeq: Int) = delLikeUseCase(questionSeq).launchIn(viewModelScope)
+
+    /** 음성 플레이, 정지 */
+    var myMediaPlayer: MediaPlayer? = null
+    var opponentMediaPlayer: MediaPlayer? = null
+
+    private val _isMyPlaying = MutableStateFlow(false)
+    val isMyPlaying = _isMyPlaying
+
+    private val _isOpponentPlaying = MutableStateFlow(false)
+    val isOpponentPlaying = _isOpponentPlaying
+
+    private fun updatePlayingState(flag: Boolean, isMe: Boolean) {
+        if (isMe) {
+            _isMyPlaying.value = flag
+        } else {
+            _isOpponentPlaying.value = flag
+        }
+    }
+
+    fun initPlayer(context: Context, audioUrl: Uri, isMe: Boolean) {
+        if (isMe) {
+            if (myMediaPlayer == null) {
+                myMediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+                    )
+                    setOnCompletionListener {
+                        audioReset(isMe)
+                    }
+                    setDataSource(context, audioUrl)
+                    prepare()
+                }
+            }
+        } else {
+            if (opponentMediaPlayer == null) {
+                opponentMediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+                    )
+                    setOnCompletionListener {
+                        audioReset(isMe)
+                    }
+                    setDataSource(context, audioUrl)
+                    prepare()
+                }
+            }
+        }
+    }
+
+    fun audioReset(isMe: Boolean) {
+        if (isMe) {
+            myMediaPlayer?.run {
+                if (this.isPlaying) {
+                    pause()
+                    seekTo(0)
+                }
+                updatePlayingState(false, isMe)
+            }
+        } else {
+            opponentMediaPlayer?.run {
+                if (this.isPlaying) {
+                    pause()
+                    seekTo(0)
+                }
+                updatePlayingState(false, isMe)
+            }
+        }
+    }
+
+    fun audioStart(isMe: Boolean) {
+        if (isMe) {
+            myMediaPlayer?.start()
+            updatePlayingState(true, isMe)
+        } else {
+            opponentMediaPlayer?.start()
+            updatePlayingState(true, isMe)
+        }
+    }
+
+    fun audioClear(isMe: Boolean) {
+        if (isMe) {
+            myMediaPlayer?.run {
+                stop()
+                release()
+                null
+            }
+        } else {
+            opponentMediaPlayer?.run {
+                stop()
+                release()
+                null
+            }
+        }
+    }
+
+    private val countUpTimer = CountUpTimer()
+    fun getTime(duration: Int?) = countUpTimer.timeToString(duration ?: 0)
 
 }
