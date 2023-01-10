@@ -51,6 +51,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.components.dialog.CustomPopup
 import mago.apps.hertz.ui.components.dialog.PopupType
+import mago.apps.hertz.ui.components.dialog.alert.ErrorMessageDialog
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.model.toast.TOAST_CODE_WAITING
@@ -58,6 +59,7 @@ import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
+import mago.apps.hertz.ui.screens.question.QuestionViewModel
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
@@ -89,7 +91,25 @@ fun AnswerDetailScreen(
     }
 
     AnswerDetailScreenLifecycle(answerDetailViewModel)
+    ErrorDialog(navController, answerDetailViewModel)
     BBiBBiPopUp(answerDetailViewModel)
+}
+
+@Composable
+private fun ErrorDialog(
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    ErrorMessageDialog(
+        errorDialog = answerDetailViewModel.errorDialog,
+        confirmText = stringResource(id = R.string.question_error_dialog_back),
+        dismissRequestEvent = {
+            navController.popBackStack()
+        },
+        confirmEvent = {
+            navController.popBackStack()
+        },
+    )
 }
 
 @Composable

@@ -35,6 +35,10 @@ class AnswerDetailViewModel @Inject constructor(
     /** 답변 정보 */
     private val _answerState = MutableStateFlow(AnswerDetailState())
     val answerState: StateFlow<AnswerDetailState> = _answerState
+
+    private val _errorDialog = MutableStateFlow<String>("")
+    val errorDialog: StateFlow<String> = _errorDialog
+
     fun updateAnswerState(answer: Answer) {
         _answerState.value = AnswerDetailState(
             isLoading = mutableStateOf(false),
@@ -47,11 +51,13 @@ class AnswerDetailViewModel @Inject constructor(
         getAnswerInfoUseCase(answerSeq).onEach {
             when (it) {
                 is Resource.Loading -> {
+                    _errorDialog.emit("")
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(true),
                     )
                 }
                 is Resource.Error -> {
+                    _errorDialog.emit(it.message.toString())
                     _answerState.value = AnswerDetailState(
                         isLoading = mutableStateOf(false),
                         isErrorState = mutableStateOf(true),
