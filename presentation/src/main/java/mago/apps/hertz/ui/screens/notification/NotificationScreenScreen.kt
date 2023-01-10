@@ -1,5 +1,9 @@
 package mago.apps.hertz.ui.screens.notification
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -9,37 +13,54 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import mago.apps.domain.model.my.Notification
 import mago.apps.hertz.R
+import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_OUR_FREQUENCY
+import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_QUESTION
 import mago.apps.hertz.ui.components.appbar.AppBarContent
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
 
 @Composable
 fun NotificationScreenScreen(
     navController: NavHostController,
     notificationsViewModel: NotificationsViewModel
 ) {
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val notifications = notificationsViewModel.notifications.collectAsLazyPagingItems()
+
+    notificationsViewModel.initLazyListState(rememberLazyListState())
+
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             NotificationScreenAppbar(navController)
         }) {
@@ -49,9 +70,53 @@ fun NotificationScreenScreen(
                 .padding(it)
                 .padding(horizontal = 20.dp),
             navController = navController,
+            notifications = notifications,
             notificationsViewModel = notificationsViewModel
         )
     }
+
+    SetBroadCaseReceiver(scaffoldState, notifications, notificationsViewModel)
+}
+
+@Composable
+fun SetBroadCaseReceiver(
+    scaffoldState: ScaffoldState,
+    notifications: LazyPagingItems<Notification>,
+    notificationsViewModel: NotificationsViewModel
+) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit, block = {
+        val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                coroutineScopeOnMain {
+                    val result = scaffoldState.snackbarHostState.showSnackbar(
+                        message = "새로운 알림이 있습니다",
+                        actionLabel = "새로고침",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    when (result) {
+                        SnackbarResult.Dismissed -> {}
+                        SnackbarResult.ActionPerformed -> {
+                            notifications.refresh()
+                            scope.launch {
+                                delay(300)
+                                notificationsViewModel.lazyListState.animateScrollToItem(0)
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+            broadcastReceiver, IntentFilter().apply {
+                addAction(BROAD_CAST_ACTION_QUESTION)
+                addAction(BROAD_CAST_ACTION_OUR_FREQUENCY)
+            }
+        )
+    })
 }
 
 @Composable
@@ -84,25 +149,26 @@ private fun NotificationScreenAppbar(navController: NavHostController) {
 private fun NotificationContent(
     modifier: Modifier,
     navController: NavHostController,
-    notificationsViewModel: NotificationsViewModel
+    notifications: LazyPagingItems<Notification>,
+    notificationsViewModel: NotificationsViewModel,
 ) {
-    val notifications = notificationsViewModel.notifications.collectAsLazyPagingItems()
-
     AnimatedVisibility(
         visible = notifications.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
         exit = fadeOut(animationSpec = tween(durationMillis = 250)),
     ) {
-        if (notifications.loadState.append.endOfPaginationReached && notifications.itemCount < 1) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
+        if (notifications.loadState.refresh == LoadState.Loading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                androidx.compose.material3.CircularProgressIndicator()
+            }
+        } else if (notifications.loadState.append.endOfPaginationReached && notifications.itemCount < 1) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(id = R.string.notification_menu_empty))
             }
         } else {
             LazyColumn(
                 modifier = modifier,
-                state = rememberLazyListState(),
+                state = notificationsViewModel.lazyListState,
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {

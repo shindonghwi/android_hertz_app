@@ -1,5 +1,6 @@
 package mago.apps.hertz.ui.screens.notification
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -14,6 +15,14 @@ import javax.inject.Inject
 class NotificationsViewModel @Inject constructor(
     getNotificationsUseCase: GetNotificationsUseCase
 ) : ViewModel() {
+
+    lateinit var lazyListState: LazyListState
+
+    fun initLazyListState(state: LazyListState){
+        if (!::lazyListState.isInitialized){
+            lazyListState = state
+        }
+    }
 
     val notifications: Flow<PagingData<Notification>> =
         getNotificationsUseCase().cachedIn(viewModelScope)

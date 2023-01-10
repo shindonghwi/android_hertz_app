@@ -7,8 +7,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import mago.apps.hertz.MainActivity
 import mago.apps.hertz.R
+import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_OUR_FREQUENCY
+import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_QUESTION
 import mago.apps.hertz.firebase.NotificationType.COMMON_GROUP
 import mago.apps.hertz.firebase.NotificationType.NOTI_CHANNEL_DESCRIPTION
 import mago.apps.hertz.firebase.NotificationType.NOTI_CHANNEL_ID
@@ -16,6 +19,8 @@ import mago.apps.hertz.firebase.NotificationType.NOTI_CHANNEL_NAME
 import mago.apps.hertz.firebase.NotificationType.NOTI_CODE
 import mago.apps.hertz.firebase.NotificationType.NOTI_GROUP_CODE
 import mago.apps.hertz.firebase.NotificationType.NOTI_GROUP_NAME
+import mago.apps.hertz.ui.model.screen.RouteScreen
+
 
 class NotificationHelper(private val context: Context) {
 
@@ -26,6 +31,9 @@ class NotificationHelper(private val context: Context) {
         imageUrl: String,
         linkUrl: String
     ) {
+
+        parseBroadcastReceiver(linkUrl)
+
         val newNotification = createNotification(title, body, linkUrl).build()
         val groupNotification = createSummaryNotification(title, body, linkUrl).build()
 
@@ -103,7 +111,20 @@ class NotificationHelper(private val context: Context) {
             .setOnlyAlertOnce(true).setAutoCancel(true)
             .setGroup(NOTI_GROUP_NAME).setGroupSummary(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+    }
 
+    private fun parseBroadcastReceiver(linkUrl: String) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(
+            if (linkUrl.contains(RouteScreen.QuestionScreen.route)) {
+                BROAD_CAST_ACTION_QUESTION
+            } else if (linkUrl.contains(RouteScreen.AnswerConnectedScreen.route)) {
+                BROAD_CAST_ACTION_OUR_FREQUENCY
+            } else {
+                null
+            }
+        ).apply {
+            putExtra("linkUrl", linkUrl)
+        })
     }
 
 }
