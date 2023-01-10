@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.answer.Answer
+import mago.apps.domain.model.answer.AnswerProperty
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.usecases.answer.GetAnswerInfoUseCase
 import mago.apps.domain.usecases.question.DelLikeUseCase
@@ -28,7 +29,7 @@ class AnswerDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     var isAudioAnswerMode: Boolean = false
-    fun updateAnswerMode(isAudioMode: Boolean){
+    fun updateAnswerMode(isAudioMode: Boolean) {
         isAudioAnswerMode = isAudioMode
     }
 
@@ -96,6 +97,16 @@ class AnswerDetailViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
+                    val isConnected = _answerState.value.data?.property?.isConnected ?: false
+                    _answerState.value = _answerState.value.copy(
+                        data = _answerState.value.data?.copy(
+                            property = AnswerProperty(
+                                isSent = true,
+                                isConnected = isConnected
+                            )
+                        )
+                    )
+
                     _bbibbiState.value = SendBBiBBiState(
                         isLoading = mutableStateOf(false),
                         isSuccessState = mutableStateOf(true),

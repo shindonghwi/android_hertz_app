@@ -59,7 +59,7 @@ class QuestionViewModel @Inject constructor(
                     }
                     is Resource.Loading -> {
                         _errorDialog.emit("")
-                        _questionEnable.emit(false)
+//                        _questionEnable.emit(false)
                         _questionVisible.emit(false)
                     }
                     is Resource.Success -> {
@@ -90,7 +90,7 @@ class QuestionViewModel @Inject constructor(
                 }
                 is Resource.Loading -> {
                     _errorDialog.emit("")
-                    _questionEnable.emit(false)
+//                    _questionEnable.emit(false)
                     _questionVisible.emit(false)
                 }
                 is Resource.Success -> {
@@ -104,7 +104,7 @@ class QuestionViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun checkOutOfQuestions(msg: String): Boolean {
+    private fun checkOutOfQuestions(msg: String): Boolean {
         return (msg.contains("질문에 모두 에피소드를 등록했습니다"))
     }
 

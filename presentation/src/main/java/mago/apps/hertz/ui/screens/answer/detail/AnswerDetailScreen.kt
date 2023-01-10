@@ -59,7 +59,6 @@ import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.screens.answer.common.DayAndLikeContent
 import mago.apps.hertz.ui.screens.answer.common.ILikeActionCallback
 import mago.apps.hertz.ui.screens.answer.common.QuestionContent
-import mago.apps.hertz.ui.screens.question.QuestionViewModel
 import mago.apps.hertz.ui.theme.light_sub_primary
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.compose.showToast
@@ -480,6 +479,8 @@ private fun BBiBBiFrequencyContent(
     navController: NavHostController,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
+    val bbiBbiState = answerDetailViewModel.bbibbiState.collectAsState().value
+
     val boxModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 20.dp, vertical = 14.dp)
@@ -491,7 +492,7 @@ private fun BBiBBiFrequencyContent(
             FrequencyButton(boxModifier, navController, answerDetailViewModel)
         }
     } ?: run {
-        property?.takeIf { !it.isSent }?.apply {
+        property?.takeIf { !it.isSent && !bbiBbiState.isSuccessState.value }?.apply {
             AnimatedVisibility(visibleState = visibleState) {
                 BBiBBiButton(boxModifier, questionSeq, answerDetailViewModel)
             }
