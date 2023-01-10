@@ -32,11 +32,13 @@ class QuestionViewModel @Inject constructor(
     private val _errorDialog = MutableStateFlow<String>("")
     val errorDialog: StateFlow<String> = _errorDialog
 
+    private val _questionEnable = MutableStateFlow(true)
+    val questionEnable: StateFlow<Boolean> = _questionEnable
+
     suspend fun clearAndFetchQuestion() {
         _errorDialog.emit("")
         fetchQuestion()
     }
-
 
     var questionInfo: QuestionRandom? = null
 
@@ -45,14 +47,24 @@ class QuestionViewModel @Inject constructor(
             getQuestionInfoUseCase(seq).onEach {
                 when (it) {
                     is Resource.Error -> {
-                        _errorDialog.emit(it.message.toString())
+                        _questionEnable.emit(false)
+                        // 사용가능한 질문이 없는경우
+                        if (checkOutOfQuestions(it.message.toString())) {
+                            _currentQuestion.emit(it.message.toString())
+                        }
+                        // 에러
+                        else {
+                            _errorDialog.emit(it.message.toString())
+                        }
                     }
                     is Resource.Loading -> {
                         _errorDialog.emit("")
-                        _questionVisible.value = false
+                        _questionEnable.emit(false)
+                        _questionVisible.emit(false)
                     }
                     is Resource.Success -> {
-                        _questionVisible.value = true
+                        _questionEnable.emit(true)
+                        _questionVisible.emit(true)
                         _currentQuestion.emit(it.data?.text.toString())
                         _currentProperty.emit(it.data?.property)
                         questionInfo = it.data
@@ -65,12 +77,25 @@ class QuestionViewModel @Inject constructor(
     suspend fun fetchQuestion() {
         getQuestionRandomUseCase().onEach {
             when (it) {
-                is Resource.Error,
+                is Resource.Error -> {
+                    _questionEnable.emit(false)
+                    // 사용가능한 질문이 없는경우
+                    if (checkOutOfQuestions(it.message.toString())) {
+                        _currentQuestion.emit(it.message.toString())
+                    }
+                    // 에러
+                    else {
+                        _errorDialog.emit(it.message.toString())
+                    }
+                }
                 is Resource.Loading -> {
-                    _questionVisible.value = false
+                    _errorDialog.emit("")
+                    _questionEnable.emit(false)
+                    _questionVisible.emit(false)
                 }
                 is Resource.Success -> {
-                    _questionVisible.value = true
+                    _questionEnable.emit(true)
+                    _questionVisible.emit(true)
                     _currentQuestion.emit(it.data?.text.toString())
                     _currentProperty.emit(it.data?.property)
                     questionInfo = it.data
@@ -79,5 +104,8 @@ class QuestionViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun checkOutOfQuestions(msg: String): Boolean {
+        return (msg.contains("질문에 모두 에피소드를 등록했습니다"))
+    }
 
 }

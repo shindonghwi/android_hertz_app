@@ -47,18 +47,23 @@ fun QuestionScreen(
     questionViewModel: QuestionViewModel,
     questionSeq: Int?,
 ) {
+    val enable = questionViewModel.questionEnable.collectAsState().value
+
     Scaffold(topBar = { QuestionAppBar(navController) }, bottomBar = {
-        QuestionBottomBar(
-            modifier = Modifier
-                .fillMaxHeight(0.4f),
-            navController = navController,
-            questionViewModel = questionViewModel
-        )
+        if (enable) {
+            QuestionBottomBar(
+                modifier = Modifier
+                    .fillMaxHeight(0.4f),
+                navController = navController,
+                questionViewModel = questionViewModel
+            )
+        }
     }) {
         QuestionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
+            enable = enable,
             questionViewModel = questionViewModel,
         )
     }
@@ -179,6 +184,7 @@ private fun QuestionLifecycle(questionViewModel: QuestionViewModel, questionSeq:
 @Composable
 private fun QuestionContent(
     modifier: Modifier,
+    enable: Boolean,
     questionViewModel: QuestionViewModel,
 ) {
     val isVisible = questionViewModel.questionVisible.collectAsState().value
@@ -195,22 +201,24 @@ private fun QuestionContent(
         }
 
         // 셔플 아이콘 영역
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp), contentAlignment = Alignment.BottomEnd
-        ) {
-            Icon(modifier = Modifier
-                .size(36.dp)
-                .noDuplicationClickable {
-                    coroutineScopeOnDefault {
-                        questionViewModel.fetchQuestion()
+        if (enable){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp), contentAlignment = Alignment.BottomEnd
+            ) {
+                Icon(modifier = Modifier
+                    .size(36.dp)
+                    .noDuplicationClickable {
+                        coroutineScopeOnDefault {
+                            questionViewModel.fetchQuestion()
+                        }
                     }
-                }
-                .padding(6.dp),
-                painter = painterResource(id = R.drawable.random),
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = null)
+                    .padding(6.dp),
+                    painter = painterResource(id = R.drawable.random),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = null)
+            }
         }
     }
 }
