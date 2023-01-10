@@ -83,6 +83,7 @@ fun AnswerDetailScreen(
                 .fillMaxSize()
                 .padding(it)
                 .verticalScroll(rememberScrollState()),
+            navController = navController,
             answerDetailViewModel = answerDetailViewModel
         )
     }
@@ -232,14 +233,20 @@ private fun AnswerDetailAppBar(
 
 @Composable
 private fun AnswerDetailContent(
-    modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel
+    modifier: Modifier,
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
 ) {
     ErrorContent(answerDetailViewModel)
-    DetailContent(modifier, answerDetailViewModel)
+    DetailContent(modifier, navController, answerDetailViewModel)
 }
 
 @Composable
-private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetailViewModel) {
+private fun DetailContent(
+    modifier: Modifier,
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
 
     val answerState = answerDetailViewModel.answerState.collectAsState().value
     val visibleState = MutableTransitionState(answerState.isSuccessState.value)
@@ -316,7 +323,8 @@ private fun DetailContent(modifier: Modifier, answerDetailViewModel: AnswerDetai
             questionSeq = answerState.data?.question?.questionSeq,
             property = answerState.data?.property,
             visibleState = visibleState,
-            answerDetailViewModel = answerDetailViewModel
+            navController = navController,
+            answerDetailViewModel = answerDetailViewModel,
         )
     }
 }
@@ -451,6 +459,7 @@ private fun BBiBBiFrequencyContent(
     questionSeq: Int?,
     property: AnswerProperty?,
     visibleState: MutableTransitionState<Boolean> = MutableTransitionState(true),
+    navController: NavHostController,
     answerDetailViewModel: AnswerDetailViewModel
 ) {
     val boxModifier = Modifier
@@ -461,7 +470,7 @@ private fun BBiBBiFrequencyContent(
 
     property?.takeIf { it.isConnected }?.apply {
         AnimatedVisibility(visibleState = visibleState) {
-            FrequencyButton(boxModifier)
+            FrequencyButton(boxModifier, navController, answerDetailViewModel)
         }
     } ?: run {
         property?.takeIf { !it.isSent }?.apply {
@@ -473,12 +482,29 @@ private fun BBiBBiFrequencyContent(
 }
 
 @Composable
-private fun FrequencyButton(modifier: Modifier) {
+private fun FrequencyButton(
+    modifier: Modifier,
+    navController: NavHostController,
+    answerDetailViewModel: AnswerDetailViewModel
+) {
+    val answerState = answerDetailViewModel.answerState.collectAsState().value
+    val answerSeq = answerState.data?.answerSeq
     val context = LocalContext.current
+
     Box(
         modifier = modifier
             .then(Modifier.noDuplicationClickable {
-                context.showToast("감정주파수 확인. 미구현")
+                answerSeq
+                    ?.takeIf { it > 0 }
+                    ?.apply {
+                        navController.navigateTo(
+                            RouteScreen.AnswerConnectedScreen.route +
+                                    "?answerSeq=${answerSeq}"
+                        )
+                    }
+                    ?: run {
+                        context.showToast(context.getString(R.string.answer_detail_error))
+                    }
             })
             .padding(horizontal = 12.dp, vertical = 8.dp), contentAlignment = Alignment.Center
     ) {
