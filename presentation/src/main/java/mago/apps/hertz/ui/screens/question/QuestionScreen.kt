@@ -1,6 +1,5 @@
 package mago.apps.hertz.ui.screens.question
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -63,7 +62,44 @@ fun QuestionScreen(
         )
     }
     QuestionLifecycle(questionViewModel, questionSeq)
+    ErrorMessageDialog(navController, questionViewModel)
     BackPressEvent()
+}
+
+@Composable
+private fun ErrorMessageDialog(
+    navController: NavHostController,
+    questionViewModel: QuestionViewModel
+) {
+    val errorDialogMessage = questionViewModel.errorDialog.collectAsState().value
+
+    if (errorDialogMessage.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = {
+                coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
+            },
+            text = { Text(text = errorDialogMessage) },
+            confirmButton = {
+                TextButton(onClick = {
+                    navController.popBackStack()
+                    coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
+                }) {
+                    Text(stringResource(id = R.string.question_error_dialog_back))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    coroutineScopeOnDefault {
+                        coroutineScopeOnDefault { questionViewModel.clearAndFetchQuestion() }
+                    }
+                }) {
+                    Text(stringResource(id = R.string.question_error_dialog_fetch_question))
+                }
+            },
+            shape = RoundedCornerShape(14.dp)
+        )
+    }
+
 }
 
 @Composable
@@ -227,7 +263,7 @@ private fun QuestionNamePropertyView(questionViewModel: QuestionViewModel) {
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 text = String.format(
-                    stringResource(id = R.string.qusetion_opponent_name),
+                    stringResource(id = R.string.question_opponent_name),
                     it.name
                 ),
                 style = MaterialTheme.typography.labelMedium,

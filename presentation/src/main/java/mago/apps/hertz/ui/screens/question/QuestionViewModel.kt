@@ -29,14 +29,26 @@ class QuestionViewModel @Inject constructor(
     private val _currentProperty = MutableStateFlow<QuestionProperty?>(null)
     val currentProperty: StateFlow<QuestionProperty?> = _currentProperty
 
+    private val _errorDialog = MutableStateFlow<String>("")
+    val errorDialog: StateFlow<String> = _errorDialog
+
+    suspend fun clearAndFetchQuestion() {
+        _errorDialog.emit("")
+        fetchQuestion()
+    }
+
+
     var questionInfo: QuestionRandom? = null
 
     suspend fun getQuestionInfo(questionSeq: Int?) {
         questionSeq?.let { seq ->
             getQuestionInfoUseCase(seq).onEach {
                 when (it) {
-                    is Resource.Error,
+                    is Resource.Error -> {
+                        _errorDialog.emit(it.message.toString())
+                    }
                     is Resource.Loading -> {
+                        _errorDialog.emit("")
                         _questionVisible.value = false
                     }
                     is Resource.Success -> {
