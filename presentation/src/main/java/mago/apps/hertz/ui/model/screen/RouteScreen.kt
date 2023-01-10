@@ -11,9 +11,9 @@ sealed class RouteScreen(val route: String) {
     object QuestionScreen : RouteScreen("/question/")
 
     // 답변
-    object AnswerAudioScreen : RouteScreen("/answer/register?type=audio")
-    object AnswerTextScreen : RouteScreen("/answer/register?type=text")
-    object AnswerDetailScreen : RouteScreen("/answer?type=detail")
-    object AnswerEditScreen : RouteScreen("/answer?type=edit")
+    object AnswerAudioScreen : RouteScreen("/answer/register/audio")
+    object AnswerTextScreen : RouteScreen("/answer/register/text")
+    object AnswerDetailScreen : RouteScreen("/answer/detail")
+    object AnswerEditScreen : RouteScreen("/answer/edit")
     object AnswerConnectedScreen : RouteScreen("/answer/connect/")
 }
