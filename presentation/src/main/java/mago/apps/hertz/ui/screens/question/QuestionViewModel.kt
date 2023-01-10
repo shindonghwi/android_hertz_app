@@ -51,15 +51,13 @@ class QuestionViewModel @Inject constructor(
                         // 사용가능한 질문이 없는경우
                         if (checkOutOfQuestions(it.message.toString())) {
                             _currentQuestion.emit(it.message.toString())
-                        }
-                        // 에러
-                        else {
+                        } else {
+                            // 에러
                             _errorDialog.emit(it.message.toString())
                         }
                     }
                     is Resource.Loading -> {
                         _errorDialog.emit("")
-//                        _questionEnable.emit(false)
                         _questionVisible.emit(false)
                     }
                     is Resource.Success -> {
@@ -82,15 +80,13 @@ class QuestionViewModel @Inject constructor(
                     // 사용가능한 질문이 없는경우
                     if (checkOutOfQuestions(it.message.toString())) {
                         _currentQuestion.emit(it.message.toString())
-                    }
-                    // 에러
-                    else {
+                    } else {
+                        // 에러
                         _errorDialog.emit(it.message.toString())
                     }
                 }
                 is Resource.Loading -> {
                     _errorDialog.emit("")
-//                    _questionEnable.emit(false)
                     _questionVisible.emit(false)
                 }
                 is Resource.Success -> {
