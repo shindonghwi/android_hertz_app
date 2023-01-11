@@ -28,14 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.input.CustomTextField
 import mago.apps.hertz.ui.components.input.ITextCallback
 import mago.apps.hertz.ui.components.input.KeyBoardActionUnit
 import mago.apps.hertz.ui.model.screen.RouteScreen
+import mago.apps.hertz.ui.model.state.UiState
 import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.findMainActivity
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -43,7 +42,10 @@ import mago.apps.hertz.ui.utils.compose.showToast
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 
 @Composable
-fun HomeScreen(navController: NavHostController, homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel
+) {
     HomeContent(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
@@ -53,24 +55,36 @@ fun HomeScreen(navController: NavHostController, homeViewModel: HomeViewModel = 
 
 @Composable
 private fun HomeContent(
-    modifier: Modifier = Modifier, navController: NavHostController, homeViewModel: HomeViewModel
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    homeViewModel: HomeViewModel
 ) {
-    val homeState = homeViewModel.login.collectAsState().value
+    val homeState = homeViewModel.uiState.collectAsState().value
     val sharedViewModel = LocalContext.current.findMainActivity().sharedViewModel
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val imageHeight = configuration.screenHeightDp.dp * 0.1f
 
-    LaunchedEffect(key1 = homeState, block = {
-        homeState.data?.token?.let {
-            sharedViewModel.updateToken(token = it)
-            navController.navigateTo(RouteScreen.QuestionScreen.route)
-            return@LaunchedEffect
+    when (homeState) {
+        is UiState.Idle,
+        is UiState.Loading -> {
         }
-        if (homeState.error.isNotEmpty()) {
-            context.showToast(homeState.error)
+        is UiState.Error -> {
+            LaunchedEffect(key1 = homeState, block = {
+                if (!homeState.message.isNullOrEmpty()) {
+                    context.showToast(homeState.message)
+                }
+            })
         }
-    })
+        is UiState.Success -> {
+            LaunchedEffect(key1 = homeState, block = {
+                homeState.data?.token?.let {
+                    sharedViewModel.updateToken(token = it)
+                    navController.navigateTo(RouteScreen.QuestionScreen.route)
+                }
+            })
+        }
+    }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         ConstraintLayout(
@@ -104,7 +118,7 @@ private fun HomeContent(
             }
         }
 
-        if (homeState.isLoading) {
+        if (homeState is UiState.Loading) {
             CircularProgressIndicator()
         }
     }
@@ -147,11 +161,13 @@ private fun InputId(homeViewModel: HomeViewModel) {
         .height(48.dp)
         .clip(RoundedCornerShape(16.dp))
         .border(
-            width = 1.dp, color = if (focused.value) {
+            width = 1.dp,
+            color = if (focused.value) {
                 MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.outline
-            }, shape = RoundedCornerShape(16.dp)
+            },
+            shape = RoundedCornerShape(16.dp)
         ),
         innerTextPaddingValues = PaddingValues(start = 12.dp),
         trailingPaddingValues = PaddingValues(end = 8.dp),

@@ -1,11 +1,9 @@
 package mago.apps.hertz.ui.components.input
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,10 +20,6 @@ import androidx.compose.ui.unit.dp
 
 interface ITextCallback {
     fun renderText(content: String)
-}
-
-interface IFocusCallback {
-    fun onFocus(isFocus: Boolean)
 }
 
 data class KeyBoardActionUnit(
