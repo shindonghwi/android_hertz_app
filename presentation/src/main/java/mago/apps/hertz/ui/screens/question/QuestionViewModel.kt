@@ -26,6 +26,9 @@ class QuestionViewModel @Inject constructor(
     private val _currentQuestion = MutableStateFlow("")
     val currentQuestion: StateFlow<String> = _currentQuestion
 
+    private val _currentExample = MutableStateFlow("")
+    val currentExample: StateFlow<String> = _currentExample
+
     private val _currentProperty = MutableStateFlow<QuestionProperty?>(null)
     val currentProperty: StateFlow<QuestionProperty?> = _currentProperty
 
@@ -63,6 +66,7 @@ class QuestionViewModel @Inject constructor(
                     is Resource.Success -> {
                         _questionEnable.emit(true)
                         _questionVisible.emit(true)
+                        _currentExample.emit(it.data?.example.toString())
                         _currentQuestion.emit(it.data?.text.toString())
                         _currentProperty.emit(it.data?.property)
                         questionInfo = it.data
@@ -92,6 +96,7 @@ class QuestionViewModel @Inject constructor(
                 is Resource.Success -> {
                     _questionEnable.emit(true)
                     _questionVisible.emit(true)
+                    _currentExample.emit(it.data?.example.toString())
                     _currentQuestion.emit(it.data?.text.toString())
                     _currentProperty.emit(it.data?.property)
                     questionInfo = it.data

@@ -54,6 +54,7 @@ fun QuestionBottomBar(
                                 "?question=${Gson().toJson(questionViewModel.questionInfo)}"
                     )
                 },
+            questionViewModel = questionViewModel
         )
         QuestionBottomBarAudioAnswer(
             modifier = Modifier
