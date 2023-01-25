@@ -24,11 +24,11 @@ android {
 //            isDebuggable = false
             applicationIdSuffix = DebugConfig.suffixName
             versionNameSuffix = DebugConfig.versionName
-            manifestPlaceholders["appLabelA"] =  DebugConfig.app_label
+            manifestPlaceholders["appLabel"] =  DebugConfig.app_label
         }
         getByName("release") {
             isMinifyEnabled = false
-            manifestPlaceholders["appLabelA"] =  ReleaseConfig.app_label
+            manifestPlaceholders["appLabel"] =  ReleaseConfig.app_label
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
