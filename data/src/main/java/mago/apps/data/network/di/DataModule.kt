@@ -52,9 +52,9 @@ object DataModule {
     private fun provideOkHttpClient(interceptor: AppInterceptor): OkHttpClient =
         OkHttpClient.Builder().run {
             addInterceptor(interceptor)
-            connectTimeout(60, TimeUnit.SECONDS)
-            readTimeout(100, TimeUnit.SECONDS)
-            writeTimeout(100, TimeUnit.SECONDS)
+            connectTimeout(100, TimeUnit.SECONDS)
+            readTimeout(300, TimeUnit.SECONDS)
+            writeTimeout(300, TimeUnit.SECONDS)
             build()
         }
 
