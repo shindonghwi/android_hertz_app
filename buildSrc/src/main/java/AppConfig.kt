@@ -12,10 +12,12 @@ object AppConfig {
 
 object DebugConfig{
     const val app_label = "Hertz(DEV)"
-    const val suffixName = ".dev"
-    const val versionName = "-dev"
+    const val suffixName = ""
+    const val versionName = ""
 }
 
 object ReleaseConfig{
     const val app_label = "Hertz"
+    const val suffixName = ""
+    const val versionName = ""
 }
