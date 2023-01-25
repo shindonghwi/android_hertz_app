@@ -9,3 +9,13 @@ object AppConfig {
     val javaVersion = JavaVersion.VERSION_11
     val jvmTarget = "11"
 }
+
+object DebugConfig{
+    const val app_label = "Hertz(DEV)"
+    const val suffixName = ".dev"
+    const val versionName = "-dev"
+}
+
+object ReleaseConfig{
+    const val app_label = "Hertz"
+}

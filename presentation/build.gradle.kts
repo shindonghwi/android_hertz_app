@@ -22,11 +22,13 @@ android {
     buildTypes {
         getByName("debug") {
 //            isDebuggable = false
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
+            applicationIdSuffix = DebugConfig.suffixName
+            versionNameSuffix = DebugConfig.versionName
+            manifestPlaceholders["appLabelA"] =  DebugConfig.app_label
         }
         getByName("release") {
             isMinifyEnabled = false
+            manifestPlaceholders["appLabelA"] =  ReleaseConfig.app_label
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
