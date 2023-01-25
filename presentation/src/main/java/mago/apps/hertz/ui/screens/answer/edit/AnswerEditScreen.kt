@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
@@ -138,7 +139,6 @@ private fun AnswerEditContent(
 ) {
     val questionText = answer.question.text
     val createdAt = answer.createdAt
-    val emotion = answer.voice?.emotion
     val emotionList = answer.voice?.emotionList
     val defaultText = answer.voice?.text
 
@@ -170,7 +170,6 @@ private fun AnswerEditContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 18.dp, start = 20.dp, end = 20.dp),
-            emotion = emotion,
             emotionList = emotionList,
             answerEditViewModel = answerEditViewModel
         )
@@ -275,7 +274,6 @@ private fun AnswerText(defaultText: String?, answerEditViewModel: AnswerEditView
 @Composable
 private fun TodayFrequencyContent(
     modifier: Modifier,
-    emotion: String?,
     emotionList: List<AnswerEmotion>?,
     answerEditViewModel: AnswerEditViewModel,
 ) {
@@ -316,6 +314,7 @@ private fun TodayFrequencyAudio(
                     val type = answerEditViewModel.frequencyInfoList[idx].iconType
 
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
@@ -335,8 +334,9 @@ private fun TodayFrequencyAudio(
                         Text(
                             modifier = Modifier.padding(start = 4.dp),
                             text = "${rate}%",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.tertiary
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
