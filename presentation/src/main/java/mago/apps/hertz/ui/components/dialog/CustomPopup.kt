@@ -82,7 +82,7 @@ fun CustomPopup(
                         interactionSource = MutableInteractionSource(),
                         indication = null,
                         onClick = {})
-                    .padding(top = 40.dp, bottom = 40.dp)
+                    .padding(vertical = 40.dp, horizontal = 18.dp)
 
                 when (type) {
                     PopupType.PERMISSION -> {

@@ -15,14 +15,14 @@ class PostAnswerVoiceUseCase @Inject constructor(private val questionRepository:
         file: MultipartBody.Part
     ): Flow<Resource<Answer>> = flow {
         emit(Resource.Loading())
-//        try {
+        try {
             val response = questionRepository.postAnswerVoice(questionSeq, file)
             when (response.status) {
                 200 -> emit(Resource.Success(response.message, response.data))
                 else -> emit(Resource.Error(response.message))
             }
-//        } catch (e: Exception) {
-//            emit(Resource.Error(message = e.toString()))
-//        }
+        } catch (e: Exception) {
+            emit(Resource.Error(message = e.toString()))
+        }
     }
 }

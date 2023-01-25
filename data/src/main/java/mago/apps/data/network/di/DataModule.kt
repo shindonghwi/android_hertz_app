@@ -23,6 +23,7 @@ import okhttp3.Response
 import okio.IOException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -39,7 +40,7 @@ object DataModule {
 
     class AppInterceptor : Interceptor {
         @Throws(IOException::class)
-        override fun intercept(chain: Interceptor.Chain) : Response = with(chain) {
+        override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
             val newRequest = request().newBuilder()
                 .addHeader(HEADER_KEY, HEADER_VALUE)
                 .addHeader(HEADER_AUTH_KEY, HEADER_AUTH_VALUE)
@@ -48,11 +49,14 @@ object DataModule {
         }
     }
 
-    private fun provideOkHttpClient(interceptor: AppInterceptor): OkHttpClient
-            = OkHttpClient.Builder().run {
-        addInterceptor(interceptor)
-        build()
-    }
+    private fun provideOkHttpClient(interceptor: AppInterceptor): OkHttpClient =
+        OkHttpClient.Builder().run {
+            addInterceptor(interceptor)
+            connectTimeout(60, TimeUnit.SECONDS)
+            readTimeout(100, TimeUnit.SECONDS)
+            writeTimeout(100, TimeUnit.SECONDS)
+            build()
+        }
 
 
     /** @feature: 권한 관련 api, repository
@@ -62,7 +66,7 @@ object DataModule {
     fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
     @Provides
-    fun provideAuthRepository(authApi: AuthApi): AuthRepository{
+    fun provideAuthRepository(authApi: AuthApi): AuthRepository {
         return AuthRepositoryImpl(authApi)
     }
 
@@ -70,32 +74,33 @@ object DataModule {
      * @author: 2022/12/28 11:14 AM donghwishin
      */
     @Provides
-    fun provideQuestionApi(retrofit: Retrofit): QuestionApi = retrofit.create(QuestionApi::class.java)
+    fun provideQuestionApi(retrofit: Retrofit): QuestionApi =
+        retrofit.create(QuestionApi::class.java)
 
     @Provides
-    fun provideQuestionRepository(questionApi: QuestionApi): QuestionRepository{
+    fun provideQuestionRepository(questionApi: QuestionApi): QuestionRepository {
         return QuestionRepositoryImpl(questionApi)
     }
 
     /** @feature: 답변 관련 api, repository
      * @author: 2022/12/28 11:14 AM donghwishin
-    */
+     */
     @Provides
     fun provideAnswerApi(retrofit: Retrofit): AnswerApi = retrofit.create(AnswerApi::class.java)
 
     @Provides
-    fun provideAnswerRepository(answerApi: AnswerApi): AnswerRepository{
+    fun provideAnswerRepository(answerApi: AnswerApi): AnswerRepository {
         return AnswerRepositoryImpl(answerApi)
     }
 
     /** @feature: 내 정보 관련 api, repository
      * @author: 2023/01/05 7:05 PM donghwishin
-    */
+     */
     @Provides
     fun provideMyApi(retrofit: Retrofit): MyApi = retrofit.create(MyApi::class.java)
 
     @Provides
-    fun provideMyRepository(myApi: MyApi): MyRepository{
+    fun provideMyRepository(myApi: MyApi): MyRepository {
         return MyRepositoryImpl(myApi)
     }
 
