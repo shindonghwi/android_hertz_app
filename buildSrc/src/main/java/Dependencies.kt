@@ -31,6 +31,7 @@ object Versions {
         const val accompanistPager = "0.28.0"
         const val paging = "1.0.0-alpha17"
         const val coil = "2.2.2"
+        const val swipeRefresh = "0.29.0-alpha"
     }
 
     object Paging{

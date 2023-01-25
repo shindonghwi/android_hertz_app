@@ -16,6 +16,7 @@ class NotificationsViewModel @Inject constructor(
     getNotificationsUseCase: GetNotificationsUseCase
 ) : ViewModel() {
 
+    var swipeRefreshState: Boolean = false
     lateinit var lazyListState: LazyListState
 
     fun initLazyListState(state: LazyListState){

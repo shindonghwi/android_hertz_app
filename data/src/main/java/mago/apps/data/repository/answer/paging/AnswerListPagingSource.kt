@@ -24,7 +24,7 @@ class AnswerListPagingSource(
     private var createdAtHashMap = HashMap<Int, String>()
 
     override fun getRefreshKey(state: PagingState<Int, Answer>): Int? {
-        return state.anchorPosition
+        return null
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Answer> {

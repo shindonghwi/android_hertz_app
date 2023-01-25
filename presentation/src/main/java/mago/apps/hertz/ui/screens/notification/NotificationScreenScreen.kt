@@ -16,12 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -145,6 +146,7 @@ private fun NotificationScreenAppbar(navController: NavHostController) {
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun NotificationContent(
     modifier: Modifier,
@@ -152,6 +154,20 @@ private fun NotificationContent(
     notifications: LazyPagingItems<Notification>,
     notificationsViewModel: NotificationsViewModel,
 ) {
+    val scope = rememberCoroutineScope()
+    var isRefreshing by remember { mutableStateOf(notificationsViewModel.swipeRefreshState) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            notifications.refresh()
+            isRefreshing = true
+            scope.launch {
+                delay(300)
+                notificationsViewModel.lazyListState.animateScrollToItem(0)
+            }
+        })
+
+
     AnimatedVisibility(
         visible = notifications.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -166,20 +182,31 @@ private fun NotificationContent(
                 Text(text = stringResource(id = R.string.notification_menu_empty))
             }
         } else {
-            LazyColumn(
-                modifier = modifier,
-                state = notificationsViewModel.lazyListState,
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+            Box(
+                modifier = modifier.then(Modifier.pullRefresh(pullRefreshState)),
+                contentAlignment = Alignment.TopCenter
             ) {
-                items(notifications, key = { item -> item.notificationSeq }) { item ->
-                    NotificationItem(
-                        navController = navController,
-                        timeAgo = item?.timeAgo,
-                        content = item?.message,
-                        linkUrl = item?.link
-                    )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = notificationsViewModel.lazyListState,
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(notifications, key = { item -> item.notificationSeq }) { item ->
+                        NotificationItem(
+                            navController = navController,
+                            timeAgo = item?.timeAgo,
+                            content = item?.message,
+                            linkUrl = item?.link
+                        )
+                    }
                 }
+                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+            }
+
+            LaunchedEffect(notifications.loadState.refresh) {
+                if (notifications.loadState.refresh is LoadState.NotLoading)
+                    isRefreshing = false
             }
         }
     }

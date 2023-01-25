@@ -10,12 +10,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +36,7 @@ import androidx.paging.compose.items
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mago.apps.domain.model.answer.Answer
 import mago.apps.domain.model.common.EmotionList
@@ -177,10 +181,25 @@ private fun EpisodeMyItemList(
     MyItemListExistView(myItemList, navController)
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MyItemListExistView(
     myItemList: LazyPagingItems<Answer>, navController: NavHostController
 ) {
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberLazyListState()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            myItemList.refresh()
+            isRefreshing = true
+            scope.launch {
+                delay(300)
+                scrollState.animateScrollToItem(0)
+            }
+        })
+
     AnimatedVisibility(
         visible = myItemList.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -193,25 +212,54 @@ private fun MyItemListExistView(
                 Text(text = stringResource(id = R.string.episode_list_menu_1_empty))
             }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(pullRefreshState),
+                contentAlignment = Alignment.TopCenter
             ) {
-                items(myItemList, key = { item -> item.answerSeq }) { item ->
-                    DayLineText(dayText = item?.firstDayInList)
-                    EpisodeItem(answerItem = item, navController = navController)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(myItemList, key = { item -> item.answerSeq }) { item ->
+                        DayLineText(dayText = item?.firstDayInList)
+                        EpisodeItem(answerItem = item, navController = navController)
+                    }
                 }
+                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+            }
+
+            LaunchedEffect(myItemList.loadState.refresh) {
+                if (myItemList.loadState.refresh is LoadState.NotLoading)
+                    isRefreshing = false
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun OurItemListExistView(
     ourItemList: LazyPagingItems<Answer>, navController: NavHostController
 ) {
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberLazyListState()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            ourItemList.refresh()
+            isRefreshing = true
+            scope.launch {
+                delay(300)
+                scrollState.animateScrollToItem(0)
+            }
+        })
+
+
     AnimatedVisibility(
         visible = ourItemList.loadState.refresh is LoadState.NotLoading,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)),
@@ -224,16 +272,27 @@ private fun OurItemListExistView(
                 Text(text = stringResource(id = R.string.episode_list_menu_2_empty))
             }
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+            Box(
+                modifier = Modifier.pullRefresh(pullRefreshState),
+                contentAlignment = Alignment.TopCenter
             ) {
-                items(ourItemList, key = { item -> item.answerSeq }) { item ->
-                    DayLineText(dayText = item?.firstDayInList)
-                    EpisodeItem(answerItem = item, navController = navController)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(ourItemList, key = { item -> item.answerSeq }) { item ->
+                        DayLineText(dayText = item?.firstDayInList)
+                        EpisodeItem(answerItem = item, navController = navController)
+                    }
                 }
+                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+            }
+
+            LaunchedEffect(ourItemList.loadState.refresh) {
+                if (ourItemList.loadState.refresh is LoadState.NotLoading)
+                    isRefreshing = false
             }
         }
     }

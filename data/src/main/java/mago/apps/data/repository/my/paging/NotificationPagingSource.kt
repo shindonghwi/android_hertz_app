@@ -19,7 +19,7 @@ class NotificationPagingSource(
     private var offsetTime: Long? = null
 
     override fun getRefreshKey(state: PagingState<Int, Notification>): Int? {
-        return state.anchorPosition
+        return null
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Notification> {
