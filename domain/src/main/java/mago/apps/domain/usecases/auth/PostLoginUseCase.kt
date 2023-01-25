@@ -9,10 +9,10 @@ import javax.inject.Inject
 
 class PostLoginUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
-    suspend operator fun invoke(id: String, password: String): Flow<Resource<Login>> = flow {
+    suspend operator fun invoke(id: String, password: String, deviceToken: String?): Flow<Resource<Login>> = flow {
         emit(Resource.Loading())
         try {
-            val response = authRepository.postLogin(id, password)
+            val response = authRepository.postLogin(id, password, deviceToken)
             when (response.status) {
                 200 -> emit(Resource.Success(response.message, response.data))
                 else -> emit(Resource.Error(response.message))

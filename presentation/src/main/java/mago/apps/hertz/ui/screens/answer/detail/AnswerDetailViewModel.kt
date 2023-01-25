@@ -97,15 +97,15 @@ class AnswerDetailViewModel @Inject constructor(
                     )
                 }
                 is Resource.Success -> {
-                    val isConnected = _answerState.value.data?.property?.isConnected ?: false
-                    _answerState.value = _answerState.value.copy(
-                        data = _answerState.value.data?.copy(
-                            property = AnswerProperty(
-                                isSent = true,
-                                isConnected = isConnected
-                            )
-                        )
-                    )
+//                    val isConnected = _answerState.value.data?.property?.isConnected ?: false
+//                    _answerState.value = _answerState.value.copy(
+//                        data = _answerState.value.data?.copy(
+//                            property = AnswerProperty(
+//                                isSent = true,
+//                                isConnected = isConnected
+//                            )
+//                        )
+//                    )
 
                     _bbibbiState.value = SendBBiBBiState(
                         isLoading = mutableStateOf(false),

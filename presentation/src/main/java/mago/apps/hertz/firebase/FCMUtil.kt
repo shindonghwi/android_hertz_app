@@ -10,13 +10,22 @@ import javax.inject.Inject
 class FCMUtil @Inject constructor(
     private val postDeviceUseCase: PostDeviceUseCase
 ) {
+    var token: String? = null
+
     fun registerToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 return@OnCompleteListener
             }
-            coroutineScopeOnDefault { postDeviceUseCase(task.result).collect() }
+            coroutineScopeOnDefault {
+                token = task.result
+                token?.let { postDeviceUseCase(it).collect() }
+            }
         })
+    }
+
+    fun removeToken(){
+        token = null
     }
 
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.onEach
 import mago.apps.domain.model.auth.Login
 import mago.apps.domain.model.common.Resource
 import mago.apps.domain.usecases.auth.PostLoginUseCase
+import mago.apps.hertz.firebase.FCMUtil
 import mago.apps.hertz.ui.base.BaseViewModel
 import mago.apps.hertz.ui.model.state.UiState
 import javax.inject.Inject
@@ -14,10 +15,11 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val postLoginUseCase: PostLoginUseCase,
+    private val fcmUtilInstance: FCMUtil
 ) : BaseViewModel<Login>() {
 
     suspend fun requestLogin(id: String, password: String) {
-        postLoginUseCase(id, password).onEach {
+        postLoginUseCase(id, password, fcmUtilInstance.token).onEach {
             when (it) {
                 is Resource.Loading -> _uiState.emit(UiState.Loading)
                 is Resource.Error -> _uiState.emit(UiState.Error(it.message.toString()))

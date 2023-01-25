@@ -5,6 +5,6 @@ import mago.apps.domain.model.common.ApiResponse
 
 interface AuthRepository {
 
-    suspend fun postLogin(id: String, password: String): ApiResponse<Login>
+    suspend fun postLogin(id: String, password: String, deviceToken: String?): ApiResponse<Login>
 
 }

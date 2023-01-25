@@ -16,6 +16,7 @@ interface AuthApi {
     suspend fun postLogin(
         @Field("id") id: String,
         @Field("password") password: String,
+        @Field("deviceToken") deviceToken: String?,
     ): Response<ApiResponse<LoginDTO>>
 
 }
