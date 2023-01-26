@@ -2,10 +2,81 @@
     <string name="app_name">MagoHz</string>
 
     <string name="home_title">My Hertz</string>
+    <string name="home_title_2">Mago\'s Hz</string>
+    <string name="home_bottombar_answer_title_text">텍스트로 답하기</string>
+    <string name="home_bottombar_answer_hint_text">예: 2만원짜리 스파게티 먹을 때</string>
+    <string name="home_bottombar_answer_title_audio">음성으로 답하기</string>
+    <string name="home_bottombar_answer_audio_stop">녹음 완료</string>
+    <string name="home_bottombar_answer_audio_play">답변하기</string>
+
+    <string name="question_opponent_name">%s 찌가 답변한 질문</string>
+    <string name="question_error_dialog_back">돌아가기</string>
+    <string name="question_error_dialog_fetch_question">질문변경</string>
+
+    <string name="episode_list_title">에피소드 목록</string>
+    <string name="episode_list_menu_1">내 에피소드</string>
+    <string name="episode_list_menu_1_empty">내 에피소드 목록이 비었어요</string>
+    <string name="episode_list_menu_2">우리의 감정 주파수</string>
+    <string name="episode_list_menu_2_empty">우리의 감정 주파수 목록이 비었어요</string>
+    <string name="episode_list_label_type_my">나의 고유주파수</string>
+    <string name="episode_list_label_type_wait">응답 대기중...</string>
+    <string name="episode_list_label_type_our">우리의 감정 주파수</string>
+
+    <string name="answer_audio_title">음성 답변</string>
+
+    <string name="answer_text_title">텍스트 답변</string>
+    <string name="answer_text_placeholder">질문에 대한 답변을 작성해주세요에 (최대 6자)</string>
+    <string name="answer_text_title_today_emotion_frequency">오늘의 감정 주파수</string>
+    <string name="answer_text_title_tag">태그</string>
+    <string name="answer_text_title_tag_placeholder">태그를 입력해주세요</string>
+    <string name="answer_text_title_tag_max_placeholder">태그는 최대 5개까지 입력 가능합니다</string>
+
+
+    <string name="answer_detail_title">에피소드</string>
+    <string name="answer_detail_title_edit">에피소드 편집</string>
+    <string name="answer_detail_bbibbi_button">상대에게 삐삐</string>
+    <string name="answer_detail_connected_button">감정 주파수 확인</string>
+    <string name="answer_detail_error">정보를 확인 할 수 없어요</string>
+
+    <string name="answer_connected_title">우리의 감정주파수</string>
+    <string name="answer_connected_common_menu_frequency">감정 주파수</string>
+    <string name="answer_connected_common_menu_keyword">헤찌뽕 키워드</string>
+    <string name="answer_connected_me_data_title_answer">나의 답변</string>
+    <string name="answer_connected_me_data_title_frequency">나의 감정 주파수</string>
+    <string name="answer_connected_me_data_title_tag">나의 태그</string>
+    <string name="answer_connected_opponent_data_title_answer">상대방의 답변</string>
+    <string name="answer_connected_opponent_data_title_frequency">상대방의 감정 주파수</string>
+    <string name="answer_connected_opponent_data_title_tag">상대방의 태그</string>
+    <string name="answer_connected_me_data_title_voice">나의 이야기</string>
+    <string name="answer_connected_opponent_data_title_voice">상대방의 이야기</string>
+
+
+    <string name="notification_title">알림 목록</string>
+    <string name="notification_menu_empty">내 알림 목록이 비었어요</string>
 
 
     <!-- 공통 -->
-    <string name="login">로그인</string>
+    <string name="id">아이디</string>
+    <string name="pw">비밀번호</string>
+    <string name="phone">전화번호</string>
+    <string name="skip">넘어가기</string>
     <string name="company">Mago</string>
+    <string name="allow">허용</string>
+    <string name="deny">거절</string>
+    <string name="save">저장</string>
+    <string name="close">닫기</string>
+    <string name="permission_mic_storage">헤르츠에서 마이크를 사용하여\n녹음하도록 허용하시겠습니까?</string>
+
+    <!-- 팝업 메세지 -->
+    <string name="dialog_record_end_frequency_title">고유 주파수 잡는 중…</string>
+    <string name="dialog_record_end_frequency_subtitle">잠시만 기다려주세요!\n오늘의 mago를 알려드릴게요</string>
+    <string name="dialog_bbibbi_send_success">신호 전송 완료!</string>
+    <string name="dialog_answer_patch_success">정보 수정 완료!</string>
+
+    <!-- 토스트 메세지 -->
+    <string name="toast_permission_required">저장공간과 마이크 권한이 필요해요</string>
+    <string name="toast_empty_input">정보를 모두 입력해주세요</string>
+    <string name="toast_fail_bbibbi_send">현재는 삐삐를 전달 할 수 없어요</string>
+
 
 </resources>

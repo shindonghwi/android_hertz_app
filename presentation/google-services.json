@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "983734706672",
+    "project_id": "mago-hertz-6e524",
+    "storage_bucket": "mago-hertz-6e524.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983734706672:android:571415651caf5150093d35",
+        "android_client_info": {
+          "package_name": "mago.apps.hertz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983734706672-b2gboih44581sqbsbho4ars9q26tfi7e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mago.apps.hertz",
+            "certificate_hash": "1563b9d914ccc9f67420361261f18b59a58991cc"
+          }
+        },
+        {
+          "client_id": "983734706672-idjvsrg7gejf96to6fiijt5lmgu72evk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp1dhidBqU98zAP-RgrNl1SWTrbDDWrks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983734706672-idjvsrg7gejf96to6fiijt5lmgu72evk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
