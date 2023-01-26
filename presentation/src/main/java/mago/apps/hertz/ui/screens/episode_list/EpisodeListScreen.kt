@@ -1,7 +1,7 @@
 package mago.apps.hertz.ui.screens.episode_list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -9,19 +9,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.pullrefresh.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +44,7 @@ import mago.apps.domain.model.common.EmotionList
 import mago.apps.domain.model.common.ShareType
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.components.refresh.SwipeRefreshIndicator
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -229,7 +231,7 @@ private fun MyItemListExistView(
                         EpisodeItem(answerItem = item, navController = navController)
                     }
                 }
-                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+                SwipeRefreshIndicator(state = pullRefreshState, refreshing = isRefreshing)
             }
 
             LaunchedEffect(myItemList.loadState.refresh) {
@@ -257,7 +259,8 @@ private fun OurItemListExistView(
                 delay(300)
                 scrollState.animateScrollToItem(0)
             }
-        })
+        },
+    )
 
 
     AnimatedVisibility(
@@ -287,7 +290,7 @@ private fun OurItemListExistView(
                         EpisodeItem(answerItem = item, navController = navController)
                     }
                 }
-                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+                SwipeRefreshIndicator(state = pullRefreshState, refreshing = isRefreshing)
             }
 
             LaunchedEffect(ourItemList.loadState.refresh) {

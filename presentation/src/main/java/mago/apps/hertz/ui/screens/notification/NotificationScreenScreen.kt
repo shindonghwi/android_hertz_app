@@ -45,6 +45,7 @@ import mago.apps.hertz.R
 import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_OUR_FREQUENCY
 import mago.apps.hertz.broadcast.BROAD_CAST_ACTION_QUESTION
 import mago.apps.hertz.ui.components.appbar.AppBarContent
+import mago.apps.hertz.ui.components.refresh.SwipeRefreshIndicator
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.navigation.navigateTo
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
@@ -201,7 +202,7 @@ private fun NotificationContent(
                         )
                     }
                 }
-                PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+                SwipeRefreshIndicator(state = pullRefreshState, refreshing = isRefreshing)
             }
 
             LaunchedEffect(notifications.loadState.refresh) {
