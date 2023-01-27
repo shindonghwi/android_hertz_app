@@ -30,6 +30,8 @@ class AnswerAudioViewModel @Inject constructor(
 
     val pcmRecorder = PcmRecorder()
 
+    val audioFocusState = pcmRecorder.audioFocusAuth
+
     private val _postAnswerVoiceState = MutableStateFlow(VoiceRegisterState())
     val postAnswerVoiceState: StateFlow<VoiceRegisterState> = _postAnswerVoiceState
 

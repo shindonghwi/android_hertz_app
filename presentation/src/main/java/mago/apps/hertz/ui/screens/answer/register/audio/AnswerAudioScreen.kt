@@ -1,5 +1,7 @@
 package mago.apps.hertz.ui.screens.answer.register.audio
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -36,6 +38,7 @@ import mago.apps.hertz.ui.components.dialog.PopupType
 import mago.apps.hertz.ui.model.screen.RouteScreen
 import mago.apps.hertz.ui.navigation.navigateWithPopUp
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
+import mago.apps.hertz.ui.utils.recorder.AudioFocusEvent
 import mago.apps.hertz.ui.utils.recorder.FileMultipart
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnDefault
 import mago.apps.hertz.ui.utils.scope.coroutineScopeOnMain
@@ -92,6 +95,16 @@ private fun AnswerAudioAppBar(navController: NavHostController) {
 
 @Composable
 private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
+    val focusState = answerAudioViewModel.audioFocusState.collectAsState()
+
+    LaunchedEffect(key1 = focusState.value, block = {
+        if (focusState.value == AudioFocusEvent.UNFOCUSED){
+            if (answerAudioViewModel.pcmRecorder.isRecording){
+                requestRecordEnd(answerAudioViewModel)
+            }
+        }
+    })
+
     val context = LocalContext.current
     val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
     DisposableEffect(key1 = Unit) {
