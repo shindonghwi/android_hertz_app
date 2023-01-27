@@ -21,8 +21,8 @@ android {
 
     buildTypes {
         getByName("debug") {
-//            isDebuggable = false
-            applicationIdSuffix = DebugConfig.suffixName
+            isDebuggable = false
+            applicationIdSuffix = DebugConfig.suffixName // 추후에 분리되면 수정해야함.
             versionNameSuffix = DebugConfig.versionName
             manifestPlaceholders["appLabel"] =  DebugConfig.app_label
         }
