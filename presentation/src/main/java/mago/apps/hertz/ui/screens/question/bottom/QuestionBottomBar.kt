@@ -32,7 +32,6 @@ fun QuestionBottomBar(
 
     val permissionList: ArrayList<String> = arrayListOf<String>().apply {
         add(android.Manifest.permission.RECORD_AUDIO)
-        add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(android.Manifest.permission.POST_NOTIFICATIONS)
         }

@@ -77,7 +77,6 @@ private fun PopupPermissionButton(
     val permissions = remember {
         listOf(
             Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
     val permissionsHandler = remember(permissions) { PermissionsHandler() }
