@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -98,8 +99,8 @@ private fun AnswerAudioLifecycle(answerAudioViewModel: AnswerAudioViewModel) {
     val focusState = answerAudioViewModel.audioFocusState.collectAsState()
 
     LaunchedEffect(key1 = focusState.value, block = {
-        if (focusState.value == AudioFocusEvent.UNFOCUSED){
-            if (answerAudioViewModel.pcmRecorder.isRecording){
+        if (focusState.value == AudioFocusEvent.UNFOCUSED) {
+            if (answerAudioViewModel.pcmRecorder.isRecording) {
                 requestRecordEnd(answerAudioViewModel)
             }
         }
@@ -244,7 +245,8 @@ private fun AudioRecordingContent(
         LinearProgressBar(answerAudioViewModel)
 
         Column(
-            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             answerAudioViewModel.run {
                 PlayTimeContent(this)
@@ -287,7 +289,7 @@ private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
     val maxTime = answerAudioViewModel.pcmRecorder.getMaxTime()
 
     Text(
-        modifier = Modifier.padding(top = 20.dp, bottom = 60.dp),
+        modifier = Modifier.padding(top = 20.dp),
         text = "$timeText / ${answerAudioViewModel.pcmRecorder.convertTimeToString(maxTime)}",
         color = MaterialTheme.colorScheme.onPrimary,
         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
@@ -297,43 +299,52 @@ private fun PlayTimeContent(answerAudioViewModel: AnswerAudioViewModel) {
 @Composable
 private fun PlayingContent(answerAudioViewModel: AnswerAudioViewModel) {
 
-    WavesAnimation(
-        waveSize = 80.dp,
-        waveColor = Color.White.copy(alpha = 0.4f),
+    val configuration = LocalConfiguration.current
+    val waveWidth = configuration.screenWidthDp.dp * 0.2f
+    val iconPadding = waveWidth * 0.3f
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
     ) {
-        Icon(
+        WavesAnimation(
+            waveSize = waveWidth,
+            waveColor = Color.White.copy(alpha = 0.4f),
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(waveWidth)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onPrimary)
+                    .noDuplicationClickable {
+                        requestRecordEnd(answerAudioViewModel)
+                    }
+                    .padding(iconPadding),
+                painter = painterResource(id = R.drawable.stop),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+
+        /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
+        Text(
             modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .wrapContentWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
                 .noDuplicationClickable {
                     requestRecordEnd(answerAudioViewModel)
                 }
-                .padding(25.dp),
-            painter = painterResource(id = R.drawable.stop),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
+            color = MaterialTheme.colorScheme.onPrimary,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            textAlign = TextAlign.Center,
         )
     }
-
-    /** 녹음중이고, 시간이 흘러간경우에만 "녹음완료" 버튼을 보여준다. */
-    Text(
-        modifier = Modifier
-            .padding(top = 80.dp)
-            .wrapContentWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp))
-            .noDuplicationClickable {
-                requestRecordEnd(answerAudioViewModel)
-            }
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        text = stringResource(id = R.string.home_bottombar_answer_audio_stop),
-        color = MaterialTheme.colorScheme.onPrimary,
-        style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.Bold
-        ),
-        textAlign = TextAlign.Center,
-    )
 }
 
 fun requestRecordEnd(answerAudioViewModel: AnswerAudioViewModel) {
