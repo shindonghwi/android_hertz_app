@@ -1,6 +1,8 @@
 package mago.apps.hertz
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -33,6 +35,14 @@ class MainActivity : ComponentActivity() {
                 MainApp(navController)
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        val newOverride = Configuration(newBase?.resources?.configuration)
+        if (newOverride.fontScale >= 1.1f)
+            newOverride.fontScale = 1.1f
+        applyOverrideConfiguration(newOverride)
+        super.attachBaseContext(newBase)
     }
 
     override fun onNewIntent(intent: Intent?) {

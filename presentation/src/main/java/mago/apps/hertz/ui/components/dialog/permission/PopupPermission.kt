@@ -41,9 +41,9 @@ fun PopupPermission(modifier: Modifier, permissionCallback: PopupPermissionCallb
     ) {
 
         Text(
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 30.dp),
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 20.dp),
             text = stringResource(id = R.string.permission_mic_storage),
-            style = MaterialTheme.typography.titleXLarge.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
         )
