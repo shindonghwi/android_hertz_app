@@ -61,7 +61,11 @@ fun QuestionBottomBar(
                 .weight(1f)
                 .background(MaterialTheme.colorScheme.primary)
                 .noDuplicationClickable {
-                    if (permissionState.allPermissionsGranted) {
+                    val isGrantedAudioPermission = permissionState.permissions
+                        .find { it.permission == android.Manifest.permission.RECORD_AUDIO }
+                        ?.hasPermission ?: false
+
+                    if (isGrantedAudioPermission) {
                         navController.navigateTo(
                             RouteScreen.AnswerAudioScreen.route +
                                     "?question=${Gson().toJson(questionViewModel.questionInfo)}"
