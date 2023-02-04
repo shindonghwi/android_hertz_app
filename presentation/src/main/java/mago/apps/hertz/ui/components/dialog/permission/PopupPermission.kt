@@ -6,22 +6,20 @@ import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -29,38 +27,45 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import mago.apps.hertz.R
 import mago.apps.hertz.ui.components.dialog.PopupPermissionCallback
-import mago.apps.hertz.ui.theme.titleXLarge
 import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 import mago.apps.hertz.ui.utils.permission.PermissionsHandler
 
 @Composable
-fun PopupPermission(modifier: Modifier, permissionCallback: PopupPermissionCallback?) {
+fun PopupPermission(modifier: Modifier = Modifier, permissionCallback: PopupPermissionCallback?) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 20.dp),
-            text = stringResource(id = R.string.permission_mic_storage),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.secondary,
-            textAlign = TextAlign.Center
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.weight(0.8f),
+            contentAlignment = Alignment.Center
         ) {
-            PopupPermissionButton(
-                content = stringResource(id = R.string.allow),
-                callback = permissionCallback,
+            Text(
+                text = stringResource(id = R.string.permission_mic_storage),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center
             )
+        }
+
+        Row(modifier = Modifier.weight(0.2f)) {
+
             PopupPermissionButton(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .fillMaxHeight(),
                 content = stringResource(id = R.string.deny),
                 buttonAlpha = 0.6f,
                 callback = permissionCallback
+            )
+
+            PopupPermissionButton(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .fillMaxHeight(),
+                content = stringResource(id = R.string.allow),
+                callback = permissionCallback,
             )
         }
     }
@@ -69,7 +74,10 @@ fun PopupPermission(modifier: Modifier, permissionCallback: PopupPermissionCallb
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun PopupPermissionButton(
-    content: String, buttonAlpha: Float = 1f, callback: PopupPermissionCallback?
+    modifier: Modifier,
+    content: String,
+    buttonAlpha: Float = 1f,
+    callback: PopupPermissionCallback?
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -102,11 +110,7 @@ private fun PopupPermissionButton(
     })
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 40.dp)
-            .height(40.dp)
-            .clip(RoundedCornerShape(14.dp))
+        modifier = modifier
             .background(MaterialTheme.colorScheme.primary.copy(alpha = buttonAlpha))
             .noDuplicationClickable {
                 callback?.run {

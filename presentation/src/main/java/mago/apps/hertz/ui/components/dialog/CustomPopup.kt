@@ -8,10 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -42,7 +39,7 @@ interface PopupPermissionCallback {
     fun deny()
 }
 
-interface IBackPressEvent{
+interface IBackPressEvent {
     fun onPress()
 }
 
@@ -82,7 +79,13 @@ fun CustomPopup(
                         interactionSource = MutableInteractionSource(),
                         indication = null,
                         onClick = {})
-                    .padding(vertical = 40.dp, horizontal = 18.dp)
+                    .padding(
+                        if (type == PopupType.PERMISSION) {
+                            PaddingValues(top = 20.dp)
+                        } else{
+                            PaddingValues(all = 20.dp)
+                        }
+                    )
 
                 when (type) {
                     PopupType.PERMISSION -> {
@@ -106,7 +109,7 @@ fun CustomPopup(
     }
 
     BackHandler(enabled = isVisible.value) {
-        if (backgroundTouchEnable){
+        if (backgroundTouchEnable) {
             iBackPressEvent?.onPress()
             popupDisable(isVisible)
         }
