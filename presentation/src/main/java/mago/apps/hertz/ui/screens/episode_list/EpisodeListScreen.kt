@@ -52,8 +52,7 @@ import mago.apps.hertz.ui.utils.compose.modifier.noDuplicationClickable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeListScreen(
-    navController: NavHostController,
-    episodeListViewModel: EpisodeListViewModel
+    navController: NavHostController, episodeListViewModel: EpisodeListViewModel
 ) {
     Scaffold(topBar = { EpisodeListAppBar(navController) }) {
         Column(
@@ -70,28 +69,24 @@ fun EpisodeListScreen(
 @Composable
 private fun EpisodeListAppBar(navController: NavHostController) {
 
-    AppBarContent(
-        leftContent = {
-            Icon(modifier = Modifier
-                .size(40.dp)
-                .noDuplicationClickable {
-                    navController.popBackStack()
-                }
-                .padding(6.dp),
-                imageVector = Icons.Default.ArrowBack,
-                tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
-        },
-        centerContent = {
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(id = R.string.episode_list_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-    )
+    AppBarContent(leftContent = {
+        Icon(modifier = Modifier
+            .size(40.dp)
+            .noDuplicationClickable {
+                navController.popBackStack()
+            }
+            .padding(6.dp),
+            imageVector = Icons.Default.ArrowBack,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = null)
+    }, centerContent = {
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            text = stringResource(id = R.string.episode_list_title),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.secondary
+        )
+    })
 
 }
 
@@ -191,16 +186,14 @@ private fun MyItemListExistView(
     val scope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
     var isRefreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isRefreshing,
-        onRefresh = {
-            myItemList.refresh()
-            isRefreshing = true
-            scope.launch {
-                delay(300)
-                scrollState.animateScrollToItem(0)
-            }
-        })
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
+        myItemList.refresh()
+        isRefreshing = true
+        scope.launch {
+            delay(300)
+            scrollState.animateScrollToItem(0)
+        }
+    })
 
     AnimatedVisibility(
         visible = myItemList.loadState.refresh is LoadState.NotLoading,
@@ -235,8 +228,7 @@ private fun MyItemListExistView(
             }
 
             LaunchedEffect(myItemList.loadState.refresh) {
-                if (myItemList.loadState.refresh is LoadState.NotLoading)
-                    isRefreshing = false
+                if (myItemList.loadState.refresh is LoadState.NotLoading) isRefreshing = false
             }
         }
     }
@@ -294,8 +286,7 @@ private fun OurItemListExistView(
             }
 
             LaunchedEffect(ourItemList.loadState.refresh) {
-                if (ourItemList.loadState.refresh is LoadState.NotLoading)
-                    isRefreshing = false
+                if (ourItemList.loadState.refresh is LoadState.NotLoading) isRefreshing = false
             }
         }
     }
@@ -341,8 +332,7 @@ private fun EpisodeItem(answerItem: Answer?, navController: NavHostController) {
             .background(MaterialTheme.colorScheme.onPrimary)
             .noDuplicationClickable {
                 navController.navigateTo(
-                    route = RouteScreen.AnswerDetailScreen.route +
-                            "?answerSeq=${answerItem?.answerSeq}"
+                    route = RouteScreen.AnswerDetailScreen.route + "?answerSeq=${answerItem?.answerSeq}"
                 )
             }
             .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 30.dp),
